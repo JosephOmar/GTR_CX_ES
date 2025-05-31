@@ -12,7 +12,7 @@ const RealDataDashboard = () => {
 
   // Obtener fechas únicas desde la API
   useEffect(() => {
-    fetch("http://localhost:8000/real-data-view/")
+    fetch("https://gtr-glovoes-cxpe.onrender.com/real-data-view/")
       .then((res) => res.json())
       .then((data) => {
         const uniqueDates = [...new Set(data.map((item) => item.date))];

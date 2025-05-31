@@ -16,7 +16,7 @@ const RealDattViewListChart = ({ selectedTeam, selectedDate }) => {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:8000/real-data-view/")
+    fetch("https://gtr-glovoes-cxpe.onrender.com/real-data-view/")
       .then((res) => res.json())
       .then((json) => {
         const filtered = json
