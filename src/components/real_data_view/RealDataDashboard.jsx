@@ -68,7 +68,7 @@ const RealDataDashboard = () => {
           <label htmlFor="date-select" className="mr-2 font-semibold text-sm">
             Update Data:
           </label>
-          <a href="real-data-view/form">Go to Form</a>
+          <a href="https://gtr-cx-glovo-es.netlify.app/real-data-view/form">Go to Form</a>
         </div>
       </div>
 
