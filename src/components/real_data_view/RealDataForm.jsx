@@ -67,33 +67,36 @@ const UploadForm = () => {
   };
 
   return (
-    <div className="flex w-full h-full">
-      <div className="m-auto p-6 bg-white rounded-xl shadow-md max-w-2xl">
-        <h2 className="text-2xl font-bold text-gray-800 mb-6">📤 Subir Archivos Excel</h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {requiredFiles.map((file, index) => (
-            <div key={file.label} className="mb-4">
-              <label className="block text-gray-700 font-semibold mb-1">{file.label}</label>
-              <input
-                type="file"
-                name={`file${index + 1}`}
-                onChange={handleFileChange}
-                className="w-full border border-gray-300 p-2 rounded-md file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                required
-              />
-            </div>
-          ))}
+    <div className="flex justify-center w-full h-full">
+      <div className='flex flex-col items-center mt-5'>
+        <a href="https://gtr-cx-glovo-es.netlify.app/real-data-view" class="text-center px-6 py-3   rounded-full bg-[#00A082] text-white border-black font-semibold">Return View</a>
+        <div className=" p-6 bg-white rounded-xl shadow-md max-w-2xl mt-10">
+          <h2 className="text-2xl font-bold text-gray-800 mb-6">📤 Subir Archivos Excel</h2>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {requiredFiles.map((file, index) => (
+              <div key={file.label} className="mb-4">
+                <label className="block text-gray-700 font-semibold mb-1">{file.label}</label>
+                <input
+                  type="file"
+                  name={`file${index + 1}`}
+                  onChange={handleFileChange}
+                  className="w-full border border-gray-300 p-2 rounded-md file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                  required
+                />
+              </div>
+            ))}
 
-          <button
-            type="submit"
-            className="w-full py-2 px-4 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition duration-200"
-          >
-            Upload Files
-          </button>
-        </form>
-        {message && (
-          <p className="mt-4 text-center text-sm font-medium text-red-600">{message}</p>
-        )}
+            <button
+              type="submit"
+              className="w-full py-2 px-4 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition duration-200"
+            >
+              Upload Files
+            </button>
+          </form>
+          {message && (
+            <p className="mt-4 text-center text-sm font-medium text-red-600">{message}</p>
+          )}
+        </div>
       </div>
     </div>
   );
