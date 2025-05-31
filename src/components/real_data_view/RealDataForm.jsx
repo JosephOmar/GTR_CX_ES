@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const UploadForm = () => {
   const [message, setMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [progress, setProgress] = useState(0);
 
-  // Etiquetas para mostrar al usuario + nombre real para validación de filename
   const requiredFiles = [
     { label: 'Planned Data', expectedPart: 'planned_data' },
     { label: 'Assembled Chat', expectedPart: 'assembled_chat' },
@@ -25,6 +26,19 @@ const UploadForm = () => {
     }));
   };
 
+  const simulateProgress = () => {
+    setProgress(0);
+    let value = 0;
+    const interval = setInterval(() => {
+      value += Math.random() * 10;
+      if (value >= 95) {
+        clearInterval(interval); // Detenemos antes del 100% real
+      }
+      setProgress(Math.min(value, 95));
+    }, 200);
+    return interval;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData();
@@ -39,7 +53,6 @@ const UploadForm = () => {
         return;
       }
 
-      // Validación opcional: verificar que el nombre contenga la palabra clave esperada
       if (!file.name.toLowerCase().includes(expected)) {
         setMessage(`❌ El archivo para "${requiredFiles[i].label}" debe contener: "${expected}"`);
         return;
@@ -48,29 +61,35 @@ const UploadForm = () => {
       formData.append(key, file);
     }
 
+    setIsLoading(true);
+    setMessage('');
+    const interval = simulateProgress();
+
     try {
       const response = await fetch('https://gtr-glovoes-cxpe.onrender.com/upload-real-data-view/', {
         method: 'POST',
         body: formData,
       });
 
-      if (response.ok) {
-        const data = await response.json();
-        setMessage('✅ ' + data.message);
-      } else {
-        const errorText = await response.text();
-        setMessage('❌ Error al subir: ' + errorText);
-      }
+      const text = await response.text();
+      setMessage(response.ok ? '✅ ' + text : '❌ Error al subir: ' + text);
     } catch (err) {
       setMessage('❌ Error de red: ' + err.message);
+    } finally {
+      clearInterval(interval);
+      setProgress(100);
+      setTimeout(() => {
+        setIsLoading(false);
+        setProgress(0); // Oculta barra al terminar
+      }, 1000);
     }
   };
 
   return (
     <div className="flex justify-center w-full h-full">
-      <div className='flex flex-col items-center mt-5'>
-        <a href="https://gtr-cx-glovo-es.netlify.app/real-data-view" class="text-center px-6 py-3   rounded-full bg-[#00A082] text-white border-black font-semibold">Return View</a>
-        <div className=" p-6 bg-white rounded-xl shadow-md max-w-2xl mt-10">
+      <div className="flex flex-col items-center mt-5">
+        <a href="https://gtr-cx-glovo-es.netlify.app/real-data-view" className="text-center px-6 py-3 rounded-full bg-[#00A082] text-white border-black font-semibold">Return View</a>
+        <div className="p-6 bg-white rounded-xl shadow-md max-w-2xl mt-10 w-full">
           <h2 className="text-2xl font-bold text-gray-800 mb-6">📤 Subir Archivos Excel</h2>
           <form onSubmit={handleSubmit} className="space-y-4">
             {requiredFiles.map((file, index) => (
@@ -88,11 +107,23 @@ const UploadForm = () => {
 
             <button
               type="submit"
-              className="w-full py-2 px-4 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition duration-200"
+              disabled={isLoading}
+              className="w-full py-2 px-4 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition duration-200 disabled:opacity-50"
             >
-              Upload Files
+              {isLoading ? 'Subiendo...' : 'Upload Files'}
             </button>
           </form>
+
+          {/* Barra de progreso */}
+          {isLoading && (
+            <div className="w-full bg-gray-200 rounded-full h-4 mt-4 overflow-hidden">
+              <div
+                className="bg-blue-500 h-4 transition-all duration-200 ease-in-out"
+                style={{ width: `${progress}%` }}
+              ></div>
+            </div>
+          )}
+
           {message && (
             <p className="mt-4 text-center text-sm font-medium text-red-600">{message}</p>
           )}
