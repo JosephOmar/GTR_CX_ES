@@ -8,7 +8,7 @@ const metrics = [
   { label: "Forecast Volumes", key: "forecast_received" },
   { label: "Real Volumes", key: "real_received" },
   { label: "Delta Real vs Forecast Volumes", key: "delta_volumes" },
-  { label: "% Delta Real vs Forecast", key: "percent_delta_agents" },
+  { label: "% Delta Real vs Forecast", key: "percent_delta_volumes" },
   { label: "Service Level 30'", key: "service_level" },
   { label: "SAT", key: "sat_interval" },
 
@@ -69,14 +69,34 @@ const RealDataViewList = ({ selectedTeam, selectedDate }) => {
 
   const getValue = (item, key) => {
     if (key === "delta_volumes") return item.real_received - item.forecast_received;
+  
     if (key === "delta_agents") return item.real_agents - item.required_agents;
-    if (key === "percent_delta_agents") {
-      return item.required_agents === 0
-        ? "N/A"
-        : (((item.real_received - item.forecast_received) / item.forecast_received) * 100).toFixed(2) + "%";
+  
+    if (key === "percent_delta_volumes") {
+      const forecast = item.forecast_received;
+      const real = item.real_received;
+  
+      if (forecast === 0) {
+        if (real === 0) return "0.00%";
+  
+        // OPCIÓN 1: Valor simbólico fijo
+        // return "Exceso";
+  
+        // OPCIÓN 2: Valor alto simbólico (puedes cambiar 1000)
+        // return "1000.00%";
+  
+        // OPCIÓN 3: Mostrar valor real como si forecast fuera 1 (sólo si te sirve aproximado)
+        return ((real - forecast) / 1 * 100).toFixed(2) + "%";
+      }
+  
+      const percent = ((real - forecast) / forecast) * 100;
+      return percent.toFixed(2) + "%";
     }
+  
     if (key === "service_level") return item.service_level + "%";
+  
     if (key === "sat_interval") return item.sat_interval + "%";
+  
     return item[key] ?? "N/A";
   };
 
@@ -111,7 +131,7 @@ const RealDataViewList = ({ selectedTeam, selectedDate }) => {
   };
 
   const getCellClassRealvsFRTVolumes = (key, value) => {
-    if (key === "delta_volumes" || key === "percent_delta_agents") {
+    if (key === "delta_volumes" || key === "percent_delta_volumes") {
       const numeric = parseFloat(value);
       if (!isNaN(numeric)) {
         return numeric > 0 ? "bg-red-200" : " bg-green-200";
