@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import html2canvas from 'html2canvas-pro';
 
 const agentMetrics = [
   { label: "Required Agents", key: "required_agents" },
@@ -80,6 +81,19 @@ const RealDataViewList = ({ selectedTeam, selectedDate }) => {
   if (loading) return <p>Cargando datos...</p>;
   if (error) return <p>Error: {error}</p>;
   if (data.length === 0) return <p>No hay datos para {selectedTeam}.</p>;
+
+  const handleCapture = () => {
+    const tableElement = document.getElementById("data-table");
+    if (tableElement) {
+      html2canvas(tableElement).then((canvas) => {
+        const imageURL = canvas.toDataURL(); // Convierte el canvas a una imagen
+        const link = document.createElement("a");
+        link.href = imageURL;
+        link.download = "tabla.png"; // Nombre del archivo de la imagen
+        link.click(); // Simula un clic para descargar la imagen
+      });
+    }
+  };
 
   const getValue = (item, key) => {
     if (key === "delta_volumes") return item.real_received - item.forecast_received;
@@ -176,83 +190,88 @@ const RealDataViewList = ({ selectedTeam, selectedDate }) => {
   };
 
   return (
-    <div className="overflow-x-auto">
-      <table className="min-w-full table-auto border-collapse">
-        <thead>
-          <tr>
-            <th className="border px-4 py-2 bg-[#00A082] min-w-[210px] text-left text-xs text-white">Métrica</th>
-            {data.map((item) => (
-              <th key={item.time_interval} className="border px-4 py-2 bg-[#00A082] text-white text-center whitespace-nowrap text-xs">
-                {item.time_interval}
-              </th>
+    <div>
+      <button onClick={handleCapture} className="mb-4 p-2 bg-blue-500 text-white">
+        Image
+      </button>
+      <div className="overflow-x-auto">
+        <table className="min-w-full table-auto border-collapse" id="data-table">
+          <thead>
+            <tr>
+              <th className="border px-4 py-2 bg-[#00A082] min-w-[210px] text-left text-xs text-white">Métrica</th>
+              {data.map((item) => (
+                <th key={item.time_interval} className="border px-4 py-2 bg-[#00A082] text-white text-center whitespace-nowrap text-xs">
+                  {item.time_interval}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {/* AGENTS */}
+            <tr>
+              <td colSpan={data.length + 1} className="bg-gray-200 font-bold text-sm ">AGENTS</td>
+            </tr>
+            {agentMetrics.map((metric) => (
+              <tr key={metric.key}>
+                <td className={`border px-4 py-2 bg-gray-50 font-medium min-w-[210px] text-xs`}>{metric.label}</td>
+                {data.map((item) => {
+                  const value = getValue(item, metric.key);
+                  return (
+                    <td
+                      key={`${item.id}-${metric.key}`}
+                      className={`border px-4 py-2 text-center font-bold text-xs ${getBackgroundColorByMetric(metric.key)} ${getCellClassRealvsFRTAgents(metric.key, value)}`}
+                    >
+                      {value}
+                    </td>
+                  );
+                })}
+              </tr>
             ))}
-          </tr>
-        </thead>
-        <tbody>
-          {/* AGENTS */}
-          <tr>
-            <td colSpan={data.length + 1} className="bg-gray-200 font-bold text-sm ">AGENTS</td>
-          </tr>
-          {agentMetrics.map((metric) => (
-            <tr key={metric.key}>
-              <td className={`border px-4 py-2 bg-gray-50 font-medium min-w-[210px] text-xs`}>{metric.label}</td>
-              {data.map((item) => {
-                const value = getValue(item, metric.key);
-                return (
-                  <td
-                    key={`${item.id}-${metric.key}`}
-                    className={`border px-4 py-2 text-center font-bold text-xs ${getBackgroundColorByMetric(metric.key)} ${getCellClassRealvsFRTAgents(metric.key, value)}`}
-                  >
-                    {value}
-                  </td>
-                );
-              })}
-            </tr>
-          ))}
 
-          {/* VOLUMES */}
-          <tr>
-            <td colSpan={data.length + 1} className="bg-gray-200 font-bold text-sm">VOLUMES</td>
-          </tr>
-          {volumeMetrics.map((metric) => (
-            <tr key={metric.key}>
-              <td className="border px-4 py-2 bg-gray-50 font-medium min-w-[210px] text-xs">{metric.label}</td>
-              {data.map((item) => {
-                const value = getValue(item, metric.key);
-                return (
-                  <td
-                    key={`${item.id}-${metric.key}`}
-                    className={`border px-4 py-2 text-center font-bold text-xs ${getBackgroundColorByMetric(metric.key)} ${getCellClassRealvsFRT(metric.key, value)}`}
-                  >
-                    {value}
-                  </td>
-                );
-              })}
+            {/* VOLUMES */}
+            <tr>
+              <td colSpan={data.length + 1} className="bg-gray-200 font-bold text-sm">VOLUMES</td>
             </tr>
-          ))}
+            {volumeMetrics.map((metric) => (
+              <tr key={metric.key}>
+                <td className="border px-4 py-2 bg-gray-50 font-medium min-w-[210px] text-xs">{metric.label}</td>
+                {data.map((item) => {
+                  const value = getValue(item, metric.key);
+                  return (
+                    <td
+                      key={`${item.id}-${metric.key}`}
+                      className={`border px-4 py-2 text-center font-bold text-xs ${getBackgroundColorByMetric(metric.key)} ${getCellClassRealvsFRT(metric.key, value)}`}
+                    >
+                      {value}
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
 
-          {/* KPIS */}
-          <tr>
-            <td colSpan={data.length + 1} className="bg-gray-200 font-bold text-sm">KPIS</td>
-          </tr>
-          {kpiMetrics.map((metric) => (
-            <tr key={metric.key}>
-              <td className="border px-4 py-2 bg-gray-50 font-medium min-w-[210px] text-xs">{metric.label}</td>
-              {data.map((item) => {
-                const value = getValue(item, metric.key);
-                return (
-                  <td
-                    key={`${item.id}-${metric.key}`}
-                    className={`border px-4 py-2 text-center font-bold text-xs ${getBackgroundColorByMetric(metric.key)} ${getCellClassAHT(metric.key, value)} ${getCellClassSLA(metric.key, value)} ${getCellClassSAT(metric.key, value)} ${getCellClassSATAbuser(metric.key, value)}`}
-                  >
-                    {value}
-                  </td>
-                );
-              })}
+            {/* KPIS */}
+            <tr>
+              <td colSpan={data.length + 1} className="bg-gray-200 font-bold text-sm">KPIS</td>
             </tr>
-          ))}
-        </tbody>
-      </table>
+            {kpiMetrics.map((metric) => (
+              <tr key={metric.key}>
+                <td className="border px-4 py-2 bg-gray-50 font-medium min-w-[210px] text-xs">{metric.label}</td>
+                {data.map((item) => {
+                  const value = getValue(item, metric.key);
+                  return (
+                    <td
+                      key={`${item.id}-${metric.key}`}
+                      className={`border px-4 py-2 text-center font-bold text-xs ${getBackgroundColorByMetric(metric.key)} ${getCellClassAHT(metric.key, value)} ${getCellClassSLA(metric.key, value)} ${getCellClassSAT(metric.key, value)} ${getCellClassSATAbuser(metric.key, value)}`}
+                    >
+                      {value}
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

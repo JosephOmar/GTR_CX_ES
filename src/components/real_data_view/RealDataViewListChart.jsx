@@ -8,12 +8,13 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Tooltip, Legend);
 
 const RealDattViewListChart = ({ selectedTeam, selectedDate }) => {
   const [data, setData] = useState([]);
+  const chartRef = useRef(null); // Referencia al gráfico
 
   useEffect(() => {
     fetch("https://gtr-glovoes-cxpe.onrender.com/real-data-view/")
@@ -119,11 +120,32 @@ const RealDattViewListChart = ({ selectedTeam, selectedDate }) => {
     },
   };
 
+  // Función para descargar la gráfica como imagen
+  const handleDownload = () => {
+    const chart = chartRef.current; // Obtener la referencia al gráfico directamente
+    if (chart) {
+      const imageUrl = chart.toBase64Image(); // Obtener la imagen en formato base64
+
+      const link = document.createElement("a");
+      link.href = imageUrl; // Establecer la URL de la imagen
+      link.download = "grafica.png"; // Establecer el nombre del archivo a descargar
+      link.click(); // Simular un clic para descargar la imagen
+    }
+  };
+
   return (
     <div className="w-full flex justify-end">
       <div className="w-[100%] p-4 bg-white rounded shadow">
         <h2 className="text-lg font-bold mb-4">Service Level Chart and Metrics</h2>
-        <Line data={chartData} options={options} />
+        {/* Gráfico de Chart.js */}
+        <Line data={chartData} options={options} ref={chartRef} />
+        {/* Botón para descargar la gráfica */}
+        <button
+          onClick={handleDownload}
+          className="mt-4 p-2 bg-blue-500 text-white rounded"
+        >
+          Descargar Gráfica
+        </button>
       </div>
     </div>
   );
