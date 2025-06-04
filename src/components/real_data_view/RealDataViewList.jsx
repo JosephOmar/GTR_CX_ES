@@ -191,9 +191,6 @@ const RealDataViewList = ({ selectedTeam, selectedDate }) => {
 
   return (
     <div>
-      <button onClick={handleCapture} className="mb-4 p-2 bg-blue-500 text-white">
-        Image
-      </button>
       <div className="overflow-x-auto">
         <table className="min-w-full table-auto border-collapse" id="data-table">
           <thead>
@@ -272,6 +269,12 @@ const RealDataViewList = ({ selectedTeam, selectedDate }) => {
           </tbody>
         </table>
       </div>
+      <div className="p-4 text-center">
+        <button onClick={handleCapture} className=" p-2 bg-blue-500 text-white">
+          Download Table
+        </button>
+      </div>
+      
     </div>
   );
 };

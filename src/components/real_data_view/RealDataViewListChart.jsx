@@ -120,32 +120,32 @@ const RealDattViewListChart = ({ selectedTeam, selectedDate }) => {
     },
   };
 
-  // Función para descargar la gráfica como imagen
-  const handleDownload = () => {
-    const chart = chartRef.current; // Obtener la referencia al gráfico directamente
-    if (chart) {
-      const imageUrl = chart.toBase64Image(); // Obtener la imagen en formato base64
+  // // Función para descargar la gráfica como imagen
+  // const handleDownload = () => {
+  //   const chart = chartRef.current; // Obtener la referencia al gráfico directamente
+  //   if (chart) {
+  //     const imageUrl = chart.toBase64Image(); // Obtener la imagen en formato base64
 
-      const link = document.createElement("a");
-      link.href = imageUrl; // Establecer la URL de la imagen
-      link.download = "grafica.png"; // Establecer el nombre del archivo a descargar
-      link.click(); // Simular un clic para descargar la imagen
-    }
-  };
+  //     const link = document.createElement("a");
+  //     link.href = imageUrl; // Establecer la URL de la imagen
+  //     link.download = "grafica.png"; // Establecer el nombre del archivo a descargar
+  //     link.click(); // Simular un clic para descargar la imagen
+  //   }
+  // };
 
   return (
     <div className="w-full flex justify-end">
-      <div className="w-[100%] p-4 bg-white rounded shadow">
+      <div className="w-[100%] p-4 bg-white rounded">
         <h2 className="text-lg font-bold mb-4">Service Level Chart and Metrics</h2>
         {/* Gráfico de Chart.js */}
         <Line data={chartData} options={options} ref={chartRef} />
         {/* Botón para descargar la gráfica */}
-        <button
+        {/* <button
           onClick={handleDownload}
           className="mt-4 p-2 bg-blue-500 text-white rounded"
         >
           Descargar Gráfica
-        </button>
+        </button> */}
       </div>
     </div>
   );

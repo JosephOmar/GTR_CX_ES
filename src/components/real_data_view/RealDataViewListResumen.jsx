@@ -44,7 +44,7 @@ const RealDataViewList = ({ selectedTeam, selectedDate }) => {
   : 0;
 
   return (
-    <div className="max-w-sm mx-aut px-4 py-8 *:py-2 rounded shadow-md text-sm">
+    <div className="h-full mx-aut px-4 py-8 *:py-2 text-sm">
       <div className="text-center font-bold text-lg mb-2">{selectedTeam}</div>
       <div className="mb-1">Ongoing Forecast hours: <b>{totalForecastHours.toFixed(1)}</b></div>
       <div className="mb-1">Ongoing Scheduled hours: <b>{totalScheduledHours.toFixed(1)}</b></div>
