@@ -42,17 +42,17 @@ const RealDattViewListChart = ({ selectedTeam, selectedDate }) => {
         label: "Scheduled Agents",
         data: data.map((item) => item.scheduled_agents),
         fill: false,
-        borderColor: "#3b82f6", // azul
-        backgroundColor: "#3b82f6",
+        borderColor: "#20e3cd", // azul
+        backgroundColor: "#20e3cd",
         tension: 0.3,
         yAxisID: "y1",
       },
       {
-        label: "Required Agents",
-        data: data.map((item) => item.required_agents),
+        label: "Agents Online",
+        data: data.map((item) => item.agents_online),
         fill: false,
-        borderColor: "#facc15", // amarillo
-        backgroundColor: "#facc15",
+        borderColor: "#78d12f", 
+        backgroundColor: "#78d12f",
         tension: 0.3,
         yAxisID: "y1",
       },
@@ -122,7 +122,7 @@ const RealDattViewListChart = ({ selectedTeam, selectedDate }) => {
   return (
     <div className="w-full flex justify-end">
       <div className="w-[100%] p-4 bg-white rounded shadow">
-        <h2 className="text-lg font-bold mb-4">Gráfico de Service Level y Métricas</h2>
+        <h2 className="text-lg font-bold mb-4">Service Level Chart and Metrics</h2>
         <Line data={chartData} options={options} />
       </div>
     </div>

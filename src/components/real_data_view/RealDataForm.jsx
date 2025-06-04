@@ -7,13 +7,15 @@ const UploadForm = () => {
 
   const requiredFiles = [
     { label: 'Planned Data', expectedPart: 'planned_data' },
-    { label: 'Assembled Chat', expectedPart: 'assembled_chat' },
     { label: 'Assembled Call', expectedPart: 'assembled_call' },
+    { label: 'Talkdesk', expectedPart: 'talkdesk' },
     { label: 'SAT Customer', expectedPart: 'sat_customer' },
     { label: 'SAT Customer Total', expectedPart: 'sat_customer_total' },
     { label: 'SAT Rider', expectedPart: 'sat_rider' },
     { label: 'SAT Rider Total', expectedPart: 'sat_rider_total' },
     { label: 'Real Agents', expectedPart: 'real_agents' },
+    { label: 'Looker Customer', expectedPart: 'looker_customer' },
+    { label: 'Looker Rider', expectedPart: 'looker_rider' },
   ];
 
   const [files, setFiles] = useState({});

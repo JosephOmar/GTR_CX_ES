@@ -17,7 +17,7 @@ const RealDataViewList = ({ selectedTeam, selectedDate }) => {
 
   const totalForecastHours = data.reduce((acc, d) => acc + d.forecast_hours, 0);
   const totalScheduledHours = data.reduce((acc, d) => acc + d.scheduled_hours, 0);
-  const totalRealHours = data.reduce((acc, d) => acc + ((d.real_agents) / 2 || 0), 0);
+  const totalRealHours = data.reduce((acc, d) => acc + ((d.agents_online + d.agents_training + d.agents_aux) / 2 || 0), 0);
 
   const deltaForecast = totalRealHours - totalForecastHours;
   const deltaScheduled = totalRealHours - totalScheduledHours;
@@ -49,8 +49,8 @@ const RealDataViewList = ({ selectedTeam, selectedDate }) => {
       <div className="mb-1">Ongoing Forecast hours: <b>{totalForecastHours.toFixed(1)}</b></div>
       <div className="mb-1">Ongoing Scheduled hours: <b>{totalScheduledHours.toFixed(1)}</b></div>
       <div className="mb-1">Ongoing Real hours: <b>{totalRealHours.toFixed(1)}</b></div>
-      <div className="mb-1">ONG Delta Real vs Forecast: <b>{deltaForecast.toFixed(1)} hrs ({((deltaForecast / totalForecastHours) * 100).toFixed(1)}%)</b></div>
-      <div className="mb-1">ONG Delta Real vs Scheduled: <b>{deltaScheduled.toFixed(1)} hrs ({((deltaScheduled / totalScheduledHours) * 100).toFixed(1)}%)</b></div>
+      <div className="mb-1">Ongoing Delta Real vs Forecast: <b>{deltaForecast.toFixed(1)} hrs ({((deltaForecast / totalForecastHours) * 100).toFixed(1)}%)</b></div>
+      <div className="mb-1">Ongoing Delta Real vs Scheduled: <b>{deltaScheduled.toFixed(1)} hrs ({((deltaScheduled / totalScheduledHours) * 100).toFixed(1)}%)</b></div>
       <div className="mb-1">SAT Samples: <b>{totalSATSamples}</b></div>
       <div className="mb-1">Ongoing SAT: <b>{satOngoing}</b></div>
       <div className="bg-yellow-200 px-2 py-1 my-1 rounded">%SAT Promoters: <b>{satPromoters ? `${satPromoters.toFixed(2)}%` : "N/A"}</b></div>

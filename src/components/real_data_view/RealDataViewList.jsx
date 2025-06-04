@@ -1,28 +1,43 @@
 import React, { useEffect, useState } from "react";
 
-const metrics = [
+const agentMetrics = [
+  { label: "Required Agents", key: "required_agents" },
   { label: "Scheduled Agents", key: "scheduled_agents" },
-  { label: "Forecast Agents", key: "required_agents" },
-  { label: "Agents Staffed Real Time", key: "real_agents" },
+  { label: "Agents Online", key: "agents_online" },
+  { label: "Agents Training Glovo", key: "agents_training" },
+  { label: "Agents Others Aux", key: "agents_aux" },
   { label: "Delta Real vs Forecast Agents", key: "delta_agents" },
+];
+
+const volumeMetrics = [
   { label: "Forecast Volumes", key: "forecast_received" },
   { label: "Real Volumes", key: "real_received" },
   { label: "Delta Real vs Forecast Volumes", key: "delta_volumes" },
   { label: "% Delta Real vs Forecast", key: "percent_delta_volumes" },
-  { label: "Service Level 30'", key: "service_level" },
-  { label: "SAT", key: "sat_interval" },
+];
 
+const kpiMetrics = [
+  { label: "SLA'", key: "service_level" },
+  { label: "AHT", key: "aht" },
+  { label: "SAT ABUSER", key: "sat_abuser" },
+  { label: "SAT", key: "sat_interval" },
 ];
 
 const getBackgroundColorByMetric = (key) => {
   switch (key) {
-    case "scheduled_agents":
     case "required_agents":
-    case "real_agents":
-      return "bg-[#CDE3F8]";
+      return "bg-[#FFC244]"
+    case "scheduled_agents":
+      return "bg-[#20e3cd]"
+    case "agents_online":
+      return "bg-[#78d12f]";
+    case "agents_training":
+    case "agents_aux":
+      return "bg-[#ff9248]"
     case "forecast_received":
+      return "bg-[#20e3cd]"
     case "real_received":
-      return "bg-[#D7D1FB]";
+      return "bg-[#78d12f]";
     case "service_level":
       return "bg-[#A7F3F0]";
     case "sat_interval":
@@ -35,7 +50,6 @@ const getBackgroundColorByMetric = (key) => {
       return "";
   }
 };
-
 
 const RealDataViewList = ({ selectedTeam, selectedDate }) => {
   const [data, setData] = useState([]);
@@ -70,7 +84,7 @@ const RealDataViewList = ({ selectedTeam, selectedDate }) => {
   const getValue = (item, key) => {
     if (key === "delta_volumes") return item.real_received - item.forecast_received;
   
-    if (key === "delta_agents") return item.real_agents - item.required_agents;
+    if (key === "delta_agents") return item.agents_online - item.scheduled_agents;
   
     if (key === "percent_delta_volumes") {
       const forecast = item.forecast_received;
@@ -78,14 +92,6 @@ const RealDataViewList = ({ selectedTeam, selectedDate }) => {
   
       if (forecast === 0) {
         if (real === 0) return "0.00%";
-  
-        // OPCIÓN 1: Valor simbólico fijo
-        // return "Exceso";
-  
-        // OPCIÓN 2: Valor alto simbólico (puedes cambiar 1000)
-        // return "1000.00%";
-  
-        // OPCIÓN 3: Mostrar valor real como si forecast fuera 1 (sólo si te sirve aproximado)
         return ((real - forecast) / 1 * 100).toFixed(2) + "%";
       }
   
@@ -100,27 +106,7 @@ const RealDataViewList = ({ selectedTeam, selectedDate }) => {
     return item[key] ?? "N/A";
   };
 
-  const getCellClassSLA = (key, value) => {
-    if (key === "service_level") {
-      const numeric = parseFloat(value);
-      if (!isNaN(numeric)) {
-        return numeric < 90 ? "text-red-800" : " text-green-800";
-      }
-    }
-    return "";
-  };
-
-  const getCellClassSAT = (key, value) => {
-    if (key === "sat_interval") {
-      const numeric = parseFloat(value);
-      if (!isNaN(numeric)) {
-        return numeric < 83 ? "text-red-800" : " text-green-800";
-      }
-    }
-    return "";
-  };
-
-  const getCellClassRealvsFRT = (key, value) => {
+  const getCellClassRealvsFRTAgents = (key, value) => {
     if (key === "delta_agents") {
       const numeric = parseFloat(value);
       if (!isNaN(numeric)) {
@@ -130,11 +116,60 @@ const RealDataViewList = ({ selectedTeam, selectedDate }) => {
     return "";
   };
 
-  const getCellClassRealvsFRTVolumes = (key, value) => {
-    if (key === "delta_volumes" || key === "percent_delta_volumes") {
+  const getCellClassRealvsFRT = (key, value) => {
+    if (key === "percent_delta_volumes" || key === 'delta_volumes') {
       const numeric = parseFloat(value);
       if (!isNaN(numeric)) {
-        return numeric > 0 ? "bg-red-200" : " bg-green-200";
+        return numeric < 0 ? "bg-red-200" : " bg-green-200";
+      }
+    }
+    return "";
+  };
+
+  const getCellClassSLA = (key, value) => {
+    if (key === "service_level") {
+      const numeric = parseFloat(value);
+      if (!isNaN(numeric)) {
+        return numeric < 90 ? "bg-red-200" : " bg-green-200";
+      } else {
+        return "bg-white"
+      }
+    }
+    return "";
+  };
+
+  const getCellClassSAT = (key, value) => {
+    if (key === "sat_interval") {
+      const numeric = parseFloat(value);
+      if (!isNaN(numeric)) {
+        return numeric < 81 ? "bg-red-200" : " bg-green-200";
+      } else {
+        return "bg-white"
+      }
+    }
+    return "";
+  };
+
+  const getCellClassSATAbuser = (key, value) => {
+    if (key === "sat_abuser") {
+      const numeric = parseFloat(value);
+      if (!isNaN(numeric)) {
+        return numeric < 4.1 ? "bg-red-200" : " bg-green-200";
+      } else {
+        return "bg-white"
+      }
+    }
+    return "";
+  };
+
+  const getCellClassAHT = (key, value) => {
+    if (key === "aht") {
+      const numeric = parseFloat(value);
+      if (!isNaN(numeric)) {
+        if(selectedTeam==='CHAT CUSTOMER') return numeric > 420 ? "bg-red-200" : " bg-green-200";
+        else if(selectedTeam === 'CHAT RIDER' || selectedTeam === 'CALL VENDORS') return numeric > 180 ? "bg-red-200" : " bg-green-200";
+      } else {
+        return "bg-white"
       }
     }
     return "";
@@ -154,7 +189,32 @@ const RealDataViewList = ({ selectedTeam, selectedDate }) => {
           </tr>
         </thead>
         <tbody>
-          {metrics.map((metric) => (
+          {/* AGENTS */}
+          <tr>
+            <td colSpan={data.length + 1} className="bg-gray-200 font-bold text-sm ">AGENTS</td>
+          </tr>
+          {agentMetrics.map((metric) => (
+            <tr key={metric.key}>
+              <td className={`border px-4 py-2 bg-gray-50 font-medium min-w-[210px] text-xs`}>{metric.label}</td>
+              {data.map((item) => {
+                const value = getValue(item, metric.key);
+                return (
+                  <td
+                    key={`${item.id}-${metric.key}`}
+                    className={`border px-4 py-2 text-center font-bold text-xs ${getBackgroundColorByMetric(metric.key)} ${getCellClassRealvsFRTAgents(metric.key, value)}`}
+                  >
+                    {value}
+                  </td>
+                );
+              })}
+            </tr>
+          ))}
+
+          {/* VOLUMES */}
+          <tr>
+            <td colSpan={data.length + 1} className="bg-gray-200 font-bold text-sm">VOLUMES</td>
+          </tr>
+          {volumeMetrics.map((metric) => (
             <tr key={metric.key}>
               <td className="border px-4 py-2 bg-gray-50 font-medium min-w-[210px] text-xs">{metric.label}</td>
               {data.map((item) => {
@@ -162,7 +222,28 @@ const RealDataViewList = ({ selectedTeam, selectedDate }) => {
                 return (
                   <td
                     key={`${item.id}-${metric.key}`}
-                    className={`border px-4 py-2 text-center font-bold text-xs ${getBackgroundColorByMetric(metric.key)} ${getCellClassSLA(metric.key, value)} ${getCellClassSAT(metric.key, value)} ${getCellClassRealvsFRT(metric.key, value)} ${getCellClassRealvsFRTVolumes(metric.key, value)}`}
+                    className={`border px-4 py-2 text-center font-bold text-xs ${getBackgroundColorByMetric(metric.key)} ${getCellClassRealvsFRT(metric.key, value)}`}
+                  >
+                    {value}
+                  </td>
+                );
+              })}
+            </tr>
+          ))}
+
+          {/* KPIS */}
+          <tr>
+            <td colSpan={data.length + 1} className="bg-gray-200 font-bold text-sm">KPIS</td>
+          </tr>
+          {kpiMetrics.map((metric) => (
+            <tr key={metric.key}>
+              <td className="border px-4 py-2 bg-gray-50 font-medium min-w-[210px] text-xs">{metric.label}</td>
+              {data.map((item) => {
+                const value = getValue(item, metric.key);
+                return (
+                  <td
+                    key={`${item.id}-${metric.key}`}
+                    className={`border px-4 py-2 text-center font-bold text-xs ${getBackgroundColorByMetric(metric.key)} ${getCellClassAHT(metric.key, value)} ${getCellClassSLA(metric.key, value)} ${getCellClassSAT(metric.key, value)} ${getCellClassSATAbuser(metric.key, value)}`}
                   >
                     {value}
                   </td>
