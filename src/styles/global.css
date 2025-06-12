@@ -1,1 +1,29 @@
 @import "tailwindcss";
+
+@font-face {
+  font-family: 'GlovoBold';
+  src: url('/fonts/gothammd_bold.otf') format('opentype');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Glovo';
+  src: url('/fonts/gothammd_medium.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+.glovo-bold {
+  font-family: 'GlovoBold', sans-serif;
+}
+
+.glovo {
+  font-family: 'Glovo', sans-serif;
+}
+
+.bg-glovo-green {
+    background-color: #00A082;
+}
