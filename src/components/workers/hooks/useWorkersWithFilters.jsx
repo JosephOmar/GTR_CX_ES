@@ -14,7 +14,7 @@ export function useWorkersWithFilters({
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch("http://localhost:8000/workers")
+    fetch("https://gtr-glovoes-cxpe.onrender.com/workers")
       .then((res) => {
         if (!res.ok) throw new Error(`Error ${res.status}`);
         return res.json();
