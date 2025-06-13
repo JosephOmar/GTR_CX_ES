@@ -1,7 +1,6 @@
 ---
-import Header from "../components/header/Header";
 import "../styles/global.css";
-import Authentication from "../components/Auth/components/Authentication";
+import Header from "../components/header/Header";
 ---
 
 <!doctype html>
@@ -14,9 +13,7 @@ import Authentication from "../components/Auth/components/Authentication";
     <title>GTR CX GLOVO ES</title>
   </head>
   <body>
-    <Authentication /> {/* Este componente se ejecuta al cargar la página */}
     <main class="bg-[#FFC244] glovo">
-      <Header client:load />
       <slot />
     </main>
   </body>

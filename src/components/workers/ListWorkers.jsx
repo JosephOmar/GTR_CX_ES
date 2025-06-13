@@ -6,12 +6,13 @@ import { WorkersTable }      from './components/WorkersTable';
 import { useWorkersWithFilters } from './hooks/useWorkersWithFilters';
 import { getTodayDay }       from './utils/scheduleUtils';
 import { LoadingOrError } from './components/LoadingOrError';
+import PrivateRoute from '../Auth/PrivateRoute';
 
 export default function WorkersWithSchedules() {
   const [search,      setSearch]      = useState('');
   const [nameList,    setNameList]    = useState('');
   const [teamFilter,  setTeamFilter]  = useState('');
-  const [selectedDay, setSelectedDay] = useState(getTodayDay());
+  const [selectedDay, setSelectedDay] = useState('');
   const [timeFilter,  setTimeFilter]  = useState('');
 
   const { workers, loading, error } = useWorkersWithFilters({
