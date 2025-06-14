@@ -1,4 +1,3 @@
-// src/types.ts
 
 /** Un ítem individual de pronóstico */
 export interface ForecastItem {
@@ -16,9 +15,9 @@ export interface ForecastItem {
   actual: number;
   /** AHT */
   aht: number;
-  /** Desvío = actual − forecasted (se añade tras el filtrado) */
+  /** Desvío = actual − forecasted*/
   desvio?: number;
-  /** Desvío porcentual = desvio / forecasted × 100 (se añade tras el filtrado) */
+  /** Desvío porcentual = desvio / forecasted × 100 */
   desvioPercentage?: number;
 }
 

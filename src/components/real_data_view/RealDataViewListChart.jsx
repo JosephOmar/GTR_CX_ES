@@ -14,7 +14,7 @@ ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Tooltip,
 
 const RealDattViewListChart = ({ selectedTeam, selectedDate }) => {
   const [data, setData] = useState([]);
-  const chartRef = useRef(null); // Referencia al gráfico
+  const chartRef = useRef(null); 
 
   useEffect(() => {
     fetch("https://gtr-glovoes-cxpe.onrender.com/real-data-view/")
@@ -34,7 +34,7 @@ const RealDattViewListChart = ({ selectedTeam, selectedDate }) => {
         label: "Service Level (%)",
         data: data.map((item) => item.service_level),
         fill: false,
-        borderColor: "#4ade80", // verde
+        borderColor: "#4ade80", 
         backgroundColor: "#4ade80",
         tension: 0.3,
         yAxisID: "y",
@@ -43,7 +43,7 @@ const RealDattViewListChart = ({ selectedTeam, selectedDate }) => {
         label: "Scheduled Agents",
         data: data.map((item) => item.scheduled_agents),
         fill: false,
-        borderColor: "#20e3cd", // azul
+        borderColor: "#20e3cd", 
         backgroundColor: "#20e3cd",
         tension: 0.3,
         yAxisID: "y1",
@@ -61,7 +61,7 @@ const RealDattViewListChart = ({ selectedTeam, selectedDate }) => {
         label: "Real Received",
         data: data.map((item) => item.real_received),
         fill: false,
-        borderColor: "#ef4444", // rojo
+        borderColor: "#ef4444", 
         backgroundColor: "#ef4444",
         tension: 0.3,
         yAxisID: "y1",
@@ -70,7 +70,7 @@ const RealDattViewListChart = ({ selectedTeam, selectedDate }) => {
         label: "Forecast Received",
         data: data.map((item) => item.forecast_received),
         fill: false,
-        borderColor: "#a855f7", // morado
+        borderColor: "#a855f7", 
         backgroundColor: "#a855f7",
         tension: 0.3,
         yAxisID: "y1",
@@ -137,9 +137,8 @@ const RealDattViewListChart = ({ selectedTeam, selectedDate }) => {
     <div className="w-full flex justify-end">
       <div className="w-[100%] p-4 bg-white rounded">
         <h2 className="text-lg font-bold mb-4">Service Level Chart and Metrics</h2>
-        {/* Gráfico de Chart.js */}
+
         <Line data={chartData} options={options} ref={chartRef} />
-        {/* Botón para descargar la gráfica */}
         {/* <button
           onClick={handleDownload}
           className="mt-4 p-2 bg-blue-500 text-white rounded"

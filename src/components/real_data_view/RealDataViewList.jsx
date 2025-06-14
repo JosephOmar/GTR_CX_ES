@@ -86,11 +86,11 @@ const RealDataViewList = ({ selectedTeam, selectedDate }) => {
     const tableElement = document.getElementById("data-table");
     if (tableElement) {
       html2canvas(tableElement).then((canvas) => {
-        const imageURL = canvas.toDataURL(); // Convierte el canvas a una imagen
+        const imageURL = canvas.toDataURL();
         const link = document.createElement("a");
         link.href = imageURL;
-        link.download = "tabla.png"; // Nombre del archivo de la imagen
-        link.click(); // Simula un clic para descargar la imagen
+        link.download = "tabla.png"; 
+        link.click(); 
       });
     }
   };

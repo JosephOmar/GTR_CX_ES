@@ -53,7 +53,7 @@ export function useForecasts() {
     applyFilter();
   }, [applyFilter]);
 
-  // Este es el callback que le pasas a TimeRangeSelector
+ 
   const handleTimeSelect = (time: string) => {
     const options = generateTimeOptions();
     if (!firstClicked) {
@@ -74,6 +74,6 @@ export function useForecasts() {
     queueFilter,
     setQueueFilter,
     timeRange,
-    handleTimeSelect,  // <-- aquí, no exponemos setTimeRange directamente
+    handleTimeSelect,  
   };
 }

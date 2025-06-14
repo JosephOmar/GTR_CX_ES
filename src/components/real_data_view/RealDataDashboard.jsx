@@ -2,8 +2,8 @@ import React, { useEffect, useState, useRef } from "react";
 import RealDataViewList from "./RealDataViewList";
 import RealDattViewListChart from "./RealDataViewListChart";
 import RealDataViewListResumen from "./RealDataViewListResumen";
-import Papa from "papaparse"; // Importamos PapaParse para exportar a CSV
-import html2canvas from "html2canvas-pro"; // Importamos html2canvas-pro
+import Papa from "papaparse"; 
+import html2canvas from "html2canvas-pro"; 
 
 const teams = ["CHAT CUSTOMER", "CHAT RIDER", "CALL VENDORS"];
 
@@ -11,19 +11,19 @@ const RealDataDashboard = () => {
   const [selectedTeam, setSelectedTeam] = useState(teams[0]);
   const [selectedDate, setSelectedDate] = useState("");
   const [availableDates, setAvailableDates] = useState([]);
-  const [allData, setAllData] = useState([]); // Estado para almacenar todos los datos
-  const sectionRef = useRef(null); // Referencia para la sección a capturar
+  const [allData, setAllData] = useState([]); 
+  const sectionRef = useRef(null); 
 
-  // Obtener fechas únicas y todos los datos desde la API
+
   useEffect(() => {
     fetch("https://gtr-glovoes-cxpe.onrender.com/real-data-view/")
       .then((res) => res.json())
       .then((data) => {
         const uniqueDates = [...new Set(data.map((item) => item.date))];
-        uniqueDates.sort(); // opcional: ordena fechas
+        uniqueDates.sort(); 
         setAvailableDates(uniqueDates);
-        setSelectedDate(uniqueDates[0]); // por defecto, la primera
-        setAllData(data); // Guardamos todos los datos en el estado
+        setSelectedDate(uniqueDates[0]);
+        setAllData(data); 
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
@@ -32,29 +32,29 @@ const RealDataDashboard = () => {
 
   // Función para exportar todos los datos a CSV, omitiendo la columna 'id'
   const handleExportCSV = () => {
-    const filteredData = allData.map(({ id, ...rest }) => rest); // Filtramos los datos y omitiendo el campo 'id'
+    const filteredData = allData.map(({ id, ...rest }) => rest); 
     const csvData = Papa.unparse(filteredData);
     const link = document.createElement("a");
     const blob = new Blob([csvData], { type: "text/csv" });
     link.href = URL.createObjectURL(blob);
     link.download = "datos.csv";
-    link.click(); // Simula un clic para descargar el CSV
+    link.click();
   };
 
   // Función para capturar la sección y descargarla como imagen
   const handleCapture = () => {
     if (sectionRef.current) {
       html2canvas(sectionRef.current, {
-        backgroundColor: "#FFC244", // Asegura un fondo blanco
-        useCORS: true, // Para evitar problemas con fuentes o imágenes externas
-        logging: true, // Habilitar logging para depurar problemas
+        backgroundColor: "#FFC244",
+        useCORS: true, 
+        logging: true, 
       }).then((canvas) => {
-        const imageURL = canvas.toDataURL(); // Convierte el canvas a imagen en base64
+        const imageURL = canvas.toDataURL(); 
 
         const link = document.createElement("a");
         link.href = imageURL;
-        link.download = "dashboard.png"; // Nombre del archivo de la imagen
-        link.click(); // Simula un clic para descargar la imagen
+        link.download = "dashboard.png"; 
+        link.click(); 
       });
     }
   };

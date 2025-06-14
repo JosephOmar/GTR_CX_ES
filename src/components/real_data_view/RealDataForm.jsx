@@ -34,7 +34,7 @@ const UploadForm = () => {
     const interval = setInterval(() => {
       value += Math.random() * 10;
       if (value >= 95) {
-        clearInterval(interval); // Detenemos antes del 100% real
+        clearInterval(interval); 
       }
       setProgress(Math.min(value, 95));
     }, 200);
@@ -97,10 +97,10 @@ const UploadForm = () => {
     
     // Formatear la fecha actual
     const formattedDate = `${currentDate.getFullYear()}/${(currentDate.getMonth() + 1).toString().padStart(2, "0")}/${currentDate.getDate().toString().padStart(2, "0")}`;
-    const formattedIsoDate = currentDate.toISOString();  // Esto nos dará el formato 'YYYY-MM-DDTHH:MM:SS'
+    const formattedIsoDate = currentDate.toISOString();  
   
-    const startFormattedDate = formattedIsoDate.split('T')[0] + 'T00:00';  // Fecha con hora 00:00
-    const endFormattedDate = formattedIsoDate.split('T')[0] + 'T23:59';  // Fecha con hora 23:59
+    const startFormattedDate = formattedIsoDate.split('T')[0] + 'T00:00';  
+    const endFormattedDate = formattedIsoDate.split('T')[0] + 'T23:59';  
   
     const baseUrls = {
       'Looker Rider': `https://glovoapp2.cloud.looker.com/dashboards/7420?Time+Granularity=30min&Created+Date=${formattedDate}&Channel=&User+Type=courier&Contact+Type=agent%2Cpartial&Country+Code=ES&Hub=Webhelp+Lima&Queue+Display+Name=Spain+Glovers+Chat`,

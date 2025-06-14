@@ -58,7 +58,7 @@ export function useWorkersWithFilters({
       // si no, pedimos datos al servidor
       fetch("https://gtr-glovoes-cxpe.onrender.com/workers", {
         headers: {
-          // pasamos el token en el header (si tu API lo requiere)
+          // pasamos el token en el header 
           Authorization: `Bearer ${token}`,
         },
       })
