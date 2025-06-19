@@ -60,7 +60,7 @@ const RealDataViewList = ({ selectedTeam, selectedDate }) => {
   useEffect(() => {
     setLoading(true);
     setError(null);
-    fetch("https://gtr-glovoes-cxpe.onrender.com/real-data-view/")
+    fetch(`${import.meta.env.PUBLIC_URL_BACKEND}operational-view`)
       .then((res) => {
         if (!res.ok) throw new Error("Error al cargar datos");
         return res.json();

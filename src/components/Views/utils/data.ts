@@ -34,25 +34,32 @@ export function calculateTotals(items: ForecastItem[]): Totals {
   const totals = items.reduce<Totals>((acc, cur) => {
     const { sla, forecasted, actual, desvio, desvioPercentage, aht } = cur;
 
-    // Sumar al total de 'actual'
-    totalActual += actual;
+    const validActual = typeof sla === 'number' && !isNaN(sla);
 
-    // Calcular la suma ponderada para sla y aht
-    weightedSlaSum += sla * actual;
-    weightedAhtSum += aht * actual;
+    if (validActual) {
+      totalActual += actual;
+      weightedSlaSum += sla * actual;
+      weightedAhtSum += aht * actual;
+      acc.actualTotal += actual;
+    }
 
-    // Sumar los totales no ponderados
-    acc.forecastedTotal += forecasted;
-    acc.actualTotal += actual;
+    acc.forecastedTotal += forecasted ?? 0;
     acc.desvioTotal += desvio ?? 0;
     acc.desvioPercentageTotal += desvioPercentage ?? 0;
 
     return acc;
-  }, {slaTotal: 0, forecastedTotal: 0, actualTotal: 0, desvioTotal: 0, desvioPercentageTotal: 0, ahtTotal: 0 });
+  }, {
+    slaTotal: 0,
+    forecastedTotal: 0,
+    actualTotal: 0,
+    desvioTotal: 0,
+    desvioPercentageTotal: 0,
+    ahtTotal: 0,
+  });
 
-  // Calcular los promedios ponderados
-  totals.slaTotal = totalActual > 0 ? (weightedSlaSum / totalActual) : 0;
-  totals.ahtTotal = totalActual > 0 ? (weightedAhtSum / totalActual) : 0;
+  totals.slaTotal = totalActual > 0 ? weightedSlaSum / totalActual : 0;
+  totals.ahtTotal = totalActual > 0 ? weightedAhtSum / totalActual : 0;
 
   return totals;
 }
+

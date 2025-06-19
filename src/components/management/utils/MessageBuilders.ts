@@ -1,4 +1,4 @@
-// File: src/utils/messageBuilders.ts
+
 import { toUnicodeBold } from "./toUnicodeBold";
 import type { Worker } from "../../workers/types/types";
 

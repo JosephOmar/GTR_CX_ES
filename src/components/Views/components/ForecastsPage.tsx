@@ -24,7 +24,9 @@ export default function ForecastsPage() {
             <QueueFilter  value={queueFilter} onChange={setQueueFilter} />
             <TimeRangeSelector selected={timeRange} onSelect={handleTimeSelect} />
             <ForecastsTable data={filtered} totals={totals} />
-            <CaptureButton />
+            <CaptureButton data={filtered}
+          totals={totals}
+          timeRange={timeRange}/>
         </div>
     </div>
   );

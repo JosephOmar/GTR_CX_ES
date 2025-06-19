@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-axios.defaults.baseURL = 'https://gtr-glovoes-cxpe.onrender.com/';
+const url_backend = import.meta.env.PUBLIC_URL_BACKEND
+axios.defaults.baseURL = url_backend;
 
 export default function AuthForm() {
-  const [isClient, setIsClient] = useState(false);  // Control para asegurarse de que solo se renderiza en el cliente
+  const [isClient, setIsClient] = useState(false);  
   const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({ username: '', password: '' });
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
 
-  // Detectar cuando el componente se renderiza en el cliente
   useEffect(() => {
     setIsClient(true);
   }, []);
@@ -40,6 +40,7 @@ export default function AuthForm() {
       if (isLogin) {
         const { access_token } = response.data;
         localStorage.setItem('token', access_token);
+        window.location.href = "/workers"
         setMessage('¡Inicio de sesión exitoso!');
       } else {
         setMessage('¡Registro exitoso! Ahora puedes iniciar sesión.');
@@ -50,7 +51,7 @@ export default function AuthForm() {
     }
   };
 
-  if (!isClient) return null;  // Evitar renderizado en el servidor
+  if (!isClient) return null; 
 
   return (
     <div className="w-[100vw] h-[100vh] flex justify-center items-center">

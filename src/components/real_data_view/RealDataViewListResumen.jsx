@@ -4,7 +4,7 @@ const RealDataViewList = ({ selectedTeam, selectedDate }) => {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    fetch("https://gtr-glovoes-cxpe.onrender.com/real-data-view/")
+    fetch(`${import.meta.env.PUBLIC_URL_BACKEND}operational-view`)
       .then((res) => res.json())
       .then((json) => {
         const filtered = json.filter(item => item.team === selectedTeam && item.date === selectedDate);
@@ -36,8 +36,6 @@ const RealDataViewList = ({ selectedTeam, selectedDate }) => {
   const realTotal = data.reduce((acc, d) => acc + d.real_received, 0);
 
   const volumeVsFCT = forecastTotal > 0 ? ((realTotal - forecastTotal) / forecastTotal) * 100 : 0;
-  console.log(forecastTotal)
-  console.log(realTotal)
   // % FCT Adherence tramo a tramo
   const fctAdherence = data.length > 0
   ? data.reduce((acc, d) => acc + ((d.real_received - d.forecast_received) / (d.forecast_received || 1)), 0) / data.length * 100

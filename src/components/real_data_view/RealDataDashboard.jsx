@@ -16,7 +16,7 @@ const RealDataDashboard = () => {
 
 
   useEffect(() => {
-    fetch("https://gtr-glovoes-cxpe.onrender.com/real-data-view/")
+    fetch(`${import.meta.env.PUBLIC_URL_BACKEND}operational-view/`)
       .then((res) => res.json())
       .then((data) => {
         const uniqueDates = [...new Set(data.map((item) => item.date))];
@@ -102,7 +102,7 @@ const RealDataDashboard = () => {
           <label htmlFor="date-select" className="mr-2 font-semibold text-sm">
             Update Data:
           </label>
-          <a className="border rounded px-2 py-1" href="https://gtr-cx-glovo-es.netlify.app/real-data-view/form">Go to Form</a>
+          <a className="border rounded px-2 py-1" href={`${import.meta.env.PUBLIC_URL_FRONTEND}real-data-view/form`}>Go to Form</a>
         </div>
 
         {/* Botón para exportar los datos a CSV */}

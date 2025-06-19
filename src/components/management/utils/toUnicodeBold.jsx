@@ -12,7 +12,7 @@ export function toUnicodeBold(str) {
     } else if (code >= 48 && code <= 57) {
       return String.fromCodePoint(code + offsetNum);
     } else {
-      return c; // keep other characters unchanged
+      return c;
     }
   }).join('');
 }

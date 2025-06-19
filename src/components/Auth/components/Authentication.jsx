@@ -1,18 +1,25 @@
 // src/components/Authentication.jsx
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
-const Authentication = () => {
+const Authentication = ({ children }) => {
+  const [isVerifying, setIsVerifying] = useState(true);
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     const isAuthenticated = !!token;
 
     if (!isAuthenticated && window.location.pathname !== "/login") {
-      // Redirigir a la página de login si no está autenticado
       window.location.href = "/login";
+    } else {
+      setIsVerifying(false);
     }
   }, []);
 
-  return null; // Este componente no necesita renderizar nada
+  if (isVerifying) {
+    return null; 
+  }
+
+  return children;
 };
 
 export default Authentication;

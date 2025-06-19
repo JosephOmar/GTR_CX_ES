@@ -42,7 +42,7 @@ export function useForecasts() {
       return {
         ...item,
         desvio,
-        desvioPercentage: (desvio / item.forecasted) * 100
+        desvioPercentage: item.forecasted > 0 ? (desvio / item.forecasted) * 100 : 0
       };
     });
     setFiltered(result);

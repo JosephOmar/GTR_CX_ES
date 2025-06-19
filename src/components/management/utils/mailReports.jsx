@@ -22,10 +22,12 @@ export function buildCustomerReport(data) {
   const por = toNum(porVencerCustomer);
   const ph = toNum(porVencerHoursCustomer);
 
-  const utime = ph <= 12 ? 'hrs' : 'min'
+  const utime = ph <= 12 ? "hrs" : "min";
 
   return (
-    `📬 ${toUnicodeBold("Reporte Bandeja Customer")} (actualizado a las ${t} hrs)\n\n` +
+    `📬 ${toUnicodeBold(
+      "Reporte Bandeja Customer"
+    )} (actualizado a las ${t} hrs)\n\n` +
     `🚫 LO ES/AD Customer: ${los}\n` +
     `⚠️ Severe Incidences: ${sev}\n` +
     `🔄 Partial Refunds: ${par}\n` +
@@ -50,7 +52,7 @@ export function buildRiderReport(data) {
   const ph = toNum(porVencerHoursRider);
   const ag = toNum(agentsRider);
 
-  const utime = ph <= 12 ? 'hrs' : 'min'
+  const utime = ph <= 12 ? "hrs" : "min";
   return (
     `🏍️ ${toUnicodeBold("Reporte Bandeja Rider")} (hasta las ${t} hrs)\n\n` +
     `🚫 LO ES/AD Glover Emails: ${los}\n` +
@@ -81,7 +83,7 @@ export function buildVendorsReport(data) {
   const por = toNum(porVencerVendors);
   const ph = toNum(porVencerHoursVendors);
 
-  const utime = ph <= 12 ? 'hrs' : 'min'
+  const utime = ph <= 12 ? "hrs" : "min";
 
   return (
     `🛒 ${toUnicodeBold("Reporte Bandeja Vendor")} (hasta las ${t} hrs)\n\n` +

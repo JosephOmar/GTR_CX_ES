@@ -62,7 +62,7 @@ const UploadForm = () => {
         return;
       }
 
-      formData.append(key, file);
+      formData.append("files", file);
     }
 
     setIsLoading(true);
@@ -71,7 +71,7 @@ const UploadForm = () => {
 
     try {
       const response = await fetch(
-        "https://gtr-glovoes-cxpe.onrender.com/upload-real-data-view/",
+        `${import.meta.env.PUBLIC_URL_BACKEND}upload-operational-view/`,
         {
           method: "POST",
           body: formData,

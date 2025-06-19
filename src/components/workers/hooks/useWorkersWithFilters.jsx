@@ -53,10 +53,9 @@ export function useWorkersWithFilters({
     ) {
       setWorkers(JSON.parse(cachedWorkers));
       setLoading(false);
-      console.log('jeje sigo en cache')
     } else {
       // si no, pedimos datos al servidor
-      fetch("https://gtr-glovoes-cxpe.onrender.com/workers", {
+      fetch(`${import.meta.env.PUBLIC_URL_BACKEND}workers`, {
         headers: {
           // pasamos el token en el header 
           Authorization: `Bearer ${token}`,
@@ -88,10 +87,12 @@ export function useWorkersWithFilters({
   }, []); // recarga efecto si cambia el token
 
   const filtered = useMemo(() => {
+
     const parsed = parseNames(nameList);
+
     let result = parsed.length
       ? workers.filter((w) =>{
-          parsed.includes((w.kustomer_name ?? "").toLowerCase())
+         return parsed.includes(w.kustomer_name?.toLowerCase())
         }
         )
       : workers;

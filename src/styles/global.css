@@ -1,29 +1,28 @@
 @import "tailwindcss";
 
 @font-face {
-  font-family: 'GlovoBold';
-  src: url('/fonts/gothammd_bold.otf') format('opentype');
-  font-weight: bold;
+  font-family: 'Product';
+  src: url('/fonts/Product_Sans_Regular.ttf') format('truetype');
   font-style: normal;
   font-display: swap;
 }
 
-@font-face {
-  font-family: 'Glovo';
-  src: url('/fonts/gothammd_medium.otf') format('opentype');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
+.product {
+  font-family: 'Product', sans-serif;
 }
 
-.glovo-bold {
-  font-family: 'GlovoBold', sans-serif;
-}
-
-.glovo {
-  font-family: 'Glovo', sans-serif;
-}
-
-.bg-glovo-green {
+.glovo-green {
     background-color: #00A082;
+}
+
+.glovo-green-accent {
+  background-color: #00846b;
+}
+
+.glovo-yellow {
+    background-color: #FFC244;
+}
+
+.glovo-yellow-accent {
+  background-color: #dda83d;
 }

@@ -8,6 +8,7 @@ export const QueueFilter: React.FC<Props> = ({ value, onChange }) => (
       <option value="">Seleccionar</option>
       <option value="Spain Glovers">CHAT RIDER</option>
       <option value="Spain Customers">CHAT CUSTOMER</option>
+      <option value="Spain Partners">CALL VENDORS</option>
     </select>
   </div>
 );
