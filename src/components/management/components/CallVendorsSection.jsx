@@ -9,7 +9,7 @@ export function CallVendorsSection() {
 
   return (
     <section className="border p-4 rounded-lg">
-      <h2 className="text-xl font-bold">{toUnicodeBold('📞 Call Vendors')}</h2>
+      <h3 className="text-xl font-bold">📞 Call Vendors</h3>
       <div className="grid grid-cols-1 gap-4 mt-2">
         <NumericInput label="Agentes en llamada:" value={enLlamada} setter={setEnLlamada} placeholder="Ej: 20" />
         <NumericInput label="Asesores disponibles:" value={disponibles} setter={setDisponibles} placeholder="Ej: 25" />

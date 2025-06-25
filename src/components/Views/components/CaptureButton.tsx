@@ -98,9 +98,9 @@ export const CaptureButton: React.FC<Props> = ({ data, totals, timeRange }) => {
     <div className="flex gap-4 mt-4">
       <button
         onClick={handleImageClick}
-        className={`flex-1 p-2 rounded text-white transition ${
-          imgCopied ? "bg-blue-500" : "bg-green-500"
-        }`}
+          className={`flex-1 p-2 rounded text-white transition ${
+            imgCopied ? "bg-blue-500" : "bg-green-500"
+          }`}
       >
         {imgCopied ? "¡Imagen Copiada!" : "Capturar Imagen"}
       </button>

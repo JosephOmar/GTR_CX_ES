@@ -49,7 +49,7 @@ export const ForecastsTable: React.FC<Props> = ({ data, totals }) => (
               r.desvio! > 0 ? "bg-red-700" : r.desvio! < 0 ? "bg-green-700" : "bg-orange-700"
             } text-white`}
           >
-            {r.desvio!.toFixed(2)}
+            {r.desvio!.toFixed(0)}
           </td>
           <td
             className={`border p-2 ${
@@ -79,12 +79,12 @@ export const ForecastsTable: React.FC<Props> = ({ data, totals }) => (
           Totales
         </td>
         <td className="border p-2">{totals.slaTotal.toFixed(1)}%</td>
-        <td className="border p-2">{totals.forecastedTotal.toFixed(2)}</td>
-        <td className="border p-2">{totals.actualTotal.toFixed(2)}</td>
+        <td className="border p-2">{totals.forecastedTotal.toFixed(0)}</td>
+        <td className="border p-2">{totals.actualTotal.toFixed(0)}</td>
         <td
           className={`border p-2`}
         >
-          {totals.desvioTotal.toFixed(2)}
+          {totals.desvioTotal.toFixed(0)}
         </td>
         <td
           className={`border p-2`}

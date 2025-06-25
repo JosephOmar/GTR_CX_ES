@@ -9,7 +9,7 @@ export function ChatRiderSection() {
 
   return (
     <section className="border p-4 rounded-lg">
-      <h2 className="text-xl font-bold">{toUnicodeBold('🏍️ Chat Rider')}</h2>
+      <h3 className="text-xl font-bold">🏍️ Chat Rider</h3>
       <div className="grid grid-cols-1 gap-4 mt-2">
         <NumericInput label="Agentes*:" value={agentes} setter={setAgentes} required placeholder="Ej: 20" />
         <NumericInput label="Bandeja Actual*:" value={bandejaActual} setter={setBandejaActual} required placeholder="Ej: 25" />

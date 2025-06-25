@@ -69,7 +69,7 @@ export const Breached: React.FC = () => {
 
   return (
     <div>
-      <h2 className="space-y-8 p-6 text-center text-[#00A082] text-4xl font-bold">
+      <h2 className="space-y-8 p-6 text-center text-4xl font-bold">
         Breached
       </h2>
       <div className="p-4 space-y-4 text-xs">

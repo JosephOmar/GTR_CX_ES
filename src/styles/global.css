@@ -7,22 +7,67 @@
   font-display: swap;
 }
 
+:root {
+  --glovo-green: #8dc73f;
+  --glovo-green-accent: #3a9d81;
+  --glovo-yellow: #f1cb38;
+  --glovo-yellow-accent: #fec349;
+  --glovo-red: #ff9a9e;
+  --glovo-red-accent: #d61f26;
+  --glovo-blue: #cbe2f7;
+  --glovo-blue-accent: #509ee3;
+}
+
 .product {
   font-family: 'Product', sans-serif;
 }
 
 .glovo-green {
-    background-color: #00A082;
+    background-color: var(--glovo-green);
 }
 
 .glovo-green-accent {
-  background-color: #00846b;
+  background-color: var(--glovo-green-accent);
 }
 
 .glovo-yellow {
-    background-color: #FFC244;
+    background-color: var(--glovo-yellow);
 }
 
 .glovo-yellow-accent {
-  background-color: #dda83d;
+  background-color: var(--glovo-yellow-accent);
+}
+
+.glovo-red {
+  background-color: var(--glovo-red);
+}
+
+.glovo-red-accent {
+  background-color: var(--glovo-red-accent);
+}
+
+.glovo-blue {
+  background-color: var(--glovo-blue);
+}
+
+.glovo-blue-accent {
+  background-color: var(--glovo-blue-accent);
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--glovo-blue-accent);
+  border: none;
+}
+
+textarea, input, select {
+  border: 2px solid var(--glovo-red);
+}
+
+h2 {
+  color: var(--glovo-red-accent);
+}
+
+h3 {
+  color: var(--glovo-red);
 }

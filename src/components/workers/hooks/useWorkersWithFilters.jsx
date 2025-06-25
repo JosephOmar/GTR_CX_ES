@@ -1,16 +1,18 @@
 import { useState, useEffect, useMemo } from "react";
 import { parseNames } from "../utils/parseUtils";
-import { expandOvernight, inWindow } from "../utils/scheduleUtils";
+import { expandOvernight, inWindow, toMinutes } from "../utils/scheduleUtils";
 
-function isTokenValid(token) {
-  if (!token) return false;
+function isSessionValid() {
+  const token = localStorage.getItem("token"); // Cambié a localStorage
+  return token && !isTokenExpired(token); // Sólo si el token de sesión está presente y no está expirado
+}
+
+function isTokenExpired(token) {
   try {
-    // el payload es la parte central del JWT
-    const { exp } = JSON.parse(atob(token.split('.')[1]));
-    // exp viene en segundos
-    return exp * 1000 > Date.now();
+    const { exp } = JSON.parse(atob(token.split(".")[1]));
+    return exp * 1000 <= Date.now();
   } catch {
-    return false;
+    return true; // Si hay un error al parsear el token, se considera expirado
   }
 }
 
@@ -18,46 +20,44 @@ export function useWorkersWithFilters({
   search,
   nameList,
   teamFilter,
-  selectedDay,
+  selectedDate,
   timeFilter,
+  roleFilter,
+  observation1Filter,
+  observation2Filter,
+  documentList,
 }) {
   const [workers, setWorkers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  const [urlKustomer, setUrlKustomer] = useState("");
 
   useEffect(() => {
-
     if (typeof window === "undefined") return;
-    // si no hay token o ya expiró, invalidamos el cache
 
-    const token = localStorage.getItem("token");
-    
-    if (!isTokenValid(token)) {
-      localStorage.removeItem("workers");
-      localStorage.removeItem("workers_timestamp");
+    const token = localStorage.getItem("token"); // Cambié a localStorage
+
+    if (!isSessionValid()) {
+      // Si la sesión ha expirado o no existe el token, limpiamos todo
+      localStorage.removeItem("workers"); // Cambié a localStorage
+      localStorage.removeItem("workers_timestamp"); // Cambié a localStorage
       setWorkers([]);
       setLoading(false);
       return;
     }
 
-    const cachedWorkers = localStorage.getItem("workers");
-    const cachedTimestamp = localStorage.getItem("workers_timestamp");
-    const currentTimestamp = Date.now();
+    // Si la sesión está activa, revisamos la caché de los trabajadores
+    const cachedWorkers = localStorage.getItem("workers"); // Cambié a localStorage
+    const cachedTimestamp = localStorage.getItem("workers_timestamp"); // Cambié a localStorage
 
-    // si hay cache y no ha pasado 12 horas, lo usamos
-    if (
-      cachedWorkers &&
-      cachedTimestamp &&
-      currentTimestamp - Number(cachedTimestamp) < 12 * 60 * 60 * 1000
-    ) {
+    if (cachedWorkers && cachedTimestamp) {
       setWorkers(JSON.parse(cachedWorkers));
       setLoading(false);
     } else {
-      // si no, pedimos datos al servidor
+      // Si no está en caché, hacemos la petición al servidor
       fetch(`${import.meta.env.PUBLIC_URL_BACKEND}workers`, {
         headers: {
-          // pasamos el token en el header 
+          // Pasamos el token de sesión en el header
           Authorization: `Bearer ${token}`,
         },
       })
@@ -70,48 +70,60 @@ export function useWorkersWithFilters({
             (worker) => worker.status?.name === "Activo"
           );
 
-          localStorage.setItem(
-            "workers",
-            JSON.stringify(activeWorkers)
-          );
-          localStorage.setItem(
-            "workers_timestamp",
-            Date.now().toString()
-          );
+          localStorage.setItem("workers", JSON.stringify(activeWorkers)); // Cambié a localStorage
+          localStorage.setItem("workers_timestamp", Date.now().toString()); // Cambié a localStorage
 
           setWorkers(activeWorkers);
         })
         .catch((err) => setError(err.message))
         .finally(() => setLoading(false));
     }
-  }, []); // recarga efecto si cambia el token
+  }, []); // Se vuelve a cargar si cambia el token de sesión
+
+  // Se extra las fechas únicas de todos los schedules
+  const availableDates = useMemo(() => {
+    // 1) extrae y deduplica
+    const allDates = workers.flatMap((w) => w.schedules.map((t) => t.date));
+    const uniqDates = Array.from(new Set(allDates));
+
+    // 2) ordena lexicográficamente — con ISO funciona igual que cronológico
+    uniqDates.sort((a, b) => a.localeCompare(b));
+
+    return uniqDates; // array de strings "2025-06-16", …
+  }, [workers]);
 
   const filtered = useMemo(() => {
+    const parsedDocuments = (documentList || "")
+      .split(/\s+/) // Separar por espacios o saltos de línea
+      .map((doc) => doc.trim())
+      .filter((doc) => doc.length > 0); // Limpiar y eliminar valores vacíos
 
-    const parsed = parseNames(nameList);
+    let result = workers;
 
-    let result = parsed.length
-      ? workers.filter((w) =>{
-         return parsed.includes(w.kustomer_name?.toLowerCase())
-        }
-        )
-      : workers;
+    // Filtrar por documentos si la lista de documentos no está vacía
+    if (parsedDocuments.length) {
+      result = result.filter((w) => {
+        return parsedDocuments.includes(w.document?.toString());
+      });
+    }
 
-    const tokens = search
-      .toLowerCase()
-      .trim()
-      .split(/\s+/)
-      .filter(Boolean);
+    // Filtrar por nombre
+    const parsedNames = parseNames(nameList);
+    if (parsedNames.length) {
+      result = result.filter((w) => {
+        return parsedNames.includes(w.kustomer_name?.toLowerCase());
+      });
+    }
+
+    const tokens = search.toLowerCase().trim().split(/\s+/).filter(Boolean);
     if (tokens.length) {
       result = result.filter((w) =>
         tokens.every((tok) => w.name.toLowerCase().includes(tok))
       );
     }
 
-    // quitar duplicados por documento
-    result = Array.from(
-      new Map(result.map((w) => [w.document, w])).values()
-    );
+    // Quitar duplicados por documento
+    result = Array.from(new Map(result.map((w) => [w.document, w])).values());
 
     if (teamFilter) {
       result = result.filter((w) => {
@@ -126,20 +138,91 @@ export function useWorkersWithFilters({
       });
     }
 
-    if (timeFilter) {
+    // Después de todos los filtros de texto, equipo, rol y observaciones
+    if (selectedDate || timeFilter) {
       result = result.filter((w) => {
         const turns =
           w.contract_type?.name === "UBYCALL"
             ? w.ubycall_schedules
             : w.schedules;
-        return expandOvernight(turns).some((frag) =>
-          inWindow(frag, selectedDay, timeFilter)
-        );
+        const frags = expandOvernight(turns);
+        return frags.some((frag) => {
+          // 1) Fecha
+          if (selectedDate && frag.date !== selectedDate) {
+            return false;
+          }
+          // 2) Hora (si hay filtro de hora)
+          if (timeFilter) {
+            const ws = toMinutes(timeFilter);
+            const we = ws + 30;
+            const s = toMinutes(frag.start);
+            const e = frag.end === "24:00" ? 1440 : toMinutes(frag.end);
+            return s < we && e > ws;
+          }
+          // si solo filtramos por fecha y pasó el chequeo => OK
+          return true;
+        });
+      });
+    }
+
+    if (roleFilter) {
+      result = result.filter((w) => {
+        const r = w.role?.name;
+        if (roleFilter === "RESPONSABLE_GROUP") {
+          return ["RESPONSABLE DE OPERACIONES", "JEFE DE OPERACIONES"].includes(
+            r
+          );
+        }
+        return r === roleFilter;
+      });
+    }
+
+    if (observation1Filter) {
+      result = result.filter((w) => {
+        const obs = (w.observation_1 || "").toString().toUpperCase();
+
+        if (observation1Filter === "MIGRACION") {
+          return obs.includes("MIGRACION");
+        } else if (observation1Filter === "REGULAR") {
+          return !obs.includes("MIGRACION");
+        }
+        return true;
+      });
+    }
+
+    if (observation2Filter) {
+      result = result.filter((w) => {
+        const obs = (w.observation_2 || "").toString().toUpperCase();
+
+        if (observation2Filter === "MAIL USER") {
+          return obs.includes("MAIL USER");
+        }
+        return true;
       });
     }
 
     return result;
-  }, [workers, search, nameList, teamFilter, selectedDay, timeFilter]);
+  }, [
+    workers,
+    search,
+    nameList,
+    teamFilter,
+    selectedDate,
+    timeFilter,
+    roleFilter,
+    observation1Filter,
+    observation2Filter,
+    documentList, // Agregamos documentList aquí
+  ]);
 
-  return { workers: filtered, loading, error };
+  useEffect(() => {
+    // Extraemos sólo los IDs y los unimos con coma
+    const ids = filtered.map((w) => w.kustomer_id).filter(Boolean); // descartamos undefined/null si existen
+
+    const url = `https://glovo.kustomerapp.com/app/users/status?u=${ids.join(
+      ","
+    )}`;
+    setUrlKustomer(url);
+  }, [filtered]);
+  return { workers: filtered, loading, error, urlKustomer, availableDates };
 }

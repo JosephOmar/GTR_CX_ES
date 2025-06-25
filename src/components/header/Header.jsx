@@ -1,7 +1,7 @@
 // src/components/Header.jsx
 import React, { useEffect, useState } from 'react';
 
-export default function Header({ title = 'GTR Glovo ES' }) {
+export default function Header({ title = 'GTR CX ES' }) {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
@@ -18,12 +18,14 @@ export default function Header({ title = 'GTR Glovo ES' }) {
 
   const handleLogout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('workers'); // Eliminar workers
+    localStorage.removeItem('workers_timestamp'); // Eliminar workers_timestamp
     setUser(null);
     window.location.href = '/login'; // ← redirección clásica
   };
 
   return (
-    <header className="bg-[#00A082] shadow">
+    <header className="glovo-red-accent shadow">
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
         <div className="text-xl font-semibold text-white">
           {title}
@@ -54,7 +56,7 @@ export default function Header({ title = 'GTR Glovo ES' }) {
                   </a>
                 </li>
                 <li className="text-white">
-                  ¡Hola, {user}!
+                  Hi, {user}!
                 </li>
                 <li>
                   <button

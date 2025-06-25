@@ -38,7 +38,7 @@ export function MailCustomerSection() {
 
   return (
     <section className="border p-4 rounded-lg">
-      <h2 className="text-xl font-bold">{toUnicodeBold('✉️ Mail Customer')}</h2>
+      <h3 className="text-xl font-bold">✉️ Mail Customer</h3>
       <div className="grid grid-cols-1 gap-4 mt-2">
         <NumericInput label="LO ES/AD Customer:" value={loEsAdCustomer} setter={setLoEsAdCustomer} required placeholder="Ej: 123" />
         <NumericInput label="Severe Incidences:" value={severeIncidences} setter={setSevereIncidences} required placeholder="Ej: 32" />

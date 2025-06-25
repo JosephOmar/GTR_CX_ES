@@ -41,7 +41,7 @@ export function MailVendorsSection() {
 
   return (
     <section className="border p-4 rounded-lg">
-      <h2 className="text-xl font-bold">{toUnicodeBold('✉️ Mail Vendors')}</h2>
+      <h3 className="text-xl font-bold">✉️ Mail Vendors</h3>
       <div className="grid grid-cols-1 gap-4 mt-2">
         <NumericInput label="Emails Not Assigned:" value={notAssigned} setter={setNotAssigned} required placeholder="Ej: 956" />
         <NumericInput label="Emails Assigned:" value={assigned} setter={setAssigned} required placeholder="Ej: 115" />

@@ -37,9 +37,6 @@ export default function AuthForm() {
         headers: { 'Content-Type': 'application/json' }
       });
 
-      console.log(url_backend)
-      console.log(url)
-
       if (isLogin) {
         const { access_token } = response.data;
         localStorage.setItem('token', access_token);

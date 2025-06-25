@@ -26,7 +26,7 @@ export function MailRiderSection() {
 
   return (
     <section className="border p-4 rounded-lg">
-      <h2 className="text-xl font-bold">{toUnicodeBold('✉️ Mail Rider')}</h2>
+      <h3 className="text-xl font-bold">✉️ Mail Rider</h3>
       <div className="grid grid-cols-1 gap-4 mt-2">
         <NumericInput label="LO ES/AD Glover Emails:" value={loEsAdRider} setter={setLoEsAdRider} required placeholder="Ej: 123" />
         <NumericInput label="Vencidos:" value={vencidosRider} setter={setVencidosRider} required placeholder="Ej: 2" />

@@ -49,7 +49,7 @@ const UploadForm = () => {
       const key = `file${i + 1}`;
       const file = files[key];
       const expected = requiredFiles[i].expectedPart;
-
+      
       if (!file) {
         setMessage(`❌ Falta el archivo: ${requiredFiles[i].label}`);
         return;

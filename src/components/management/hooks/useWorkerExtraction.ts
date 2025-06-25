@@ -14,8 +14,11 @@ export function useWorkerExtraction(nameInput: string, timeInput: string) {
     search: "",
     nameList: "",
     teamFilter: "",
-    selectedDay: getTodayDay(),
+    selectedDate: "",
     timeFilter: "",
+    roleFilter: "",
+    observation1Filter: "",
+    observation2Filter: "",
   });
 
   const extract = (): ExtractionResult | null => {
