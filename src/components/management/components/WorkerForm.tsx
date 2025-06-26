@@ -33,13 +33,17 @@ export const WorkerForm: React.FC<WorkerFormProps> = ({
         <div className="text-sm text-gray-700">
           🧑‍💼{" "}
           <strong>
-            {matchingWorker.contract_type.name
+            {matchingWorker.trainee
+              ?.toUpperCase()
+              .includes('DESPEGANDO')
+              ? "Despegando" :
+              matchingWorker.contract_type.name
               .toUpperCase()
               .includes("FULL TIME") ||
             matchingWorker.contract_type.name
               .toUpperCase()
               .includes("PART TIME")
-              ? "Agente Concentrix"
+              ? "Agente Concentrix" 
               : "Agente Ubycall"}
           </strong>
         </div>
