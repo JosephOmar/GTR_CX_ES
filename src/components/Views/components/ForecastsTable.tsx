@@ -4,8 +4,10 @@ import type { ForecastItem, Totals } from "../types/types";
 interface Props {
   data: ForecastItem[];
   totals: Totals;
+  analysis: string;
 }
-export const ForecastsTable: React.FC<Props> = ({ data, totals }) => (
+export const ForecastsTable: React.FC<Props> = ({ data, totals, analysis }) => (
+  <div>
   <table id="data-table" className="min-w-full table-auto border-collapse mt-4 glovo-yellow border-black">
     <thead>
       <tr className="glovo-green *:text-white">
@@ -41,7 +43,7 @@ export const ForecastsTable: React.FC<Props> = ({ data, totals }) => (
           </td>
           <td className={`border p-2 ${
               r.sla! < 86 ? "bg-red-700" : r.sla! < 91 ? "bg-orange-700" : "bg-green-700"
-            } text-white`}>{Number(r.sla) ? `${r.sla.toFixed(2)}%` : '-'}</td>
+            } text-white`}>{Number(r.sla) ? `${r.sla.toFixed(2)}%` : Number(r.sla) === 0 ? '0.00%' : '-'}</td>
           <td className="border p-2">{r.forecasted}</td>
           <td className="border p-2">{r.actual}</td>
           <td
@@ -99,4 +101,5 @@ export const ForecastsTable: React.FC<Props> = ({ data, totals }) => (
       </tr>
     </tbody>
   </table>
+  </div>
 );

@@ -162,10 +162,6 @@ export function WorkersTable({ workers, selectedDate }) {
                   ))
                 : "—"; // Si no hay turnos para el día, mostramos un guion
 
-              if (w.document === "70499497") {
-                console.log(filteredTurns); // Verifica si los turnos están siendo filtrados correctamente
-              }
-
               return (
                 <tr
                   key={w.document}

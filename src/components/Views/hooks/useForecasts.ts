@@ -1,7 +1,7 @@
 // src/hooks/useForecasts.ts
 import { useState, useEffect, useCallback } from 'react';
 import type { ForecastItem, Totals } from '../types/types';
-import { parseCsvToJson, calculateTotals } from '../utils/data';
+import { parseCsvToJson, calculateTotals, calculateDeviationAnalysis } from '../utils/data';
 import { generateTimeOptions } from '../utils/time';
 
 export function useForecasts() {
@@ -18,6 +18,7 @@ export function useForecasts() {
     desvioPercentageTotal: 0,
     ahtTotal: 0
   });
+  const [analysis, setAnalysis] = useState<string>('');
 
   const loadFile = useCallback((file: File) => {
     const reader = new FileReader();
@@ -39,6 +40,7 @@ export function useForecasts() {
     // calcular desvíos
     result = result.map(item => {
       const desvio = item.actual - item.forecasted;
+
       return {
         ...item,
         desvio,
@@ -47,6 +49,7 @@ export function useForecasts() {
     });
     setFiltered(result);
     setTotals(calculateTotals(result));
+    setAnalysis(calculateDeviationAnalysis(result));
   }, [data, queueFilter, timeRange]);
 
   useEffect(() => {
@@ -75,5 +78,6 @@ export function useForecasts() {
     setQueueFilter,
     timeRange,
     handleTimeSelect,  
+    analysis
   };
 }

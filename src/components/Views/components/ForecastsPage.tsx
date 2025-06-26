@@ -13,9 +13,8 @@ export default function ForecastsPage() {
     filtered, totals,
     loadFile,
     queueFilter, setQueueFilter,
-    timeRange, handleTimeSelect
+    timeRange, handleTimeSelect, analysis
   } = useForecasts();
-
   return (
     <div className='w-full'>
         <h2 className="space-y-8 p-6 text-center text-[#00A082] text-4xl font-bold">View Assembled</h2>
@@ -23,7 +22,7 @@ export default function ForecastsPage() {
             <FileUploader onFileSelected={loadFile} />
             <QueueFilter  value={queueFilter} onChange={setQueueFilter} />
             <TimeRangeSelector selected={timeRange} onSelect={handleTimeSelect} />
-            <ForecastsTable data={filtered} totals={totals} />
+            <ForecastsTable data={filtered} totals={totals} analysis={analysis} />
             <CaptureButton data={filtered}
           totals={totals}
           timeRange={timeRange}/>

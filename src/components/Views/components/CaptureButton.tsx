@@ -2,6 +2,9 @@
 import React, { useState } from "react";
 import html2canvas from "html2canvas-pro";
 import type { ForecastItem, Totals } from "../types/types";
+import { calculateDeviationAnalysis } from "../utils/data";
+import { getMadridToPeruTime } from "../utils/time";
+import { toUnicodeBold } from "../../management/utils/toUnicodeBold";
 
 interface Props {
   data: ForecastItem[];
@@ -12,6 +15,7 @@ interface Props {
 export const CaptureButton: React.FC<Props> = ({ data, totals, timeRange }) => {
   const [imgCopied, setImgCopied] = useState(false);
   const [txtCopied, setTxtCopied] = useState(false);
+  const [txtCopiedAnalisys, setTxtCopiedAnalisys] = useState(false);
 
   // 1) Capturar tabla como imagen
   const handleImageClick = async () => {
@@ -26,7 +30,7 @@ export const CaptureButton: React.FC<Props> = ({ data, totals, timeRange }) => {
           .write([new ClipboardItem({ "image/png": blob })])
           .then(() => {
             setImgCopied(true);
-            setTimeout(() => setImgCopied(false), 2000);
+            setTimeout(() => setImgCopied(false), 500);
           });
       });
     } catch (e) {
@@ -36,82 +40,73 @@ export const CaptureButton: React.FC<Props> = ({ data, totals, timeRange }) => {
 
   // 2) Generar y copiar el resumen de texto
   const handleTextClick = () => {
-  if (data.length === 0) return;
+    if (data.length === 0) return;
 
-  const last = data[data.length - 1];
-  const lastTime = last.time; // ej. "23:30"
+    const last = data[data.length - 1];
+    const lastTime = last.time; // ej. "23:30"
 
-  // Obtener la fecha actual y comprobar si Madrid está en horario de verano
-  const currentDate = new Date();
+    const peruTime = getMadridToPeruTime(lastTime)
 
-  // Función para comprobar si Madrid está en horario de verano
-  const isDST = (date: Date) => {
-    // El horario de verano en Madrid comienza el último domingo de marzo y termina el último domingo de octubre
-    const startDST = new Date(date.getFullYear(), 2, 31);  // Marzo 31
-    const endDST = new Date(date.getFullYear(), 9, 31);   // Octubre 31
+    const totalAht = Number(totals.ahtTotal.toFixed(0)); // segs totales
+    const lastAht = last.aht; // segs último tramo
 
-    // Ajustamos al último domingo de marzo y octubre
-    startDST.setDate(startDST.getDate() - startDST.getDay()); // Último domingo de marzo
-    endDST.setDate(endDST.getDate() - endDST.getDay());     // Último domingo de octubre
+    const fmt = (sec: number) => {
+      const min = Math.floor(sec / 60)
+        .toString()
+        .padStart(2, "0");
+      const seg = (sec % 60).toString().padStart(2, "0");
+      return `${min}m ${seg}s`;
+    };
 
-    return date >= startDST && date <= endDST;
+    const text = `${toUnicodeBold(`ASSEMBLED ${lastTime} HE (${peruTime} HP)`)}\n\n`+
+        `🔴 ${toUnicodeBold('AHT acumulado día')}\n`+
+        `${toUnicodeBold(`⏰ ${fmt(totalAht)} - ${totalAht}seg.`)}\n\n`+
+        `${toUnicodeBold(`Último tramo up: ${lastTime} HE`)} \n`+
+        `${toUnicodeBold(`⏰ ${fmt(lastAht)} - ${lastAht}seg.`)}\n\n`+
+        `${toUnicodeBold(`▶️ SLA acumulado : ${totals.slaTotal.toFixed(1)}%👥`)}\n`+
+        `Dato REFERENTE con intervalo de ${toUnicodeBold('30 min')}`
+
+    navigator.clipboard.writeText(text).then(() => {
+      setTxtCopied(true);
+      setTimeout(() => setTxtCopied(false), 500); 
+    });
   };
 
-  // Determinar si estamos en horario de verano o estándar en Madrid
-  const isMadridDST = isDST(currentDate);
-  const offsetMadrid = isMadridDST ? 2 : 1; // 2 horas si está en horario de verano, 1 si no lo está
-  const offsetPeru = -5; // Perú está en GMT-5 todo el año
+  const handleTextClickAnalysis = () => {
+    if (data.length === 0) return;
 
-  // Calcular la diferencia horaria entre Madrid y Perú
-  const timeDifference = offsetMadrid - offsetPeru;
+    const analysisText = calculateDeviationAnalysis(data); // Llamada a la función para generar el análisis
 
-  // Convertir la hora de Madrid a la hora de Perú (restando la diferencia)
-  const [h, m] = lastTime.split(":").map(Number);
-  const dt = new Date();
-  dt.setHours(h - timeDifference, m); // Restamos la diferencia horaria
-  const peruTime = dt.toTimeString().slice(0, 5); // "06:30" o "07:30"
-
-  const totalAht = Number(totals.ahtTotal.toFixed(0)); // segs totales 
-  const lastAht = last.aht; // segs último tramo
-
-  const fmt = (sec: number) => {
-    const min = Math.floor(sec / 60).toString().padStart(2, "0");
-    const seg = (sec % 60).toString().padStart(2, "0");
-    return `${min}m ${seg}s`;
+    // Copiar el texto generado al portapapeles
+    navigator.clipboard.writeText(analysisText).then(() => {
+      setTxtCopiedAnalisys(true);
+      setTimeout(() => setTxtCopiedAnalisys(false), 500);
+    });
   };
-
-  const text = `ASSEMBLED ${lastTime} HE (${peruTime} HP)
-🔴 AHT acumulado día :
-                ${fmt(totalAht)} - ${totalAht}seg.
-Último tramo up: ${lastTime} HE 
-                 ${fmt(lastAht)} - ${lastAht}seg 
-▶️ SLA acumulado : ${totals.slaTotal.toFixed(1)}%👥 Dato REFERENTE con intervalo de 30 min`;
-
-  navigator.clipboard.writeText(text).then(() => {
-    setTxtCopied(true);
-    setTimeout(() => setTxtCopied(false), 2000);
-  });
-};
-
 
   return (
     <div className="flex gap-4 mt-4">
       <button
         onClick={handleImageClick}
-          className={`flex-1 p-2 rounded text-white transition ${
-            imgCopied ? "bg-blue-500" : "bg-green-500"
-          }`}
+        className={`flex-1 p-2 rounded text-white transition ${
+          imgCopied ? "bg-blue-500" : "bg-green-500"
+        }`}
       >
         {imgCopied ? "¡Imagen Copiada!" : "Capturar Imagen"}
       </button>
-
+        <button
+        onClick={handleTextClickAnalysis}
+        className={`flex-1 p-2 rounded text-white transition ${txtCopiedAnalisys ? "bg-blue-500" : "bg-teal-500"}`}
+      >
+        {txtCopiedAnalisys ? "¡Texto Copiado!" : "Resumen Desvio"}
+      </button>
       <button
         onClick={handleTextClick}
         className={`flex-1 p-2 rounded text-white transition ${
           txtCopied ? "bg-blue-500" : "bg-teal-500"
         }`}
       >
-        {txtCopied ? "¡Texto Copiado!" : "Copiar Resumen"}
+        {txtCopied ? "¡Texto Copiado!" : "Resumen AHT"}
       </button>
     </div>
   );
