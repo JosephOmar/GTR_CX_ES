@@ -52,7 +52,7 @@ export function WorkersTable({ workers, selectedDate }) {
     rows.forEach((row) => {
       const cells = row.querySelectorAll("td, th"); // Incluimos tanto th como td
       cells.forEach((cell, index) => {
-        if (index >= 6) {
+        if (index >= 7) {
           // Ocultamos las columnas después de la columna 6
           cell.style.display = "none";
         }

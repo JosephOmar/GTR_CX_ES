@@ -65,7 +65,7 @@ export function calculateTotals(items: ForecastItem[]): Totals {
 }
 
 export function calculateDeviationAnalysis(items: ForecastItem[]): string {
-  const deviationThreshold = 50; // Umbral de desviación
+  const deviationThreshold = 40; // Umbral de desviación
   let analysis = '';
   const significantDeviations: { time: string; desvioPercentage: number; desvio: number }[] = [];
   let totalDeviation = 0;
@@ -77,8 +77,8 @@ export function calculateDeviationAnalysis(items: ForecastItem[]): string {
     const { time, desvio, desvioPercentage, sla } = item;
 
     // Solo analizamos cuando el SLA es menor a 70
-    if (sla < 70 && (desvioPercentage || 50) > deviationThreshold) {
-      significantDeviations.push({ time, desvioPercentage: desvioPercentage || 30, desvio: desvio || 0 });
+    if (sla < 85 && (desvioPercentage || 25) > deviationThreshold) {
+      significantDeviations.push({ time, desvioPercentage: desvioPercentage || 25, desvio: desvio || 0 });
       totalDeviation += desvio || 0;
       totalDesvioPercentage += desvioPercentage || 0;
       count++;

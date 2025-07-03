@@ -66,10 +66,10 @@ export function useWorkersWithFilters({
           return res.json();
         })
         .then((data) => {
-          const activeWorkers = data.filter(
-            (worker) => worker.status?.name === "Activo"
-          );
-
+          const activeWorkers = data;
+          // .filter(
+          //   (worker) => worker.status?.name === "Activo"
+          // );
           localStorage.setItem("workers", JSON.stringify(activeWorkers)); // Cambié a localStorage
           localStorage.setItem("workers_timestamp", Date.now().toString()); // Cambié a localStorage
 
@@ -185,7 +185,10 @@ export function useWorkersWithFilters({
           return obs.includes("MIGRACION");
         } else if (observation1Filter === "REGULAR") {
           return !obs.includes("MIGRACION");
+        } else if (observation1Filter === "VAC") {
+          return obs.includes("VAC");
         }
+
         return true;
       });
     }
@@ -193,10 +196,16 @@ export function useWorkersWithFilters({
     if (observation2Filter) {
       result = result.filter((w) => {
         const obs = (w.observation_2 || "").toString().toUpperCase();
+        const email = (w.kustomer_email || "").toString().toLowerCase();
 
         if (observation2Filter === "MAIL USER") {
           return obs.includes("MAIL USER");
         }
+
+        if (observation2Filter === "MAIL RIDER") {
+          return email.includes("providers");
+        }
+
         return true;
       });
     }

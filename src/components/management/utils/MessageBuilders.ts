@@ -11,45 +11,45 @@ export interface MessageData {
 }
 
 export const buildAsNoRetomaMessage = ({ worker, contractLabel, diffSec, hmsStr, url }: MessageData) => [
-  `💬 ${toUnicodeBold(`${worker.team.name.toUpperCase()} - ${contractLabel}`)}`,
+  `💬 ${toUnicodeBold(`${worker.team?.name?.toUpperCase() ?? "Equipo Desconocido"} - ${contractLabel}`)}`,
   ``,
-  `🧑‍💻 ${toUnicodeBold(worker.name.toUpperCase())} aún no retoma su chat. Por favor, que retome y agilice.`,
+  `🧑‍💻 ${toUnicodeBold(worker.name?.toUpperCase() ?? "Nombre Desconocido")} aún no retoma su chat. Por favor, que retome y agilice.`,
   `⏱️ Tiempo de espera: ${diffSec} segundos (${hmsStr} hrs)`,
   `🔗 Ver caso en Kustomer: ${url}`,
-  `📋 Supervisor: ${toUnicodeBold(worker.supervisor.toUpperCase())}`,
+  `📋 Supervisor: ${toUnicodeBold(worker.supervisor?.toUpperCase() ?? " ")}`,
 ].join("\n");
 
 export const buildAgilizarChatMessage = ({ worker, contractLabel, diffSec, hmsStr, url }: MessageData) => [
-  `💬 ${toUnicodeBold(`${worker.team.name.toUpperCase()} - ${contractLabel}`)}`,
+  `💬 ${toUnicodeBold(`${worker.team?.name?.toUpperCase() ?? "Equipo Desconocido"} - ${contractLabel}`)}`,
   ``,
-  `🏃‍♂️ Su apoyo agilizando el chat del agente ${toUnicodeBold(worker.name.toUpperCase())}.`,
+  `🏃‍♂️ Su apoyo agilizando el chat del agente ${toUnicodeBold(worker.name?.toUpperCase() ?? "Nombre Desconocido")}.`,
   `⏱️ Tiempo de gestión: ${diffSec} segundos (${hmsStr} hrs).`,
   `🔗 Ver caso en Kustomer: ${url}`,
-  `📋 Supervisor: ${toUnicodeBold(worker.supervisor.toUpperCase())}`,
+  `📋 Supervisor: ${toUnicodeBold(worker.supervisor?.toUpperCase() ?? " ")}`,
 ].join("\n");
 
 export const buildAgilizarMailMessage = ({ worker, contractLabel, diffSec, hmsStr, url }: MessageData) => [
-  `📧 ${toUnicodeBold(`${worker.team.name.toUpperCase()} - ${contractLabel}`)}`,
+  `📧 ${toUnicodeBold(`${worker.team?.name?.toUpperCase() ?? "Equipo Desconocido"} - ${contractLabel}`)}`,
   ``,
-  `🏃‍♂️ Su apoyo agilizando el correo del agente ${toUnicodeBold(worker.name.toUpperCase())}.`,
+  `🏃‍♂️ Su apoyo agilizando el correo del agente ${toUnicodeBold(worker.name?.toUpperCase() ?? "Nombre Desconocido")}.`,
   `⏱️ Tiempo de gestión: ${diffSec} segundos (${hmsStr} hrs) desde que le fue asignado al agente.`,
   `🔗 Ver caso en Kustomer: ${url}`,
-  `📋 Supervisor: ${toUnicodeBold(worker.supervisor.toUpperCase())}`,
+  `📋 Supervisor: ${toUnicodeBold(worker.supervisor?.toUpperCase() ?? " ")}`,
 ].join("\n");
 
 export const buildAsNoCierraChatMessage = ({ worker, contractLabel, diffSec, hmsStr, url }: MessageData) => [
-  `💬 ${toUnicodeBold(`${worker.team.name.toUpperCase()} - ${contractLabel}`)}`,
+  `💬 ${toUnicodeBold(`${worker.team?.name?.toUpperCase() ?? "Equipo Desconocido"} - ${contractLabel}`)}`,
   ``,
-  `⚠️ ${toUnicodeBold(worker.name.toUpperCase())} aún no cierra su chat. Por favor, retome y proceda con el cierre.`,
+  `⚠️ ${toUnicodeBold(worker.name?.toUpperCase() ?? "Nombre Desconocido")} aún no cierra su chat. Por favor, retome y proceda con el cierre.`,
   `⏱️ Tiempo de retoma: ${diffSec} segundos (${hmsStr} hrs).`,
   `🔗 Ver caso en Kustomer: ${url}`,
-  `📋 Supervisor: ${toUnicodeBold(worker.supervisor.toUpperCase())}`,
+  `📋 Supervisor: ${toUnicodeBold(worker.supervisor?.toUpperCase() ?? " ")}`,
 ].join("\n");
 
 export const buildAsNoSaludaMessage = ({ worker, contractLabel, url }: Omit<MessageData, 'diffSec' | 'hmsStr'>) => [
-  `💬 ${toUnicodeBold(`${worker.team.name.toUpperCase()} - ${contractLabel}`)}`,
+  `💬 ${toUnicodeBold(`${worker.team?.name?.toUpperCase() ?? "Equipo Desconocido"} - ${contractLabel}`)}`,
   ``,
-  `❗ Se detectó un chat sin saludo por parte del agente ${toUnicodeBold(worker.name.toUpperCase())}. Por favor, que realice un saludo inicial.`,
+  `❗ Se detectó un chat sin saludo por parte del agente ${toUnicodeBold(worker.name?.toUpperCase() ?? "Nombre Desconocido")}. Por favor, que realice un saludo inicial.`,
   `🔗 Ver caso en Kustomer: ${url}`,
-  `📋 Supervisor: ${toUnicodeBold(worker.supervisor.toUpperCase())}`,
+  `📋 Supervisor: ${toUnicodeBold(worker.supervisor?.toUpperCase() ?? " ")}`,
 ].join("\n");

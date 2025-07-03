@@ -84,6 +84,7 @@ export default function WorkersWithSchedules() {
           Subir Horarios
         </button>
       </div>
+      
       <WorkersTable workers={workers} selectedDate={selectedDate} />
       
       {/* Modal para subir trabajadores */}

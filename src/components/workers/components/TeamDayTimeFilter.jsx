@@ -50,11 +50,13 @@ export function TeamDayTimeFilter({
     { label: "All", value: "" },
     { label: "Regular", value: "REGULAR" },
     { label: "Migration", value: "MIGRACION" },
+    { label: "Vacaciones", value: "VAC" },
   ];
 
   const observation2Options = [
     { label: "All", value: "" },
     { label: "Mail User", value: "MAIL USER" },
+    { label: "Mail Rider", value: "MAIL RIDER" },
   ];
 
   const timeSlots = [];
