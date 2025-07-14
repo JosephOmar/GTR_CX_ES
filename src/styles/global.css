@@ -12,6 +12,7 @@
   --glovo-green-accent: #3a9d81;
   --glovo-yellow: #f1cb38;
   --glovo-yellow-accent: #fec349;
+  --glovo-red-light: #ffefea;
   --glovo-red: #ff9a9e;
   --glovo-red-accent: #d61f26;
   --glovo-blue: #cbe2f7;
@@ -36,6 +37,10 @@
 
 .glovo-yellow-accent {
   background-color: var(--glovo-yellow-accent);
+}
+
+.glovo-red-light {
+  background-color: var(--glovo-red-light);
 }
 
 .glovo-red {

@@ -19,6 +19,7 @@ function isTokenExpired(token) {
 export function useWorkersWithFilters({
   search,
   nameList,
+  statusFilter,
   teamFilter,
   selectedDate,
   timeFilter,
@@ -139,7 +140,15 @@ export function useWorkersWithFilters({
     }
 
     // Después de todos los filtros de texto, equipo, rol y observaciones
-    if (selectedDate || timeFilter) {
+    if (selectedDate || (timeFilter && timeFilter.length > 0)) {
+      // calculamos el rango continuo de minutos sólo una vez
+      let rangeStart, rangeEnd;
+      if (timeFilter && timeFilter.length > 0) {
+        const mins = timeFilter.map(toMinutes).sort((a, b) => a - b);
+        rangeStart = mins[0]; // minuto inicial del rango
+        rangeEnd = mins[mins.length - 1] + 30; // minuto final (+30m)
+      }
+
       result = result.filter((w) => {
         const turns =
           w.contract_type?.name === "UBYCALL"
@@ -147,21 +156,32 @@ export function useWorkersWithFilters({
             : w.schedules;
         const frags = expandOvernight(turns);
         return frags.some((frag) => {
-          // 1) Fecha
-          if (selectedDate && frag.date !== selectedDate) {
-            return false;
-          }
-          // 2) Hora (si hay filtro de hora)
-          if (timeFilter) {
-            const ws = toMinutes(timeFilter);
-            const we = ws + 30;
+          // 1) filtrado por fecha si está aplicado
+          if (selectedDate && frag.date !== selectedDate) return false;
+
+          // 2) filtrado por hora usando rango continuo
+          if (timeFilter && timeFilter.length > 0) {
             const s = toMinutes(frag.start);
             const e = frag.end === "24:00" ? 1440 : toMinutes(frag.end);
-            return s < we && e > ws;
+            return s < rangeEnd && e > rangeStart;
           }
-          // si solo filtramos por fecha y pasó el chequeo => OK
+
+          // si sólo hay fecha, pasó ambos chequeos
           return true;
         });
+      });
+    }
+
+    if (statusFilter) {
+      result = result.filter((w) => {
+        const status = (w.status?.name || "").toString().toUpperCase();
+        const obs = (w.observation_1 || "").toString().toUpperCase();
+        if (statusFilter === 'ACTIVO' || statusFilter === 'INACTIVO'){
+          return status === statusFilter;
+        } else if (statusFilter === "VACACIONES") {
+          return obs.includes("VAC");
+        }
+        return true
       });
     }
 
@@ -180,13 +200,29 @@ export function useWorkersWithFilters({
     if (observation1Filter) {
       result = result.filter((w) => {
         const obs = (w.observation_1 || "").toString().toUpperCase();
+        const contract_type = (w.contract_type?.name || "")
+          .toString()
+          .toLowerCase();
 
         if (observation1Filter === "MIGRACION") {
           return obs.includes("MIGRACION");
-        } else if (observation1Filter === "REGULAR") {
-          return !obs.includes("MIGRACION");
-        } else if (observation1Filter === "VAC") {
-          return obs.includes("VAC");
+        } else if (observation1Filter === "CX+UBY") {
+          return !obs.includes("MIGRACION") && !contract_type.includes("ubycall") &&
+            !obs.includes("VAC");
+        } else if (observation1Filter === "UBYCALL") {
+          return contract_type.includes("ubycall");
+        } else if (observation1Filter === "PART_TIME") {
+          return (
+            !contract_type.includes("ubycall") &&
+            !obs.includes("MIGRACION") &&
+            !contract_type.includes("full time")
+          );
+        } else if (observation1Filter === "FULL_TIME") {
+          return (
+            !contract_type.includes("ubycall") &&
+            !obs.includes("MIGRACION") &&
+            !contract_type.includes("part time")
+          );
         }
 
         return true;
@@ -197,13 +233,14 @@ export function useWorkersWithFilters({
       result = result.filter((w) => {
         const obs = (w.observation_2 || "").toString().toUpperCase();
         const email = (w.kustomer_email || "").toString().toLowerCase();
+        const team = (w.team?.name || "").toString().toLowerCase();
 
         if (observation2Filter === "MAIL USER") {
           return obs.includes("MAIL USER");
         }
 
         if (observation2Filter === "MAIL RIDER") {
-          return email.includes("providers");
+          return email.includes("providers") && team.includes("chat rider");
         }
 
         return true;
@@ -215,6 +252,7 @@ export function useWorkersWithFilters({
     workers,
     search,
     nameList,
+    statusFilter,
     teamFilter,
     selectedDate,
     timeFilter,

@@ -2,11 +2,11 @@ import React from 'react';
 import { useForecasts } from '../hooks/useForecasts';
 
 // IMPORTA siempre desde components/
-import { FileUploader }       from '../components/FileUploader';
-import { QueueFilter }        from '../components/QueueFilter';
-import { TimeRangeSelector }  from '../components/TimeRangeSelector';
-import { ForecastsTable }     from '../components/ForecastsTable';
-import { CaptureButton }      from '../components/CaptureButton';
+import { FileUploader }       from './FileUploader';
+import { QueueFilter }        from './QueueFilter';
+import { TimeRangeSelector }  from './TimeRangeSelector';
+import { ForecastsTable }     from './ForecastsTable';
+import { CaptureButton }      from './CaptureButton';
 
 export default function ForecastsPage() {
   const {

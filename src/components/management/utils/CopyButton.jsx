@@ -23,7 +23,7 @@ export default function CopyButton({ text }) {
             : "bg-[#cbe2f7] hover:bg-[#509ee3]"
         }`}
       >
-        {copied ? "✅ Copiado" : "📋 Copiar"}
+        {copied ? "✅ Copiado" : "📋 Copy"}
       </button>
     </div>
   );

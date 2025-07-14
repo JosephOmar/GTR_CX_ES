@@ -12,9 +12,10 @@ import UploadSchedulesModal from './hooks/UploadSchedulesModal';
 export default function WorkersWithSchedules() {
   const [search, setSearch] = useState('');
   const [nameList, setNameList] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
   const [teamFilter, setTeamFilter] = useState('');
   const [selectedDate, setSelectedDate] = useState('');
-  const [timeFilter, setTimeFilter] = useState('');
+  const [timeFilter, setTimeFilter] = useState([]);
   const [roleFilter, setRoleFilter] = useState('');
   const [observation1Filter, setObservation1Filter] = useState('');
   const [observation2Filter, setObservation2Filter] = useState('');
@@ -23,7 +24,7 @@ export default function WorkersWithSchedules() {
   const [documentList, setDocumentList] = useState('');
 
   const { workers, loading, error, urlKustomer, availableDates } = useWorkersWithFilters({
-    search, nameList, teamFilter, selectedDate, timeFilter, roleFilter, observation1Filter, observation2Filter, documentList
+    search, nameList, statusFilter, teamFilter, selectedDate, timeFilter, roleFilter, observation1Filter, observation2Filter, documentList
   });
 
   const handleAction = () => {
@@ -55,6 +56,7 @@ export default function WorkersWithSchedules() {
       </div>
       
       <TeamDayTimeFilter
+        statusFilter={statusFilter} setStatusFilter={setStatusFilter}
         teamFilter={teamFilter} setTeamFilter={setTeamFilter}
         selectedDate={selectedDate} setSelectedDate={setSelectedDate}
         timeFilter={timeFilter} setTimeFilter={setTimeFilter}

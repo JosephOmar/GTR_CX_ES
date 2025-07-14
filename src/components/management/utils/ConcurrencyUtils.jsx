@@ -135,12 +135,12 @@ export function buildChatRiderReport({
 }
 
 export function buildCallVendorsReport({
-  enLlamada,
+  agentes,
   disponibles,
   enAuxiliar,
   cola,
 }) {
-  const cvL = toNum(enLlamada);
+  const cvL = toNum(agentes);
   const cvD = toNum(disponibles);
   const cvX = toNum(enAuxiliar);
   const cvQ = toNum(cola);

@@ -36,6 +36,7 @@ export function useFetchWorkers() {
     // Realizar la solicitud GET
     fetch(`${import.meta.env.PUBLIC_URL_BACKEND}workers`, {
       headers: {
+        // Pasamos el token de sesión en el header
         Authorization: `Bearer ${token}`,
       },
     })
@@ -44,12 +45,13 @@ export function useFetchWorkers() {
         return res.json();
       })
       .then((data) => {
-        const activeWorkers = data.filter(
-          (worker) => worker.status?.name === "Activo"
-        );
-        // Almacenar los trabajadores obtenidos en localStorage si la respuesta es exitosa
-        localStorage.setItem("workers", JSON.stringify(activeWorkers));
-        localStorage.setItem("workers_timestamp", Date.now().toString());
+        const activeWorkers = data;
+        // .filter(
+        //   (worker) => worker.status?.name === "Activo"
+        // );
+        localStorage.setItem("workers", JSON.stringify(activeWorkers)); // Cambié a localStorage
+        localStorage.setItem("workers_timestamp", Date.now().toString()); // Cambié a localStorage
+
         setWorkers(activeWorkers);
       })
       .catch((err) => setError(err.message))

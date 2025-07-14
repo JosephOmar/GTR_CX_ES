@@ -1,4 +1,4 @@
-import ForecastsPage from "./components/ForecastsPage"
+import ForecastsPage from "./ForecastVsReal/components/ForecastsPage"
 
 export function Views() {
     return (

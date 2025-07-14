@@ -13,12 +13,14 @@ export function useWorkerExtraction(nameInput: string, timeInput: string) {
   const { workers, loading, error } = useWorkersWithFilters({
     search: "",
     nameList: "",
+    statusFilter: "",
     teamFilter: "",
     selectedDate: "",
     timeFilter: "",
     roleFilter: "",
     observation1Filter: "",
     observation2Filter: "",
+    documentList: "",
   });
 
   const extract = (): ExtractionResult | null => {
