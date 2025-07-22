@@ -32,7 +32,7 @@ export function useFetchWorkers() {
     // Eliminar los trabajadores del localStorage antes de hacer la solicitud
     localStorage.removeItem("workers");
     localStorage.removeItem("workers_timestamp");
-
+    console.log('URL que se está usando:', `${import.meta.env.PUBLIC_URL_BACKEND}workers`);
     // Realizar la solicitud GET
     fetch(`${import.meta.env.PUBLIC_URL_BACKEND}workers`, {
       headers: {
