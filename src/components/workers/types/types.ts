@@ -6,6 +6,7 @@ export interface Schedule {
   break_start: string | null;
   break_end: string | null;
   is_rest_day: boolean;
+  obs: string;
 }
 
 export interface UbycallSchedule {

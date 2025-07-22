@@ -43,6 +43,7 @@ export default function UploadSchedulesModal({ isOpen, onClose }) {
 
   const requiredFiles = [
     { label: "Schedule Concentrix", expectedPart: "schedule_concentrix" },
+    { label: "People Obs", expectedPart: "people_obs" },
     { label: "Schedule Ubycall", expectedPart: "schedule_ubycall" },
   ];
 

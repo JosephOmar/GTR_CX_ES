@@ -176,12 +176,26 @@ export function useWorkersWithFilters({
       result = result.filter((w) => {
         const status = (w.status?.name || "").toString().toUpperCase();
         const obs = (w.observation_1 || "").toString().toUpperCase();
-        if (statusFilter === 'ACTIVO' || statusFilter === 'INACTIVO'){
+        if (w.document === '71583160'){
+          console.log(w);
+        }
+        const schedule = w.schedules.map((item) => {
+          // Compara las fechas y retorna 'obs' si coincide con 'selectedDate', o un string vacío
+          if (item.date === selectedDate) {
+            return item.obs || ""; // Retorna el valor de 'obs' o un string vacío si no tiene valor
+          }
+          return ""; // Si no coincide la fecha, retorna un string vacío
+        });
+        if (w.document === '71583160'){
+          console.log(schedule);
+        }
+        if (statusFilter === "ACTIVO" || statusFilter === "INACTIVO") {
           return status === statusFilter;
         } else if (statusFilter === "VACACIONES") {
-          return obs.includes("VAC");
+          // Retorna verdadero solo si al menos un 'obs' no está vacío
+          return schedule.some((obs) => obs !== "");
         }
-        return true
+        return true;
       });
     }
 
@@ -207,8 +221,11 @@ export function useWorkersWithFilters({
         if (observation1Filter === "MIGRACION") {
           return obs.includes("MIGRACION");
         } else if (observation1Filter === "CX+UBY") {
-          return !obs.includes("MIGRACION") && !contract_type.includes("ubycall") &&
-            !obs.includes("VAC");
+          return (
+            !obs.includes("MIGRACION") &&
+            !contract_type.includes("ubycall") &&
+            !obs.includes("VAC")
+          );
         } else if (observation1Filter === "UBYCALL") {
           return contract_type.includes("ubycall");
         } else if (observation1Filter === "PART_TIME") {
