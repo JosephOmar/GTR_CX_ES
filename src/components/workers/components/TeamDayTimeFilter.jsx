@@ -43,27 +43,31 @@ export function TeamDayTimeFilter({
     { label: "All", value: "" },
     { label: "Chat Customer", value: "CHAT CUSTOMER" },
     { label: "Chat Rider", value: "CHAT RIDER" },
-    { label: "Call Vendors", value: "CALL VENDORS" },
-    { label: "Mail Vendors", value: "MAIL VENDORS" },
+    { label: "Call Vendor", value: "CALL VENDOR" },
+    { label: "Mail Customer", value: "MAIL CUSTOMER" },
     { label: "Mail Rider", value: "MAIL RIDER" },
-    { label: "Mail Customer / IS", value: "MAIL_CUSTOMER_GROUP" },
-    { label: "Vendors (Call + Mail)", value: "VENDORS_GROUP" },
+    { label: "Mail Vendor", value: "MAIL VENDOR" },
+    { label: "Customer HC", value: "CHAT CUSTOMER HC"},
+    { label: "Rider HC", value: "CHAT RIDER HC"},
+    { label: "Vendor HC", value: "CALL VENDOR HC"},
+    { label: "Customer Rubik", value: "RUBIK CUSTOMER"},
+    { label: "Rider Rubik", value: "RUBIK RIDER"},
+    { label: "Vendor Rubik", value: "RUBIK VENDOR"},
+    { label: "Moil", value: "MOIL"},
   ];
 
   const roleOptions = [
     { label: "All", value: "" },
-    { label: "Agent", value: "AGENTE" },
+    { label: "Agent", value: "AGENT" },
     { label: "Supervisor", value: "SUPERVISOR" },
-    { label: "Coordinator", value: "RESPONSABLE_GROUP" },
+    { label: "Coordinator", value: "COORDINATOR" },
   ];
 
   const observation1Options = [
     { label: "All", value: "" },
-    { label: "Part-Time", value: "PART_TIME" },
-    { label: "Full-Time", value: "FULL_TIME" },
+    { label: "Part-Time", value: "PART TIME" },
+    { label: "Full-Time", value: "FULL TIME" },
     { label: "Ubycall", value: "UBYCALL" },
-    { label: "Concentrix + Ubycall", value: "CX+UBY" },
-    { label: "Migration", value: "MIGRACION" },
   ];
 
   const observation2Options = [
@@ -103,7 +107,7 @@ export function TeamDayTimeFilter({
   return (
     <div className="w-[100vw]">
       <div className="w-[80%] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className=" col-span-1 grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Filtros de equipo, rol, observaciones */}
           <div>
             <label className="block mb-1">Filter by Status:</label>
@@ -178,11 +182,11 @@ export function TeamDayTimeFilter({
         </div>
 
         {/* Filtros de fecha */}
-        <div>
+        <div className="col-span-1">
           <div className="flex items-center gap-4 mb-4">
             <label className="block mb-1">Filter by Date:</label>
             <button
-              className="px-2 py-2 glovo-blue-accent text-white rounded"
+              className="px-2 py-2 text-white rounded"
               onClick={() => setSelectedDate("")}
             >
               Clean Dates
@@ -195,8 +199,8 @@ export function TeamDayTimeFilter({
                 onClick={() => setSelectedDate(date)}
                 className={`px-2 py-2 text-center rounded ${
                   selectedDate === date
-                    ? "glovo-blue-accent text-white"
-                    : "bg-gray-200"
+                    ? "bg-primary-hover"
+                    : ""
                 }`}
               >
                 {formatDM(date)}
@@ -206,25 +210,25 @@ export function TeamDayTimeFilter({
         </div>
 
         {/* Filtros de hora */}
-        <div>
+        <div className="lg:col-span-2 col-span-1 w-[50%] sm:min-w-[680px] min-w-[100%] mx-auto">
           <div className="flex items-center gap-4 mb-4">
             <label className="block mb-1">Filter by Hour:</label>
             <button
-              className="px-2 py-2 glovo-blue-accent text-white rounded"
+              className="px-2 py-2 text-white rounded"
               onClick={() => setTimeFilter([])} // Limpiar selección de horas
             >
               Clean Hours
             </button>
           </div>
-          <div className="grid grid-cols-12 gap-2">
+          <div className="grid sm:grid-cols-12 grid-cols-6 gap-2">
             {timeSlots.map((ts) => (
               <button
                 key={ts}
                 onClick={() => handleTimeClick(ts)}
                 className={`px-2 py-2 text-center rounded ${
                   timeFilter.includes(ts)
-                    ? "glovo-blue-accent text-white"
-                    : "bg-gray-200"
+                    ? "bg-primary-hover text-white"
+                    : ""
                 }`}
               >
                 {ts}

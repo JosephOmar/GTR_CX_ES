@@ -10,10 +10,10 @@ export const ForecastsTable: React.FC<Props> = ({ data, totals, analysis }) => (
   <div>
     <table
       id="data-table"
-      className="min-w-full table-auto border-collapse mt-4 glovo-yellow border-black"
+      className="min-w-full table-auto border-collapse mt-4 border-black"
     >
       <thead>
-        <tr className="glovo-red-accent *:text-white">
+        <tr className="bg-primary *:text-white">
           <th className="border p-2">Date</th>
           <th className="border p-2">Interval</th>
           <th className="border p-2">Team</th>
@@ -36,7 +36,7 @@ export const ForecastsTable: React.FC<Props> = ({ data, totals, analysis }) => (
         {data.map((r, i) => (
           <tr
             key={i}
-            className={`*:text-center ${i % 2 == 0 ? "bg-white" : "glovo-red-light"}`}
+            className={`*:text-center ${i % 2 == 0 ? "bg-white" : ""}`}
           >
             <td className="border p-2">{r.date}</td>
             <td className="border p-2">{r.time}</td>
@@ -96,7 +96,7 @@ export const ForecastsTable: React.FC<Props> = ({ data, totals, analysis }) => (
           </tr>
         ))}
         {/* fila de totales */}
-        <tr className="*:text-center glovo-red-accent text-white">
+        <tr className="*:text-center  text-white">
           <td colSpan={3} className="border p-2 text-center">
             Totales
           </td>

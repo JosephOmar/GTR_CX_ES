@@ -17,6 +17,7 @@ export function WorkersTable({ workers, selectedDate }) {
     "Document",
     "Name",
     "Team",
+    "Role",
     "Supervisor",
     "Contract Type",
     "Schedule",
@@ -161,7 +162,7 @@ export function WorkersTable({ workers, selectedDate }) {
       <button
         onClick={handleCopyToClipboard}
         className={`text-white p-2 rounded mb-4 transition-colors ${
-          imgCopied ? "bg-green-500" : "glovo-blue-accent"
+          imgCopied ? "bg-green-500" : ""
         }`}
       >
         {imgCopied ? "¡Imagen Copiada!" : "Capturar Imagen"}
@@ -170,7 +171,7 @@ export function WorkersTable({ workers, selectedDate }) {
       <div className="overflow-x-auto" id="workers-table-section">
         <table className="min-w-full table-auto border-collapse">
           <thead className="bg-gray-50">
-            <tr className="glovo-red-accent *:font-semibold *:text-white">
+            <tr className=" *:font-semibold bg-primary *:text-white">
               {headers.map((h, i) => {
                 const key = h.toLowerCase().replace(/ /g, "_");
                 return (
@@ -196,7 +197,7 @@ export function WorkersTable({ workers, selectedDate }) {
             </tr>
           </thead>
 
-          <tbody>
+          <tbody className="bg-main">
             {sortedWorkers.map((w, idx) => {
               const turns =
                 w.contract_type?.name === "UBYCALL"
@@ -221,12 +222,13 @@ export function WorkersTable({ workers, selectedDate }) {
                 <tr
                   key={w.document}
                   className={`*:px-2 *:py-1 *:truncate ${
-                    idx % 2 === 0 ? "glovo-red-light" : ""
+                    idx % 2 === 0 ? "table-row-even" : "table-row-odd"
                   } font-medium`}
                 >
                   <td>{w.document}</td>
                   <td>{w.name}</td>
                   <td>{w.team?.name}</td>
+                  <td>{w.role?.name}</td>
                   <td>{w.supervisor}</td>
                   <td>{w.contract_type?.name || "—"}</td>
                   <td>{slots.length ? slots : <em>Sin horario</em>}</td>

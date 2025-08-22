@@ -1,5 +1,6 @@
 import { Breached } from "./components/Breached"
 import { Concurrency } from "./components/Concurrency"
+import { ConcurrencyHC } from "./components/ConcurrencyHC"
 import { MailInbox } from "./components/MailInbox"
 
 export function Management() {
@@ -8,6 +9,7 @@ export function Management() {
             <Breached />
             <Concurrency  />
             <MailInbox  />
+            <ConcurrencyHC />
         </div>
     )
 }

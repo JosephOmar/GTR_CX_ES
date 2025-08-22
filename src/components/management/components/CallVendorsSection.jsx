@@ -28,7 +28,7 @@ export function CallVendorsSection() {
       <h3 className="text-xl font-bold">📞 Call Vendors</h3>
       <div  className="grid grid-cols-1 gap-4 mt-2">
         <NumericInput
-          label="Agentes en llamada:"
+          label="Agentes en llamada:" 
           value={agentes}
           setter={setAgentes}
           placeholder="Ej: 20"

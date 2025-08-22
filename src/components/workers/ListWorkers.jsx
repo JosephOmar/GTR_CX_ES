@@ -69,7 +69,7 @@ export default function WorkersWithSchedules() {
         <div>Mostrando <strong>{workers.length}</strong> agentes</div>
         <button
           onClick={handleAction}
-          className="px-3 py-1 glovo-blue-accent text-white rounded"
+          className="px-3 py-1 text-white rounded"
         >
           All Users Link
         </button>

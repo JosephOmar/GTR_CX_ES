@@ -129,13 +129,16 @@ export function useWorkersWithFilters({
     if (teamFilter) {
       result = result.filter((w) => {
         const t = w.team?.name;
-        if (teamFilter === "MAIL_CUSTOMER_GROUP") {
-          return ["MAIL CUSTOMER", "MAIL CUSTOMER IS"].includes(t);
+        const obs = (w.observation_1 || "").toString().toUpperCase();
+
+        if (teamFilter === "CHAT CUSTOMER HC" || teamFilter === "CHAT RIDER HC" || teamFilter === "CALL VENDOR HC"){          
+          return (t === teamFilter && !obs.includes('PORTUGAL'));
+        } else if (teamFilter === "RUBIK CUSTOMER" || teamFilter === "RUBIK RIDER" || teamFilter === "RUBIK VENDOR"){   
+          return t.includes(teamFilter);
+        } else if(teamFilter === "MOIL") {
+          return obs.includes('DESPEGANDO') && t.includes('CHAT CUSTOMER');
         }
-        if (teamFilter === "VENDORS_GROUP") {
-          return ["CALL VENDORS", "MAIL VENDORS"].includes(t);
-        }
-        return t === teamFilter;
+        return t === teamFilter
       });
     }
 
@@ -202,47 +205,20 @@ export function useWorkersWithFilters({
     if (roleFilter) {
       result = result.filter((w) => {
         const r = w.role?.name;
-        if (roleFilter === "RESPONSABLE_GROUP") {
-          return ["RESPONSABLE DE OPERACIONES", "JEFE DE OPERACIONES"].includes(
-            r
-          );
-        }
         return r === roleFilter;
       });
     }
 
     if (observation1Filter) {
+      console.log(observation1Filter)
       result = result.filter((w) => {
         const obs = (w.observation_1 || "").toString().toUpperCase();
         const contract_type = (w.contract_type?.name || "")
           .toString()
-          .toLowerCase();
+          .toUpperCase();
 
-        if (observation1Filter === "MIGRACION") {
-          return obs.includes("MIGRACION");
-        } else if (observation1Filter === "CX+UBY") {
-          return (
-            !obs.includes("MIGRACION") &&
-            !contract_type.includes("ubycall") &&
-            !obs.includes("VAC")
-          );
-        } else if (observation1Filter === "UBYCALL") {
-          return contract_type.includes("ubycall");
-        } else if (observation1Filter === "PART_TIME") {
-          return (
-            !contract_type.includes("ubycall") &&
-            !obs.includes("MIGRACION") &&
-            !contract_type.includes("full time")
-          );
-        } else if (observation1Filter === "FULL_TIME") {
-          return (
-            !contract_type.includes("ubycall") &&
-            !obs.includes("MIGRACION") &&
-            !contract_type.includes("part time")
-          );
-        }
+        return contract_type === observation1Filter;
 
-        return true;
       });
     }
 

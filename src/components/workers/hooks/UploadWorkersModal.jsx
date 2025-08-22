@@ -8,7 +8,8 @@ export default function UploadWorkersModal({ isOpen, onClose }) {
   const [message, setMessage] = useState("");
 
   const requiredFiles = [
-    { label: "People Consultation", expectedPart: "people_consultation" },
+    { label: "People Active", expectedPart: "people_active" },
+    { label: "People Inactive", expectedPart: "people_inactive" },
     { label: "Scheduling PPP", expectedPart: "scheduling_ppp" },
     { label: "Report Kustomer", expectedPart: "report_kustomer" },
     { label: "Master Glovo", expectedPart: "master_glovo" },

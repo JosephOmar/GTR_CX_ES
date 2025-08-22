@@ -25,9 +25,9 @@ export default function Header({ title = 'GTR CX ES' }) {
   };
 
   return (
-    <header className="glovo-red-accent shadow">
+    <header className="bg-primary shadow">
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
-        <div className="text-xl font-semibold text-white">
+        <div className="text-xl font-semibold ">
           {title}
         </div>
 
@@ -36,32 +36,32 @@ export default function Header({ title = 'GTR CX ES' }) {
             {user ? (
               <>
                 <li>
-                  <a href="/workers" className="text-white hover:text-indigo-600 transition-colors">
+                  <a href="/workers" className="">
                     Workers
                   </a>
                 </li>
                 <li>
-                  <a href="/operational-view" className="text-white hover:text-indigo-600 transition-colors">
+                  <a href="/operational-view" className="">
                     Operational View
                   </a>
                 </li>
                 <li>
-                  <a href="/management" className="text-white hover:text-indigo-600 transition-colors">
+                  <a href="/management" className="">
                     Management
                   </a>
                 </li>
                 <li>
-                  <a href="/views" className="text-white hover:text-indigo-600 transition-colors">
+                  <a href="/views" className="">
                     Views
                   </a>
                 </li>
-                <li className="text-white">
+                <li className="">
                   Hi, {user}!
                 </li>
                 <li>
                   <button
                     onClick={handleLogout}
-                    className="text-white hover:text-indigo-600 transition-colors"
+                    className=""
                   >
                     Logout
                   </button>
@@ -69,7 +69,7 @@ export default function Header({ title = 'GTR CX ES' }) {
               </>
             ) : (
               <li>
-                <a href="/login" className="text-white hover:text-indigo-600 transition-colors">
+                <a href="/login" className="">
                   Login
                 </a>
               </li>

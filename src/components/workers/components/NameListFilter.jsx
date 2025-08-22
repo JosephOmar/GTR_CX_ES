@@ -14,7 +14,7 @@ export function NameListFilter({ nameList, setNameList }) {
       <button
         type="button"
         onClick={() => setNameList('')}
-        className="mt-2 px-3 py-1 glovo-blue-accent text-white rounded"
+        className="mt-2 px-3 py-1 text-white rounded"
       >
         Clean List
       </button>

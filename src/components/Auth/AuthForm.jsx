@@ -76,7 +76,7 @@ export default function AuthForm() {
               value={formData.username}
               onChange={handleChange}
               required
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 shadow-sm transition duration-200"
+              className=" mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg"
             />
           </div>
           <div>
@@ -91,7 +91,7 @@ export default function AuthForm() {
               value={formData.password}
               onChange={handleChange}
               required
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-    lg focus:outline-none focus:ring-2 focus:ring-indigo-400 shadow-sm transition duration-200"
+              className=" mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg"
             />
           </div>
 
