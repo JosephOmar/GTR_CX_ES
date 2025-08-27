@@ -3,6 +3,7 @@ import { ChatCustomerSection } from './ChatCustomerSection';
 import { ChatRiderSection } from './ChatRiderSection';
 import { CallVendorsSection } from './CallVendorsSection';
 import { ChatCustomerHCSection } from './ChatCustomerHCSection';
+import { RubikHCUpdate } from './RubikHCUpdate';
 
 export function ConcurrencyHC() {
   return (
@@ -10,8 +11,7 @@ export function ConcurrencyHC() {
       <h2 className='text-center text-4xl font-bold'>Concurrency HC</h2>
       <div className="space-y-8 p-6 flex flex-wrap justify-center gap-4 lg:w-[60vw] items-stretch w-[70vw] mx-auto">
         <ChatCustomerHCSection />
-        <ChatRiderSection />
-        <CallVendorsSection />
+        <RubikHCUpdate />
       </div>
     </div>
   );

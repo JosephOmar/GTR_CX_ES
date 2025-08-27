@@ -14,10 +14,10 @@ export function ChatCustomerHCSection() {
     setCurrentSla,
     totalChats,
     setTotalChats,
-    ART,
-    setART,
     FRT,
     setFRT,
+    agentsCurrent,
+    setAgentsCurrent,
     agentsOnline,
     setAgentsOnline,
     agentsScheduled,
@@ -36,8 +36,8 @@ export function ChatCustomerHCSection() {
       "team",
       "currentSla",
       "totalChats",
-      "ART",
       "FRT",
+      "agentsCurrent",
       "agentsOnline",
       "agentsScheduled",
       "agentsRequired",
@@ -67,18 +67,18 @@ export function ChatCustomerHCSection() {
           placeholder="Ej: 32"
         />
         <NumericInput
-          label="ART:"
-          value={ART}
-          setter={setART}
-          required
-          placeholder="Ej: 21"
-        />
-        <NumericInput
           label="FRT:"
           value={FRT}
           setter={setFRT}
           required
           placeholder="Ej: 0"
+        />
+        <NumericInput
+          label="AgentsCurrent:"
+          value={agentsCurrent}
+          setter={setAgentsCurrent}
+          required
+          placeholder="Ej: 21"
         />
         <NumericInput
           label="Agents Online:"
