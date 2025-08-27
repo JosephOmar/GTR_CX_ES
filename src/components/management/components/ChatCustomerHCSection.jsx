@@ -50,7 +50,7 @@ export function ChatCustomerHCSection() {
 
   return (
     <section className="border p-4 rounded-lg">
-      <h3 className="text-xl font-bold">✉️ Mail Customer</h3>
+      <h3 className="text-xl font-bold">Migration HC</h3>
       <div className="grid grid-cols-1 gap-4 mt-2">
         <NumericInput
           label="Current SLA:"
