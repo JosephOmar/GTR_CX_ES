@@ -11,27 +11,32 @@ export function buildRubikHCUpdate(data) {
   // Convertir valores numéricos, excluyendo 'team'
   const numericData = Object.fromEntries(
     Object.entries(data)
-      .filter(([key]) => key !== 'team')
+      .filter(([key]) => (key !== 'team' && key!== 'group'))
       .map(([key, value]) => [key, toNum(value)])
   );
 
   // Destructuring con valores por defecto
   const {
     team = '',
+    group = '',
     agentsOnline = 0,
     agentsScheduled = 0,
     backlogES = 0,
     backlogPT = 0,
     longestTime = 0
-  } = { team: data.team, ...numericData };
+  } = { team: data.team, group: data.group, ...numericData };
 
-  const totalBacklog = backlogES + backlogPT
   const longestTimeText = (longestTime > 0) ? `🟢Case con mayor tiempo en gestión: ${longestTime} min` : `🟢Sin casos en gestión`
+  const isGroup = (group === 'Slack' ) ? `\n\n⚠️${toUnicodeBold(`Importante : Considerar que de forma automática se les está asignando a los agentes cases del skill ${team}-case-inbox-spa-ES-tier2 como prioridad 1, al término de bandeja se les asigna automáticamente  ${team}-case-inbox-por-PT-tier2BO`)}\n` +
+    `⚠️${toUnicodeBold(`Casos de región GV_PT se reflejan en skill ${team}-case-inbox-spa-ES-tier2`)}` : ''
+
   // Reporte final
   return (
     `${toUnicodeBold(`🔰 PANEL ACTUAL ${team} - ${t} PT`)}\n\n` +
-    `🟢Contamos con ${agentsOnline} Agentes en gestión de ${agentsScheduled} programados\n` +
-    `🟢Backlog: ${totalBacklog} cases (${team}-case-inbox-spa-ES-tier2 + ${team}-case-inbox-por-PT-tier2BO\n` +
-    `${longestTimeText}`
+    `🟢${agentsOnline} Agentes en gestión de ${agentsScheduled} programados\n` +
+    `🟢${team}-case-inbox-spa-ES-tier2 : ${backlogES} cases\n` +
+    `🟢${team}-case-inbox-por-PT-tier2BO : ${backlogPT} cases\n` +
+    `${longestTimeText}` +
+    `${isGroup}`
   );
 }

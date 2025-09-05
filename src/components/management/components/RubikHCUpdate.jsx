@@ -10,6 +10,8 @@ export function RubikHCUpdate() {
   const {
     team,
     setTeam,
+    group,
+    setGroup,
     agentsOnline,
     setAgentsOnline,
     agentsScheduled,
@@ -24,6 +26,7 @@ export function RubikHCUpdate() {
   } = useMailSection(
     [
       "team",
+      "group",
       "agentsOnline",
       "agentsScheduled",
       "backlogES",
@@ -72,6 +75,24 @@ export function RubikHCUpdate() {
           required
           placeholder="Ej: 6"
         />
+        <div className="flex gap-3 justify-center">
+          <button
+            className={`px-3 py-1 rounded-sm ${
+              group === "Teams" ? "bg-blue-500 text-white" : ""
+            }`}
+            onClick={() => setGroup("Teams")}
+          >
+            Teams
+          </button>
+          <button 
+            className={`px-3 py-1 rounded-sm ${
+              group === "Slack" ? "bg-blue-500 text-white" : ""
+            }`}
+            onClick={() => setGroup("Slack")}
+          >
+            Slack
+          </button>
+        </div>
         <div className="flex gap-3 justify-center">
           <button
             className={`px-3 py-1 rounded-sm ${
