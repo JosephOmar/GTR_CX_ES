@@ -32,45 +32,42 @@ export function buildChatCustomerReport({
   const emoji = con4 < 2 ? "🟢" : con4 < 3 ? "🟠" : "🔴";
   const emojiQ = "🚨🚨";
 
-  const title = toUnicodeBold("Reporte de Capacidad - Chat Customer");
+  const title = toUnicodeBold("Update Capacidad Customer");
+
+  const textCap4 = `${toUnicodeBold("Agentes con Capacidad 4 (Cap4)")}\n` +
+      `  ${regular} agentes disponibles\n` +
+      `  ${chats} chats activos\n` +
+      `  ${ccS} Snapcalls en curso\n\n`
+
+  const textTotalCap = `${toUnicodeBold("Capacidad Total:")} ${totalCap} chats\n` +
+      `${toUnicodeBold("Capacidad Restante:")} ${rest} chats disponibles\n\n`
+
   if (ccQ > 0) {
     return (
-      `🔹 ${title} 💬📈\n\n` +
-      `🧑‍💻 Agentes en total: ${regular}\n` +
-      `📊 Capacidad total: ${totalCap} chats\n` +
-      `⚠️ Chats en cola: ${ccQ} ${emojiQ}\n`
+      `🔹 ${title}\n\n` +
+      `Agentes en total: ${regular}\n` +
+      `Capacidad total: ${totalCap} chats\n` +
+      `Chats en cola: ${ccQ} ${emojiQ}\n`
     );
   } else if (ccAN === 0) {
     return (
-      `🔹 ${title} 💬📈\n\n` +
-      `${toUnicodeBold("Agentes con Capacidad 4 (Cap4)")}\n` +
-      `🧑‍💻 ${regular} agente(s) disponibles\n` +
-      `💬 ${chats} chat(s) activos\n` +
-      `📞 ${ccS} Snapcall(s) en curso\n\n` +
-      `⭐ ${toUnicodeBold("Capacidad Total:")} ${totalCap} contacto(s)\n` +
-      `🧮 ${toUnicodeBold(
-        "Capacidad Restante:"
-      )} ${rest} contacto(s) disponibles\n\n` +
-      `📊 ${toUnicodeBold("Concurrencia Actual")}\n` +
-      `🔹 Cap4: ${con4} contacto(s)/agente ${emoji}\n`
+      `🔹 ${title}\n\n` +
+      `${textCap4}` +
+      `${textTotalCap}` +
+      `${toUnicodeBold("Concurrencia Actual")}\n` +
+      `  Cap4: ${con4} chats/agente ${emoji}\n`
     );
   } else {
     return (
-      `🔹 ${title} 💬📈\n\n` +
-      `${toUnicodeBold("Agentes con Capacidad 4 (Cap4)")}\n` +
-      `🧑‍💻 ${regular} agente(s) disponibles\n` +
-      `💬 ${chats} chat(s) activos\n` +
-      `📞 ${ccS} Snapcall(s) en curso\n\n` +
+      `${title}\n\n` +
+      `${textCap4}` +
       `${toUnicodeBold("Agentes con Capacidad 2 (Cap2)")}\n` +
-      `🧑‍💻 ${ccAN} agente(s) disponibles\n` +
-      `💬 ${nestChats} chat(s) activos\n\n` +
-      `⭐ ${toUnicodeBold("Capacidad Total:")} ${totalCap} contacto(s)\n` +
-      `🧮 ${toUnicodeBold(
-        "Capacidad Restante:"
-      )} ${rest} contacto(s) disponibles\n\n` +
-      `📊 ${toUnicodeBold("Concurrencia Actual")}\n` +
-      `🔹 Cap4: ${con4} contacto(s)/agente ${emoji}\n` +
-      `🔸 Cap2: ${con2} contacto(s)/agente`
+      `  ${ccAN} agentes disponibles\n` +
+      `  ${nestChats} chats activos\n\n` +
+      `${textTotalCap}` +
+      `${toUnicodeBold("Concurrencia Actual")}\n` +
+      `  Cap4: ${con4} chats/agente ${emoji}\n` +
+      `  Cap2: ${con2} chats/agente`
     );
   }
 }
@@ -99,38 +96,40 @@ export function buildChatRiderReport({
   const emoji = con3 < 2 ? "🟢" : con3 < 2.5 ? "🟠" : "🔴";
   const emojiQ = "🚨🚨";
 
-  const title = toUnicodeBold("Reporte de Capacidad - Chat Rider");
+  const textCap3 = `${toUnicodeBold("Agentes con Capacidad 3 (Cap3)")}\n` +
+      `  ${regular} agentes\n` +
+      `  ${main} chats en gestión\n\n`
+  
+  const textTotalCap = `${toUnicodeBold(`Capacidad total:`)} ${totalCap} chats\n` +
+      `${toUnicodeBold(`Capacidad restante:`)} ${rest} chats\n\n`
+
+  const title = toUnicodeBold("Update Capacidad Rider");
   if (crQ > 0) {
     return (
-      `🔹 ${title} 🛵📈\n\n` +
-      `🧑‍💻 Agentes totales: ${regular}\n` +
-      `📊 Capacidad total: ${totalCap} chats\n` +
-      `⚠️ Chats en cola: ${crQ}\n` +
-      `🕑 Contactos esperando: ${crQ} ${emojiQ}`
+      `🔹 ${title}\n\n` +
+      `Agentes totales: ${regular}\n` +
+      `Capacidad total: ${totalCap} chats\n` +
+      `Chats en cola: ${crQ} ${emojiQ}`
     );
   } else if (crAN === 0) {
     return (
-      `🔹 ${title} 🛵📈\n\n` +
-      `${toUnicodeBold("Agentes con Capacidad 3 (Cap3)")}\n` +
-      `🧑‍💻 ${regular} agente(s)\n` +
-      `📌 ${main} chat(s) en gestión\n\n` +
-      `⭐ Capacidad total: ${totalCap} chats\n` +
-      `🧮 Capacidad restante: ${rest} chats\n\n` +
-      `📊 Concurrencia Cap3: ${con3} chat(s)/agente ${emoji}`
+      `🔹 ${title}\n\n` +
+      `${textCap3}` +
+      `${textTotalCap}` +
+      `${toUnicodeBold("Concurrencia Actual")}\n` +
+      `  Cap3: ${con3} chats/agente ${emoji}`
     );
   } else
     return (
-      `🔹 ${title} 🛵📈\n\n` +
-      `👨‍💻 ${toUnicodeBold("Agentes con Capacidad 3 (Cap3)")}\n` +
-      `🧑‍💻 ${regular} agente(s)\n` +
-      `📌 ${main} chat(s) en gestión\n\n` +
-      `🧑‍💼 ${toUnicodeBold("Agentes con Capacidad 1 (Cap1)")}\n` +
-      `🧑‍💻 ${crAN} agente(s)\n` +
-      `📌 ${nest} chat(s) en gestión\n\n` +
-      `⭐ Capacidad total: ${totalCap} chats\n` +
-      `🧮 Capacidad restante: ${rest} chats\n\n` +
-      `📊 Concurrencia Cap3: ${con3} chat(s)/agente ${emoji}\n` +
-      `📊 Concurrencia Cap1: ${con1} chat(s)/agente`
+      `🔹 ${title}\n\n` +
+      `${textCap3}` +
+      `${toUnicodeBold("Agentes con Capacidad 1 (Cap1)")}\n` +
+      `  ${crAN} agentes\n` +
+      `  ${nest} chats en gestión\n\n`+
+      `${textTotalCap}`+
+      `${toUnicodeBold("Concurrencia Actual")}\n` +
+      `  Cap3 ${con3} chats/agente ${emoji}\n` +
+      `  Cap1 ${con1} chats/agente`
     );
 }
 
@@ -144,13 +143,16 @@ export function buildCallVendorsReport({
   const cvD = toNum(disponibles);
   const cvX = toNum(enAuxiliar);
   const cvQ = toNum(cola);
+
+  const textQueue = (cvQ > 0) ? `${toUnicodeBold(`\n\nAgilicemos, tenemos contactos en espera`)}` : (cvD === 0) ? `${toUnicodeBold(`\n\nAgilicemos, no hay agentes disponibles`)}` : ''
+  const emoji = (cvD > 0) ? '🟢' : (cvQ > 0) ? '🔴' : '🟠'
+
   return (
-    `📞 ${toUnicodeBold("Panel Actual - AGILICEMOS")}  ♻️ ${toUnicodeBold(
-      "MANTENGAMOS EL CONTROL"
-    )}\n\n` +
-    `🔵 Llamadas en curso: ${cvL}\n` +
-    `🟢 Asesores disponibles: ${cvD}\n` +
-    `🟡 Asesores en auxiliar: ${cvX}\n` +
-    `🆘 Llamadas en cola: ${cvQ}`
+    `${toUnicodeBold(`Panel Actual Vendor ${emoji}`)}\n\n` +
+    `  🔵 Llamadas en curso: ${cvL}\n` +
+    `  🟢 Asesores disponibles: ${cvD}\n` +
+    `  🟡 Asesores en auxiliar: ${cvX}\n` +
+    `  🆘 Llamadas en cola: ${cvQ}` +
+    `${textQueue}`
   );
 }

@@ -75,7 +75,7 @@ export function RubikHCUpdate() {
           required
           placeholder="Ej: 6"
         />
-        <div className="flex gap-3 justify-center">
+        {/* <div className="flex gap-3 justify-center">
           <button
             className={`px-3 py-1 rounded-sm ${
               group === "Teams" ? "bg-blue-500 text-white" : ""
@@ -92,7 +92,7 @@ export function RubikHCUpdate() {
           >
             Slack
           </button>
-        </div>
+        </div> */}
         <div className="flex gap-3 justify-center">
           <button
             className={`px-3 py-1 rounded-sm ${
