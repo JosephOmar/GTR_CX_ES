@@ -8,6 +8,7 @@ import { useWorkersWithFilters } from './hooks/useWorkersWithFilters';
 import { LoadingOrError } from './components/LoadingOrError';
 import UploadWorkersModal from './hooks/UploadWorkersModal';
 import UploadSchedulesModal from './hooks/UploadSchedulesModal';
+import UploadPlannedModal from './hooks/UploadPlannedModal';
 
 export default function WorkersWithSchedules() {
   const [search, setSearch] = useState('');
@@ -21,6 +22,7 @@ export default function WorkersWithSchedules() {
   const [observation2Filter, setObservation2Filter] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false); // Estado para abrir/cerrar el modal de trabajadores
   const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false); // Estado para el modal de horarios
+  const [isPlannedModalOpen, setIsPlannedModalOpen] = useState(false); // Estado para el modal de horarios
   const [documentList, setDocumentList] = useState('');
 
   const { workers, loading, error, urlKustomer, availableDates } = useWorkersWithFilters({
@@ -39,6 +41,9 @@ export default function WorkersWithSchedules() {
 
   const openScheduleModal = () => setIsScheduleModalOpen(true);
   const closeScheduleModal = () => setIsScheduleModalOpen(false);
+
+  const openPlannedModal = () => setIsPlannedModalOpen(true);
+  const closePlannedModal = () => setIsPlannedModalOpen(false);
 
   if (loading || error) {
     return <LoadingOrError loading={loading} error={error} />;
@@ -85,6 +90,12 @@ export default function WorkersWithSchedules() {
         >
           Subir Horarios
         </button>
+        <button
+          onClick={openPlannedModal}
+          className="px-3 py-1 bg-yellow-500 text-white rounded"
+        >
+          Subir Planificado
+        </button>
       </div>
       
       <WorkersTable workers={workers} selectedDate={selectedDate} />
@@ -94,6 +105,8 @@ export default function WorkersWithSchedules() {
 
       {/* Modal para subir horarios */}
       <UploadSchedulesModal isOpen={isScheduleModalOpen} onClose={closeScheduleModal} />
+
+      <UploadPlannedModal isOpen={isPlannedModalOpen} onClose={closePlannedModal} />
     </div>
   );
 }

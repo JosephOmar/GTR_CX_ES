@@ -20,10 +20,6 @@ export function ChatCustomerHCSection() {
     setAgentsCurrent,
     agentsOnline,
     setAgentsOnline,
-    agentsScheduled,
-    setAgentsScheduled,
-    agentsRequired,
-    setAgentsRequired,
     chatsInterval,
     setChatsInterval,
     onlineChats,
@@ -39,8 +35,6 @@ export function ChatCustomerHCSection() {
       "FRT",
       "agentsCurrent",
       "agentsOnline",
-      "agentsScheduled",
-      "agentsRequired",
       "chatsInterval",
       "onlineChats",
       "slaInterval",
@@ -88,20 +82,6 @@ export function ChatCustomerHCSection() {
           placeholder="Ej: 12"
         />
         <NumericInput
-          label="Agents Scheduled:"
-          value={agentsScheduled}
-          setter={setAgentsScheduled}
-          required
-          placeholder="Ej: 12"
-        />
-        <NumericInput
-          label="Agents Required:"
-          value={agentsRequired}
-          setter={setAgentsRequired}
-          required
-          placeholder="Ej: 6"
-        />
-        <NumericInput
           label="Chats Interval:"
           value={chatsInterval}
           setter={setChatsInterval}
@@ -125,17 +105,17 @@ export function ChatCustomerHCSection() {
         <div className="flex gap-3 justify-center">
           <button
             className={`px-3 py-1 rounded-sm ${
-              team === "Customer" ? "bg-blue-500 text-white" : ""
+              team === "CHAT CUSTOMER HC" ? "bg-blue-500 text-white" : ""
             }`}
-            onClick={() => setTeam("Customer")}
+            onClick={() => setTeam("CHAT CUSTOMER HC")}
           >
             Customer
           </button>
           <button
             className={`px-3 py-1 rounded-sm ${
-              team === "Rider" ? "bg-blue-500 text-white" : ""
+              team === "CHAT RIDER HC" ? "bg-blue-500 text-white" : ""
             }`}
-            onClick={() => setTeam("Rider")}
+            onClick={() => setTeam("CHAT RIDER HC")}
           >
             Rider
           </button>

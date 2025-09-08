@@ -96,25 +96,25 @@ export function RubikHCUpdate() {
         <div className="flex gap-3 justify-center">
           <button
             className={`px-3 py-1 rounded-sm ${
-              team === "CS" ? "bg-blue-500 text-white" : ""
+              team === "RUBIK CUSTOMER" ? "bg-blue-500 text-white" : ""
             }`}
-            onClick={() => setTeam("CS")}
+            onClick={() => setTeam("RUBIK CUSTOMER")}
           >
             Customer
           </button>
           <button
             className={`px-3 py-1 rounded-sm ${
-              team === "RS" ? "bg-blue-500 text-white" : ""
+              team === "RUBIK RIDER" ? "bg-blue-500 text-white" : ""
             }`}
-            onClick={() => setTeam("RS")}
+            onClick={() => setTeam("RUBIK RIDER")}
           >
             Rider
           </button>
           <button
             className={`px-3 py-1 rounded-sm ${
-              team === "VS" ? "bg-blue-500 text-white" : ""
+              team === "RUBIK VENDOR" ? "bg-blue-500 text-white" : ""
             }`}
-            onClick={() => setTeam("VS")}
+            onClick={() => setTeam("RUBIK VENDOR")}
           >
             Vendor
           </button>

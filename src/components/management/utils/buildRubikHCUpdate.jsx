@@ -1,7 +1,17 @@
 import { toUnicodeBold } from "./toUnicodeBold";
 import { getRoundedDisplayTimePortugal, getHourStartTimePortugal } from "../hooks/timeUtils";
+import { getPlannedFor } from "./getPlannedFor";
+
+const AGENTS_THRESHOLD = { green: 0.15, orange: 0.3};
 
 const toNum = (str) => Number(str) || 0;
+
+function getStatusColorAgents(online, scheduled, { green, orange }) {
+  if (scheduled*(1-green) < online) return '🟢';
+  console.log(scheduled*(1-green))
+  if (scheduled*(1-orange) < online) return '🟠';
+  return '🔴';
+}
 
 
 export function buildRubikHCUpdate(data) {
@@ -20,22 +30,28 @@ export function buildRubikHCUpdate(data) {
     team = '',
     group = '',
     agentsOnline = 0,
-    agentsScheduled = 0,
     backlogES = 0,
     backlogPT = 0,
     longestTime = 0
   } = { team: data.team, group: data.group, ...numericData };
 
-  const longestTimeText = (longestTime > 0) ? `🟢Case con mayor tiempo en gestión: ${longestTime} min` : `🟢Sin casos en gestión`
+  // Buscar planned programado para este team/hora
+  const planned = getPlannedFor(team, hourStart, "Europe/Lisbon");
+  const agentsScheduled = planned?.scheduled_agents ?? 0;
+  const agentsRequired = planned?.required_agents ?? 0;
+
+  const colorAgents = getStatusColorAgents(agentsOnline, agentsScheduled, AGENTS_THRESHOLD)
+  const colorLongestTime = (longestTime > 15 ) ? '🔴' : (longestTime > 6 ) ? '🟠' : '🟢'
+  const longestTimeText = (longestTime > 0) ? `${colorLongestTime}Case con mayor tiempo en gestión: ${longestTime} min` : `🟢Sin casos en gestión`
   const isGroup = (group === 'Slack' ) ? `\n\n⚠️${toUnicodeBold(`Importante : Considerar que de forma automática se les está asignando a los agentes cases del skill ${team}-case-inbox-spa-ES-tier2 como prioridad 1, al término de bandeja se les asigna automáticamente  ${team}-case-inbox-por-PT-tier2BO`)}\n` +
     `⚠️${toUnicodeBold(`Casos de región GV_PT se reflejan en skill ${team}-case-inbox-spa-ES-tier2`)}` : ''
 
   // Reporte final
   return (
     `${toUnicodeBold(`🔰 PANEL ACTUAL ${team} - ${t} PT`)}\n\n` +
-    `🟢${agentsOnline} Agentes en gestión de ${agentsScheduled} programados\n` +
-    `🟢${team}-case-inbox-spa-ES-tier2 : ${backlogES} cases\n` +
-    `🟢${team}-case-inbox-por-PT-tier2BO : ${backlogPT} cases\n` +
+    `${colorAgents }${agentsOnline} Agentes en gestión de ${agentsScheduled} programados\n` +
+    `🟢Backlog ES: ${backlogES} cases\n` +
+    `🟢Backlog PT: ${backlogPT} cases\n` +
     `${longestTimeText}` +
     `${isGroup}`
   );

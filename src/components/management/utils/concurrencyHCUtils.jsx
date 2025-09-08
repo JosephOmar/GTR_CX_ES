@@ -1,14 +1,23 @@
 import { toUnicodeBold } from "./toUnicodeBold";
 import { getRoundedDisplayTimeSpain, getHourStartTimeSpain } from "../hooks/timeUtils";
+import { getPlannedFor } from "./getPlannedFor";
 
 const SLA_THRESHOLDS = { green: 80, orange: 70 };
 const FRT_THRESHOLD = 30;
+const AGENTS_THRESHOLD = { green: 0.15, orange: 0.3};
 
 const toNum = (str) => Number(str) || 0;
 
-function getStatusColor(value, { green, orange }) {
-  if (value > green) return '🟢';
-  if (value > orange) return '🟠';
+function getStatusColorSLA(value, { green, orange }) {
+  if (value >= green) return '🟢';
+  if (value >= orange) return '🟠';
+  return '🔴';
+}
+
+function getStatusColorAgents(online, scheduled, { green, orange }) {
+  if (scheduled*(1-green) < online) return '🟢';
+  console.log(scheduled*(1-green))
+  if (scheduled*(1-orange) < online) return '🟠';
   return '🔴';
 }
 
@@ -31,17 +40,22 @@ export function buildCustomerHC(data) {
     FRT = 0,
     agentsCurrent = 0,
     agentsOnline = 0,
-    agentsScheduled = 0,
-    agentsRequired = 0,
     chatsInterval = 0,
     onlineChats = 0,
     slaInterval = 0
   } = { team: data.team, ...numericData };
 
+  // Buscar planned programado para este team/hora
+  const planned = getPlannedFor(team, hourStart, "Europe/Madrid");
+  const agentsScheduled = planned?.scheduled_agents ?? 0;
+  const agentsRequired = planned?.required_agents ?? 0;
+
   // Colores
-  const colorSLA = getStatusColor(currentSla, SLA_THRESHOLDS);
-  const colorSLAInterval = getStatusColor(slaInterval, SLA_THRESHOLDS);
+  const colorSLA = getStatusColorSLA(currentSla, SLA_THRESHOLDS);
+  const colorSLAInterval = getStatusColorSLA(slaInterval, SLA_THRESHOLDS);
   const colorFRT = FRT > FRT_THRESHOLD ? '🔴' : '🟢';
+  const colorAgents = getStatusColorAgents(agentsOnline, agentsScheduled, AGENTS_THRESHOLD)
+  const colorCurrentChats = (onlineChats > 0) ? '⚠️' : '🟢'
 
   // Datos derivados
   const nonBreachedChat = Math.round((totalChats * currentSla) / 100);
@@ -62,7 +76,7 @@ export function buildCustomerHC(data) {
     `${colorFRT} FRT: ${FRT}\n` +
     `${agentsCurrentText}` +
     `${chatsIntervalText}` +
-    `⚠️ ${onlineChats} Chats en curso${onlineChatsText}\n\n` +
-    `🟢 Gestionaron ${agentsOnline} Agentes de ${agentsScheduled} Programados / Requeridos ${agentsRequired}`
+    `${colorCurrentChats} ${onlineChats} Chats en curso${onlineChatsText}\n\n` +
+    `${colorAgents} Gestionaron ${agentsOnline} Agentes de ${agentsScheduled} Programados / Requeridos ${agentsRequired}`
   );
 }
