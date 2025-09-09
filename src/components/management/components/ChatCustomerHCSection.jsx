@@ -68,14 +68,21 @@ export function ChatCustomerHCSection() {
           placeholder="Ej: 0"
         />
         <NumericInput
-          label="AgentsCurrent:"
+          label="Current Agents:"
           value={agentsCurrent}
           setter={setAgentsCurrent}
           required
           placeholder="Ej: 21"
         />
         <NumericInput
-          label="Agents Online:"
+          label="Current Chats:"
+          value={onlineChats}
+          setter={setOnlineChats}
+          required
+          placeholder="Ej: 12"
+        /> 
+        <NumericInput
+          label="Online Agents:"
           value={agentsOnline}
           setter={setAgentsOnline}
           required
@@ -89,19 +96,12 @@ export function ChatCustomerHCSection() {
           placeholder="Ej: 6"
         />
         <NumericInput
-          label="Online Chats:"
-          value={onlineChats}
-          setter={setOnlineChats}
-          required
-          placeholder="Ej: 12"
-        />
-        <NumericInput
           label="Interval SLA:"
           value={slaInterval}
           setter={setSlaInterval}
           required
           placeholder="Ej: 6"
-        />
+        />         
         <div className="flex gap-3 justify-center">
           <button
             className={`px-3 py-1 rounded-sm ${

@@ -48,13 +48,6 @@ export function RubikHCUpdate() {
           placeholder="Ej: 12"
         />
         <NumericInput
-          label="Agents Scheduled:"
-          value={agentsScheduled}
-          setter={setAgentsScheduled}
-          required
-          placeholder="Ej: 12"
-        />
-        <NumericInput
           label="Backlog ES:"
           value={backlogES}
           setter={setBacklogES}

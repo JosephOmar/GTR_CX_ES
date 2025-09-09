@@ -71,7 +71,7 @@ export function buildCustomerHC(data) {
 
   // Reporte final
   return (
-    `${toUnicodeBold(`CHAT ${team} - ${currentSla}% ${colorSLA} - CORTE ${t} Hrs`)}\n\n` +
+    `${toUnicodeBold(`${team} - ${currentSla}% ${colorSLA} - CORTE ${t} Hrs`)}\n\n` +
     `${nonBreachedChat}/${totalChats} chat atendidos a tiempo!!\n\n` +
     `${colorFRT} FRT: ${FRT}\n` +
     `${agentsCurrentText}` +

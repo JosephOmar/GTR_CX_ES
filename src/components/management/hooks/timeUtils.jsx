@@ -81,7 +81,7 @@ export function getHourStartTimePortugal(date = new Date()) {
   // Convertir la fecha a la hora de Portugal (Lisboa)
   const dateInPortugal = new Date(date.toLocaleString('en-US', { timeZone: 'Europe/Lisbon' }));
 
-  let hour = dateInPortugal.getHours() - 1;
+  let hour = dateInPortugal.getHours();
   if (hour === -1) hour = 23;
   const pad = (n) => String(n).padStart(2, '0');
   return `${pad(hour)}:00`;

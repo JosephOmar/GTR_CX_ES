@@ -92,7 +92,7 @@
   }
 }
 
-button {
+button:not(.no-style) {
   background-color: light-dark(var(--cx-primary), var(--cx-primary-dark));
 }
 

@@ -11,45 +11,40 @@ export interface MessageData {
 }
 
 export const buildAsNoRetomaMessage = ({ worker, contractLabel, diffSec, hmsStr, url }: MessageData) => [
-  `💬 ${toUnicodeBold(`${worker.team?.name?.toUpperCase() ?? "Equipo Desconocido"} - ${contractLabel}`)}`,
-  ``,
-  `🧑‍💻 ${toUnicodeBold(worker.name?.toUpperCase() ?? "Nombre Desconocido")} aún no retoma su chat. Por favor, que retome y agilice.`,
-  `⏱️ Tiempo de espera: ${diffSec} segundos (${hmsStr} hrs)`,
-  `🔗 Ver caso en Kustomer: ${url}`,
-  `📋 Supervisor: ${toUnicodeBold(worker.supervisor?.toUpperCase() ?? " ")}`,
+  `${toUnicodeBold(`${worker.team?.name?.toUpperCase() ?? "Equipo Desconocido"} - ${contractLabel}`)}\n`,
+  `  ${toUnicodeBold(worker.name?.toUpperCase() ?? "Nombre Desconocido")} aún no retoma su chat. Su apoyo alertando, que retome y agilice🚨`,
+  `  ${toUnicodeBold(`Tiempo de espera:`)} ${diffSec} segundos (${hmsStr} hrs)⏰`,
+  `  ${toUnicodeBold(`Link:`)} ${url}`,
+  `  ${toUnicodeBold(`Supervisor: ${worker.supervisor?.toUpperCase() ?? " "}`)}`,
 ].join("\n");
 
 export const buildAgilizarChatMessage = ({ worker, contractLabel, diffSec, hmsStr, url }: MessageData) => [
-  `💬 ${toUnicodeBold(`${worker.team?.name?.toUpperCase() ?? "Equipo Desconocido"} - ${contractLabel}`)}`,
-  ``,
-  `🏃‍♂️ Su apoyo agilizando el chat del agente ${toUnicodeBold(worker.name?.toUpperCase() ?? "Nombre Desconocido")}.`,
-  `⏱️ Tiempo de gestión: ${diffSec} segundos (${hmsStr} hrs).`,
-  `🔗 Ver caso en Kustomer: ${url}`,
-  `📋 Supervisor: ${toUnicodeBold(worker.supervisor?.toUpperCase() ?? " ")}`,
+  `${toUnicodeBold(`${worker.team?.name?.toUpperCase() ?? "Equipo Desconocido"} - ${contractLabel}`)}\n`,
+  `  ${toUnicodeBold(worker.name?.toUpperCase() ?? "Nombre Desconocido")} presenta tiempo de atención elevado en su chat. Su apoyo alertando, que agilice🚨`,
+  `  ${toUnicodeBold(`Tiempo de gestión:`)} ${diffSec} segundos (${hmsStr} hrs)⏰`,
+  `  ${toUnicodeBold(`Link:`)} ${url}`,
+  `  ${toUnicodeBold(`Supervisor: ${worker.supervisor?.toUpperCase() ?? " "}`)}`,
 ].join("\n");
 
 export const buildAgilizarMailMessage = ({ worker, contractLabel, diffSec, hmsStr, url }: MessageData) => [
-  `📧 ${toUnicodeBold(`${worker.team?.name?.toUpperCase() ?? "Equipo Desconocido"} - ${contractLabel}`)}`,
-  ``,
-  `🏃‍♂️ Su apoyo agilizando el correo del agente ${toUnicodeBold(worker.name?.toUpperCase() ?? "Nombre Desconocido")}.`,
-  `⏱️ Tiempo de gestión: ${diffSec} segundos (${hmsStr} hrs) desde que le fue asignado al agente.`,
-  `🔗 Ver caso en Kustomer: ${url}`,
-  `📋 Supervisor: ${toUnicodeBold(worker.supervisor?.toUpperCase() ?? " ")}`,
+  `${toUnicodeBold(`${worker.team?.name?.toUpperCase() ?? "Equipo Desconocido"} - ${contractLabel}`)}\n`,
+  `  ${toUnicodeBold(worker.name?.toUpperCase() ?? "Nombre Desconocido")} presenta tiempo de atención elevado en su mail. Su apoyo alertando, que agilice🚨`,
+  `  ${toUnicodeBold(`Tiempo de gestión:`)} ${diffSec} segundos (${hmsStr} hrs)⏰`,
+  `  ${toUnicodeBold(`Link:`)} ${url}`,
+  `  ${toUnicodeBold(`Supervisor: ${worker.supervisor?.toUpperCase() ?? " "}`)}`,
 ].join("\n");
 
 export const buildAsNoCierraChatMessage = ({ worker, contractLabel, diffSec, hmsStr, url }: MessageData) => [
-  `💬 ${toUnicodeBold(`${worker.team?.name?.toUpperCase() ?? "Equipo Desconocido"} - ${contractLabel}`)}`,
-  ``,
-  `⚠️ ${toUnicodeBold(worker.name?.toUpperCase() ?? "Nombre Desconocido")} aún no cierra su chat. Por favor, retome y proceda con el cierre.`,
-  `⏱️ Tiempo de retoma: ${diffSec} segundos (${hmsStr} hrs).`,
-  `🔗 Ver caso en Kustomer: ${url}`,
-  `📋 Supervisor: ${toUnicodeBold(worker.supervisor?.toUpperCase() ?? " ")}`,
+  `${toUnicodeBold(`${worker.team?.name?.toUpperCase() ?? "Equipo Desconocido"} - ${contractLabel}`)}\n`,
+  `  ${toUnicodeBold(worker.name?.toUpperCase() ?? "Nombre Desconocido")} aún no cierra su chat. Su apoyo alertando, que proceda con el cierre🚨`,
+  `  ${toUnicodeBold(`Tiempo de retoma:`)} ${diffSec} segundos (${hmsStr} hrs)⏰`,
+  `  ${toUnicodeBold(`Link:`)} ${url}`,
+  `  ${toUnicodeBold(`Supervisor: ${worker.supervisor?.toUpperCase() ?? " "}`)}`,
 ].join("\n");
 
 export const buildAsNoSaludaMessage = ({ worker, contractLabel, url }: Omit<MessageData, 'diffSec' | 'hmsStr'>) => [
-  `💬 ${toUnicodeBold(`${worker.team?.name?.toUpperCase() ?? "Equipo Desconocido"} - ${contractLabel}`)}`,
-  ``,
-  `❗ Se detectó un chat sin saludo por parte del agente ${toUnicodeBold(worker.name?.toUpperCase() ?? "Nombre Desconocido")}. Por favor, que realice un saludo inicial.`,
-  `🔗 Ver caso en Kustomer: ${url}`,
-  `📋 Supervisor: ${toUnicodeBold(worker.supervisor?.toUpperCase() ?? " ")}`,
+  `${toUnicodeBold(`${worker.team?.name?.toUpperCase() ?? "Equipo Desconocido"} - ${contractLabel}`)}\n`,
+  `  ${toUnicodeBold(worker.name?.toUpperCase() ?? "Nombre Desconocido")} no da primera respuesta a su chat. Su apoyo alertando, que realice el saludo inicial🚨`,
+  `  ${toUnicodeBold(`Link:`)} ${url}`,
+  `  ${toUnicodeBold(`Supervisor: ${worker.supervisor?.toUpperCase() ?? " "}`)}`,
 ].join("\n");

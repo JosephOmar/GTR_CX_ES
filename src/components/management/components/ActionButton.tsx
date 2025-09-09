@@ -20,12 +20,12 @@ export const ActionButton: React.FC<ActionButtonProps> = ({
     // Restaurar color después de 1 segundo
     setTimeout(() => {
       setAnimate(false);
-    }, 1000);
+    }, 500);
   };
 
   return (
     <button
-      className={`px-4 py-2 text-white rounded transition-colors duration-500 ${animate ? "bg-green-500" : colorClass}`}
+      className={`no-style px-4 py-2 text-white rounded transition-colors duration-500 ${animate ? "bg-green-500" : colorClass}`}
       onClick={handleClick}
     >
       {label}
