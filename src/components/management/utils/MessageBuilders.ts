@@ -11,18 +11,27 @@ export interface MessageData {
 }
 
 // 🔹 Función auxiliar para la primera línea
-const buildFirstLine = (worker: any, contractLabel: string) =>
-  worker.trainee === "DESPEGANDO"
+const buildFirstLine = (worker: any, contractLabel: string) => {
+  return worker.trainee === "DESPEGANDO"
     ? `${toUnicodeBold(`${worker.team?.name?.toUpperCase() ?? "Equipo Desconocido"} - ${contractLabel} - ${worker.requirement_id ?? ""}`)}\n`
     : `${toUnicodeBold(`${worker.team?.name?.toUpperCase() ?? "Equipo Desconocido"} - ${contractLabel}`)}\n`;
+};
 
-// 🔹 Función auxiliar para supervisor / QA
-const buildSupervisorLine = (worker: any) =>
-  worker.trainee === "DESPEGANDO"
-    ? `${toUnicodeBold(`QA a cargo: ${worker.qa_in_charge?.toUpperCase() ?? " "}`)}`
-    : `${toUnicodeBold(`Supervisor: ${worker.supervisor?.toUpperCase() ?? " "}`)}`;
+// 🔹 Función auxiliar para Supervisor + QA
+const buildSupervisorLine = (worker: any) => {
+  const supervisorLine = `${toUnicodeBold(`Supervisor: ${worker.supervisor?.toUpperCase() ?? " "}`)}`;
 
-// 🔹 Mensajes
+  if (worker.trainee === "DESPEGANDO" && worker.qa_in_charge) {
+    const qaLine = `${toUnicodeBold(`QA: ${worker.qa_in_charge?.toUpperCase()}`)}`;
+    return [supervisorLine, qaLine].join("\n");
+  }
+
+  return supervisorLine;
+};
+
+// =========================================================
+// Mensajes
+// =========================================================
 
 export const buildAsNoRetomaMessage = ({ worker, contractLabel, diffSec, hmsStr, url }: MessageData) => [
   buildFirstLine(worker, contractLabel),
