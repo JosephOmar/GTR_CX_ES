@@ -10,41 +10,55 @@ export interface MessageData {
   url: string;
 }
 
+// 🔹 Función auxiliar para la primera línea
+const buildFirstLine = (worker: any, contractLabel: string) =>
+  worker.trainee === "DESPEGANDO"
+    ? `${toUnicodeBold(`${worker.team?.name?.toUpperCase() ?? "Equipo Desconocido"} - ${contractLabel} - ${worker.requirement_id ?? ""}`)}\n`
+    : `${toUnicodeBold(`${worker.team?.name?.toUpperCase() ?? "Equipo Desconocido"} - ${contractLabel}`)}\n`;
+
+// 🔹 Función auxiliar para supervisor / QA
+const buildSupervisorLine = (worker: any) =>
+  worker.trainee === "DESPEGANDO"
+    ? `${toUnicodeBold(`QA a cargo: ${worker.qa_in_charge?.toUpperCase() ?? " "}`)}`
+    : `${toUnicodeBold(`Supervisor: ${worker.supervisor?.toUpperCase() ?? " "}`)}`;
+
+// 🔹 Mensajes
+
 export const buildAsNoRetomaMessage = ({ worker, contractLabel, diffSec, hmsStr, url }: MessageData) => [
-  `${toUnicodeBold(`${worker.team?.name?.toUpperCase() ?? "Equipo Desconocido"} - ${contractLabel}`)}\n`,
+  buildFirstLine(worker, contractLabel),
   `  ${toUnicodeBold(worker.name?.toUpperCase() ?? "Nombre Desconocido")} aún no retoma su chat. Su apoyo alertando, que retome y agilice🚨`,
   `  ${toUnicodeBold(`Tiempo de espera:`)} ${diffSec} segundos (${hmsStr} hrs)⏰`,
   `  ${toUnicodeBold(`Link:`)} ${url}`,
-  `  ${toUnicodeBold(`Supervisor: ${worker.supervisor?.toUpperCase() ?? " "}`)}`,
+  buildSupervisorLine(worker),
 ].join("\n");
 
 export const buildAgilizarChatMessage = ({ worker, contractLabel, diffSec, hmsStr, url }: MessageData) => [
-  `${toUnicodeBold(`${worker.team?.name?.toUpperCase() ?? "Equipo Desconocido"} - ${contractLabel}`)}\n`,
+  buildFirstLine(worker, contractLabel),
   `  ${toUnicodeBold(worker.name?.toUpperCase() ?? "Nombre Desconocido")} presenta tiempo de atención elevado en su chat. Su apoyo alertando, que agilice🚨`,
   `  ${toUnicodeBold(`Tiempo de gestión:`)} ${diffSec} segundos (${hmsStr} hrs)⏰`,
   `  ${toUnicodeBold(`Link:`)} ${url}`,
-  `  ${toUnicodeBold(`Supervisor: ${worker.supervisor?.toUpperCase() ?? " "}`)}`,
+  buildSupervisorLine(worker),
 ].join("\n");
 
 export const buildAgilizarMailMessage = ({ worker, contractLabel, diffSec, hmsStr, url }: MessageData) => [
-  `${toUnicodeBold(`${worker.team?.name?.toUpperCase() ?? "Equipo Desconocido"} - ${contractLabel}`)}\n`,
+  buildFirstLine(worker, contractLabel),
   `  ${toUnicodeBold(worker.name?.toUpperCase() ?? "Nombre Desconocido")} presenta tiempo de atención elevado en su mail. Su apoyo alertando, que agilice🚨`,
   `  ${toUnicodeBold(`Tiempo de gestión:`)} ${diffSec} segundos (${hmsStr} hrs)⏰`,
   `  ${toUnicodeBold(`Link:`)} ${url}`,
-  `  ${toUnicodeBold(`Supervisor: ${worker.supervisor?.toUpperCase() ?? " "}`)}`,
+  buildSupervisorLine(worker),
 ].join("\n");
 
 export const buildAsNoCierraChatMessage = ({ worker, contractLabel, diffSec, hmsStr, url }: MessageData) => [
-  `${toUnicodeBold(`${worker.team?.name?.toUpperCase() ?? "Equipo Desconocido"} - ${contractLabel}`)}\n`,
+  buildFirstLine(worker, contractLabel),
   `  ${toUnicodeBold(worker.name?.toUpperCase() ?? "Nombre Desconocido")} aún no cierra su chat. Su apoyo alertando, que proceda con el cierre🚨`,
   `  ${toUnicodeBold(`Tiempo de retoma:`)} ${diffSec} segundos (${hmsStr} hrs)⏰`,
   `  ${toUnicodeBold(`Link:`)} ${url}`,
-  `  ${toUnicodeBold(`Supervisor: ${worker.supervisor?.toUpperCase() ?? " "}`)}`,
+  buildSupervisorLine(worker),
 ].join("\n");
 
 export const buildAsNoSaludaMessage = ({ worker, contractLabel, url }: Omit<MessageData, 'diffSec' | 'hmsStr'>) => [
-  `${toUnicodeBold(`${worker.team?.name?.toUpperCase() ?? "Equipo Desconocido"} - ${contractLabel}`)}\n`,
+  buildFirstLine(worker, contractLabel),
   `  ${toUnicodeBold(worker.name?.toUpperCase() ?? "Nombre Desconocido")} no da primera respuesta a su chat. Su apoyo alertando, que realice el saludo inicial🚨`,
   `  ${toUnicodeBold(`Link:`)} ${url}`,
-  `  ${toUnicodeBold(`Supervisor: ${worker.supervisor?.toUpperCase() ?? " "}`)}`,
+  buildSupervisorLine(worker),
 ].join("\n");

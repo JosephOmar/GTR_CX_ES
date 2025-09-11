@@ -1,25 +1,36 @@
 function getTodayForInterval(hourStart, timeZone) {
-  const now = new Date(
-    new Date().toLocaleString("en-US", { timeZone })
-  );
+  const now = new Date();
 
-  const formatter = new Intl.DateTimeFormat("en-CA", {
+  // 📌 Fecha en la zona horaria deseada
+  const dateFormatter = new Intl.DateTimeFormat("en-CA", {
     timeZone,
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
   });
 
-  let dateToUse = now;
+  // 📌 Hora en la zona horaria deseada (00–23)
+  const hourFormatter = new Intl.DateTimeFormat("en-US", {
+    timeZone,
+    hour: "2-digit",
+    hour12: false,
+  });
 
-  // ⚠️ Ajuste de 23:00 -> retroceder un día si ya pasó medianoche
-  if (hourStart === "23:00" && now.getHours() < 23) {
-    dateToUse = new Date(dateToUse);
+  const currentHourInTZ = parseInt(hourFormatter.format(now), 10);
+
+  // Fecha base en la zona horaria
+  let dateToUse = new Date(
+    dateFormatter.format(now) + "T00:00:00"
+  );
+
+  // ⚠️ Ajuste especial: si pedimos 23:00 y ya pasó medianoche en esa zona
+  if (hourStart === "23:00" && currentHourInTZ < 23) {
     dateToUse.setDate(dateToUse.getDate() - 1);
   }
 
-  return formatter.format(dateToUse);
+  return dateFormatter.format(dateToUse);
 }
+
 
 export function getPlannedFor(team, hourStart, timeZone = "Europe/Madrid") {
   try {
@@ -29,7 +40,7 @@ export function getPlannedFor(team, hourStart, timeZone = "Europe/Madrid") {
     const planned = JSON.parse(raw);
 
     const date = getTodayForInterval(hourStart, timeZone);
-
+    console.log(`${hourStart}, ${date}`)
     return planned.find(
       (p) =>
         p.team === team &&

@@ -45,7 +45,7 @@ export function buildChatCustomerReport({
   if (ccQ > 0) {
     return (
       `🔹 ${title}\n\n` +
-      `Agentes en total: ${regular}\n` +
+      `Agentes en total: ${ccA} (${regular} Cap4 con - ${ccAN} con Cap2)\n` +
       `Capacidad total: ${totalCap} chats\n` +
       `Chats en cola: ${ccQ} ${emojiQ}\n`
     );
@@ -107,7 +107,7 @@ export function buildChatRiderReport({
   if (crQ > 0) {
     return (
       `🔹 ${title}\n\n` +
-      `Agentes totales: ${regular}\n` +
+      `Agentes totales: ${crA} (${regular} con Cap3 - ${crAN} con Cap1)\n` +
       `Capacidad total: ${totalCap} chats\n` +
       `Chats en cola: ${crQ} ${emojiQ}`
     );

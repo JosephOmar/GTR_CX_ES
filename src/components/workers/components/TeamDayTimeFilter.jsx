@@ -199,7 +199,7 @@ export function TeamDayTimeFilter({
                 onClick={() => setSelectedDate(date)}
                 className={`px-2 py-2 text-center rounded ${
                   selectedDate === date
-                    ? "bg-primary-hover"
+                    ? "bg-primary-hover text-white"
                     : ""
                 }`}
               >

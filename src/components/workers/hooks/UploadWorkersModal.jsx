@@ -14,6 +14,7 @@ export default function UploadWorkersModal({ isOpen, onClose }) {
     { label: "Report Kustomer", expectedPart: "report_kustomer" },
     { label: "Master Glovo", expectedPart: "master_glovo" },
     { label: "Scheduling Ubycall", expectedPart: "scheduling_ubycall" },
+    { label: "Taking Off", expectedPart: "taking_off" },
   ];
 
   const handleFileChange = (e) => {
