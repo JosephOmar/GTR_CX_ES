@@ -24,9 +24,10 @@ export function useWorkerExtraction(nameInput: string, timeInput: string) {
   });
 
   const extract = (): ExtractionResult | null => {
-    const extractedName = nameInput.split("(")[0].trim().toLowerCase();
+    const extractedName = nameInput.split("(")[0].split(":").pop()?.trim().toLowerCase();
     const worker = workers.find(
-      (w) => w.kustomer_name?.toLowerCase() === extractedName
+      (w) => w.kustomer_name?.toLowerCase() === extractedName ||
+             w.kustomer_email?.toLowerCase() === extractedName
     );
     if (!worker) {
       alert(`No encontré un worker llamado "${extractedName}"`);
@@ -40,11 +41,15 @@ export function useWorkerExtraction(nameInput: string, timeInput: string) {
     const now = new Date();
     let diffSec = 0;
     let hmsStr = "00:00:00";
+
     if (timeInput) {
-      const m = timeInput.match(/Today at (.+)$/);
+      const m = timeInput.match(/(\d{1,2}:\d{2}(?::\d{2})?\s?(AM|PM))/i);
       const timePart = m ? m[1] : "";
+
       let [hms, meridiem] = timePart.split(" ");
-      let [hh, mm, ss] = hms.split(":").map(Number);
+      meridiem = meridiem?.toUpperCase();
+      let [hh, mm, ss = 0] = hms.split(":").map(Number);
+      console.log(timeInput, hh,mm,ss)
       if (meridiem === "PM" && hh < 12) hh += 12;
       if (meridiem === "AM" && hh === 12) hh = 0;
       const inputDate = new Date(

@@ -21,10 +21,12 @@ export const Breached: React.FC = () => {
     timeInput
   );
 
+  const inputNormalized = nameInput.split("(")[0].split(":").pop()?.trim().toLowerCase();
+
   const matchingWorker = workers.find(
     (w) =>
-      w.kustomer_name?.toLowerCase() ===
-      nameInput.split("(")[0].trim().toLowerCase()
+      w.kustomer_name?.toLowerCase() === inputNormalized ||
+      w.kustomer_email?.toLowerCase() === inputNormalized
   );
 
   const actions = [
