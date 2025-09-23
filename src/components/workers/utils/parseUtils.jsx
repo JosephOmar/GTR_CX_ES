@@ -1,6 +1,6 @@
 // Extrae nombres antes de "(DYLAT"
 export function parseNames(text) {
-  const regex = /^(.+?)\s*\(DYLAT/;
+  const regex = /^(.+?)(?:\s*WHL)?$/;
   return text
     .split('\n')
     .map(line => (line.match(regex) || [])[1])

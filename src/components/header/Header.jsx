@@ -1,7 +1,9 @@
 // src/components/Header.jsx
 import React, { useEffect, useState } from 'react';
 
-export default function Header({ title = 'GTR CX ES' }) {
+const url_backend = import.meta.env.PUBLIC_URL_BACKEND;
+
+export default function Header({ title = 'GTR SUPPORT' }) {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
@@ -10,7 +12,13 @@ export default function Header({ title = 'GTR CX ES' }) {
 
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
-      setUser(payload.sub);
+      const userId = payload.sub;
+      fetch(`${url_backend}users/${userId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      .then(res => res.json())
+      .then(data => setUser(data)) // aquí ya tienes { id, name, email, ... }
+      .catch(() => localStorage.removeItem('token'));
     } catch {
       localStorage.removeItem('token');
     }
@@ -19,7 +27,6 @@ export default function Header({ title = 'GTR CX ES' }) {
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('workers'); // Eliminar workers
-    localStorage.removeItem('workers_timestamp'); // Eliminar workers_timestamp
     setUser(null);
     window.location.href = '/login'; // ← redirección clásica
   };
@@ -56,7 +63,7 @@ export default function Header({ title = 'GTR CX ES' }) {
                   </a>
                 </li>
                 <li className="">
-                  Hi, {user}!
+                  Hi, {user?.name}!
                 </li>
                 <li>
                   <button

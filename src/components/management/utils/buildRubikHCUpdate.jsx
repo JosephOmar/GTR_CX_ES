@@ -1,5 +1,5 @@
 import { toUnicodeBold } from "./toUnicodeBold";
-import { getRoundedDisplayTimePortugal, getHourStartTimePortugal } from "../hooks/timeUtils";
+import { getRoundedDisplayTimeSpain, getNextHourTimeSpain } from "../hooks/timeUtils";
 import { getPlannedFor } from "./getPlannedFor";
 
 const AGENTS_THRESHOLD = { green: 0.15, orange: 0.3};
@@ -21,8 +21,8 @@ function getStatusColorBacklog(backlog, { green, orange }) {
 
 
 export function buildRubikHCUpdate(data) {
-  const t = getRoundedDisplayTimePortugal();
-  const hourStart = getHourStartTimePortugal();
+  const t = getRoundedDisplayTimeSpain();
+  const hourStart = getNextHourTimeSpain();
 
   // Convertir valores numéricos, excluyendo 'team'
   const numericData = Object.fromEntries(
@@ -42,7 +42,7 @@ export function buildRubikHCUpdate(data) {
   } = { team: data.team, group: data.group, ...numericData };
 
   // Buscar planned programado para este team/hora
-  const planned = getPlannedFor(team, hourStart, "Europe/Lisbon");
+  const planned = getPlannedFor(team, hourStart, "Europe/Madrid");
   const agentsScheduled = planned?.scheduled_agents ?? 0;
   const agentsRequired = planned?.required_agents ?? 0;
 
@@ -53,13 +53,12 @@ export function buildRubikHCUpdate(data) {
   const longestTimeText = (longestTime > 0) ? `${colorLongestTime} Case con mayor tiempo en gestión: ${longestTime} min` : `🟢Sin casos en gestión`
   const isGroup = (group === 'Slack' ) ? `\n\n⚠️${toUnicodeBold(`Importante : Considerar que de forma automática se les está asignando a los agentes cases del skill ${team}-case-inbox-spa-ES-tier2 como prioridad 1, al término de bandeja se les asigna automáticamente  ${team}-case-inbox-por-PT-tier2BO`)}\n` +
     `⚠️${toUnicodeBold(`Casos de región GV_PT se reflejan en skill ${team}-case-inbox-spa-ES-tier2`)}` : ''
-
+  console.log(hourStart)
   // Reporte final
   return (
-    `${toUnicodeBold(`PANEL ACTUAL ${team} - ${t} PT`)}\n\n` +
+    `${toUnicodeBold(`PANEL ACTUAL ${team} - ${t} ES`)}\n\n` +
     `  ${colorAgents } ${agentsOnline} Agentes en gestión de ${agentsScheduled} programados\n` +
-    `  ${colorBacklogES} Backlog ES: ${backlogES} cases\n` +
-    `  ${colorBacklogPT} Backlog PT: ${backlogPT} cases\n` +
+    `  ${colorBacklogES} Backlog: ${backlogES + backlogPT} cases\n` +
     `  ${longestTimeText}` +
     `${isGroup}`
   );

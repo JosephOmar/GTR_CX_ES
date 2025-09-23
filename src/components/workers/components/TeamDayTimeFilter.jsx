@@ -41,19 +41,14 @@ export function TeamDayTimeFilter({
 
   const teamOptions = [
     { label: "All", value: "" },
-    { label: "Chat Customer", value: "CHAT CUSTOMER" },
-    { label: "Chat Rider", value: "CHAT RIDER" },
-    { label: "Call Vendor", value: "CALL VENDOR" },
-    { label: "Mail Customer", value: "MAIL CUSTOMER" },
-    { label: "Mail Rider", value: "MAIL RIDER" },
-    { label: "Mail Vendor", value: "MAIL VENDOR" },
-    { label: "Customer HC", value: "CHAT CUSTOMER HC"},
-    { label: "Rider HC", value: "CHAT RIDER HC"},
-    { label: "Vendor HC", value: "CALL VENDOR HC"},
-    { label: "Customer Rubik", value: "RUBIK CUSTOMER"},
-    { label: "Rider Rubik", value: "RUBIK RIDER"},
-    { label: "Vendor Rubik", value: "RUBIK VENDOR"},
-    { label: "Moil", value: "MOIL"},
+    { label: "Customer Tier 1", value: "CUSTOMER TIER 1" },
+    { label: "Customer Tier 2", value: "CUSTOMER TIER 2" },
+    { label: "Rider Tier 1", value: "RIDER TIER 1" },
+    { label: "Rider Tier 1", value: "RIDER TIER 1" },
+    { label: "Vendor Tier 1", value: "VENDOR TIER 1" },
+    { label: "Vendor Tier 1", value: "VENDOR TIER 1" },
+    { label: "Vendor Call", value: "VENDOR CALL" },
+    { label: "Vendor Mail", value: "VENDOR MAIL" },
   ];
 
   const roleOptions = [

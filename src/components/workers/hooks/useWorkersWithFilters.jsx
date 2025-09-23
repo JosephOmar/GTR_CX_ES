@@ -133,11 +133,7 @@ export function useWorkersWithFilters({
 
         if (teamFilter === "CHAT CUSTOMER HC" || teamFilter === "CHAT RIDER HC" || teamFilter === "CALL VENDOR HC"){          
           return (t === teamFilter && !obs.includes('PORTUGAL'));
-        } else if (teamFilter === "RUBIK CUSTOMER" || teamFilter === "RUBIK RIDER" || teamFilter === "RUBIK VENDOR"){   
-          return t.includes(teamFilter);
-        } else if(teamFilter === "MOIL") {
-          return obs.includes('DESPEGANDO') && t.includes('CHAT CUSTOMER');
-        }
+        } 
         return t === teamFilter
       });
     }

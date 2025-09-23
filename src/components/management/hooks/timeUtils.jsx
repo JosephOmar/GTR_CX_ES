@@ -55,6 +55,16 @@ export function getHourStartTimeSpain(date = new Date()) {
   return `${pad(hour)}:00`;
 }
 
+export function getNextHourTimeSpain(date = new Date()) {
+  // Convertir la fecha a la hora de España (Madrid)
+  const dateInSpain = new Date(date.toLocaleString('en-US', { timeZone: 'Europe/Madrid' }));
+
+  let hour = dateInSpain.getHours();
+  if (hour == -1 ) { hour = 23} 
+  const pad = (n) => String(n).padStart(2, '0');
+  return `${pad(hour)}:00`;
+}
+
 export function getRoundedDisplayTimePortugal(date = new Date()) {
   // Convertir la fecha a la hora de Portugal (Lisboa)
   const dateInPortugal = new Date(date.toLocaleString('en-US', { timeZone: 'Europe/Lisbon' }));
