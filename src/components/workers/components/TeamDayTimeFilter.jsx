@@ -10,6 +10,8 @@ export function TeamDayTimeFilter({
   setSelectedDate,
   timeFilter,
   setTimeFilter,
+  exactStart,
+  setExactStart,
   roleFilter,
   setRoleFilter,
   observation1Filter,
@@ -44,9 +46,9 @@ export function TeamDayTimeFilter({
     { label: "Customer Tier 1", value: "CUSTOMER TIER 1" },
     { label: "Customer Tier 2", value: "CUSTOMER TIER 2" },
     { label: "Rider Tier 1", value: "RIDER TIER 1" },
-    { label: "Rider Tier 1", value: "RIDER TIER 1" },
+    { label: "Rider Tier 2", value: "RIDER TIER 2" },
     { label: "Vendor Tier 1", value: "VENDOR TIER 1" },
-    { label: "Vendor Tier 1", value: "VENDOR TIER 1" },
+    { label: "Vendor Tier 2", value: "VENDOR TIER 2" },
     { label: "Vendor Call", value: "VENDOR CALL" },
     { label: "Vendor Mail", value: "VENDOR MAIL" },
   ];
@@ -62,6 +64,7 @@ export function TeamDayTimeFilter({
     { label: "All", value: "" },
     { label: "Part-Time", value: "PART TIME" },
     { label: "Full-Time", value: "FULL TIME" },
+    { label: "Concentrix", value: "CONCENTRIX" },
     { label: "Ubycall", value: "UBYCALL" },
   ];
 
@@ -213,6 +216,14 @@ export function TeamDayTimeFilter({
               onClick={() => setTimeFilter([])} // Limpiar selección de horas
             >
               Clean Hours
+            </button>
+            <button
+              className={`px-2 py-2 rounded text-white ${
+                exactStart ? "bg-purple-600" : "bg-gray-500"
+              }`}
+              onClick={() => setExactStart((prev) => !prev)}
+            >
+              {exactStart ? "Inicio exacto" : "Rango"}
             </button>
           </div>
           <div className="grid sm:grid-cols-12 grid-cols-6 gap-2">

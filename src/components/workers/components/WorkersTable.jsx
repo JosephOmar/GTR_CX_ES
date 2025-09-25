@@ -55,29 +55,24 @@ export function WorkersTable({ workers, selectedDate }) {
     const sortedData = [...workers].sort((a, b) => {
       // Orden para 'schedule'
       if (key === "schedule") {
-        // obtener turno filtrado para el día
         const turnsA = expandOvernight(
           a.contract_type?.name === "UBYCALL" ? a.ubycall_schedules : a.schedules
         ).filter((f) => f.date === selectedDate);
+
         const turnsB = expandOvernight(
           b.contract_type?.name === "UBYCALL" ? b.ubycall_schedules : b.schedules
         ).filter((f) => f.date === selectedDate);
-        // primer rango: entrada mínima
+
+        // calcular la hora mínima de ingreso
         const startA = turnsA.length
           ? Math.min(...turnsA.map((f) => parseTime(f.start)))
           : Infinity;
         const startB = turnsB.length
           ? Math.min(...turnsB.map((f) => parseTime(f.start)))
           : Infinity;
-        // segundo rango: salida máxima
-        const endA = turnsA.length
-          ? Math.max(...turnsA.map((f) => parseTime(f.end)))
-          : Infinity;
-        const endB = turnsB.length
-          ? Math.max(...turnsB.map((f) => parseTime(f.end)))
-          : Infinity;
-        // si direction asc -> por entrada, si desc -> por salida
-        return direction === "asc" ? startA - startB : endA - endB;
+
+        // toggle solo en base a la hora de ingreso
+        return direction === "asc" ? startA - startB : startB - startA;
       }
 
       // Orden alfabético para name y supervisor

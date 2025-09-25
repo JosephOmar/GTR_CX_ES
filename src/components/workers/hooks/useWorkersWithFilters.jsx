@@ -23,6 +23,7 @@ export function useWorkersWithFilters({
   teamFilter,
   selectedDate,
   timeFilter,
+  exactStart,
   roleFilter,
   observation1Filter,
   observation2Filter,
@@ -140,6 +141,7 @@ export function useWorkersWithFilters({
 
     // Después de todos los filtros de texto, equipo, rol y observaciones
     if (selectedDate || (timeFilter && timeFilter.length > 0)) {
+      console.log(exactStart)
       // calculamos el rango continuo de minutos sólo una vez
       let rangeStart, rangeEnd;
       if (timeFilter && timeFilter.length > 0) {
@@ -162,7 +164,15 @@ export function useWorkersWithFilters({
           if (timeFilter && timeFilter.length > 0) {
             const s = toMinutes(frag.start);
             const e = frag.end === "24:00" ? 1440 : toMinutes(frag.end);
-            return s < rangeEnd && e > rangeStart;
+            
+            if (exactStart) {
+              const slotStart = rangeStart;
+              const slotEnd = rangeStart + 30;
+              return s >= slotStart && s < slotEnd;
+            } else {
+              // 👈 modo actual: rango continuo
+              return s < rangeEnd && e > rangeStart;
+            }
           }
 
           // si sólo hay fecha, pasó ambos chequeos
@@ -175,9 +185,6 @@ export function useWorkersWithFilters({
       result = result.filter((w) => {
         const status = (w.status?.name || "").toString().toUpperCase();
         const obs = (w.observation_1 || "").toString().toUpperCase();
-        if (w.document === '71583160'){
-          console.log(w);
-        }
         const schedule = w.schedules.map((item) => {
           // Compara las fechas y retorna 'obs' si coincide con 'selectedDate', o un string vacío
           if (item.date === selectedDate) {
@@ -185,9 +192,6 @@ export function useWorkersWithFilters({
           }
           return ""; // Si no coincide la fecha, retorna un string vacío
         });
-        if (w.document === '71583160'){
-          console.log(schedule);
-        }
         if (statusFilter === "ACTIVO" || statusFilter === "INACTIVO") {
           return status === statusFilter;
         } else if (statusFilter === "VACACIONES") {
@@ -212,7 +216,9 @@ export function useWorkersWithFilters({
         const contract_type = (w.contract_type?.name || "")
           .toString()
           .toUpperCase();
-
+        if(observation1Filter === "CONCENTRIX"){
+          return contract_type.includes("PART TIME") || contract_type.includes("FULL TIME")
+        }
         return contract_type === observation1Filter;
 
       });
@@ -243,6 +249,7 @@ export function useWorkersWithFilters({
     nameList,
     statusFilter,
     teamFilter,
+    exactStart,
     selectedDate,
     timeFilter,
     roleFilter,
@@ -255,8 +262,8 @@ export function useWorkersWithFilters({
     // Extraemos sólo los IDs y los unimos con coma
     const ids = filtered.map((w) => w.kustomer_id).filter(Boolean); // descartamos undefined/null si existen
 
-    const url = `https://glovo.kustomerapp.com/app/users/status?u=${ids.join(
-      ","
+    const url = `https://glovo-eu.deliveryherocare.com/supervisor/agent-monitor?filter.agent.ids=${ids.join(
+      "%2C"
     )}`;
     setUrlKustomer(url);
   }, [filtered]);

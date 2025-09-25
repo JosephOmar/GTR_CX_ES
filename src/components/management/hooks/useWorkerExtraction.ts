@@ -17,6 +17,7 @@ export function useWorkerExtraction(nameInput: string, timeInput: string) {
     teamFilter: "",
     selectedDate: "",
     timeFilter: "",
+    exactStart: "",
     roleFilter: "",
     observation1Filter: "",
     observation2Filter: "",

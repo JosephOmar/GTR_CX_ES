@@ -17,6 +17,7 @@ export default function WorkersWithSchedules() {
   const [teamFilter, setTeamFilter] = useState('');
   const [selectedDate, setSelectedDate] = useState('');
   const [timeFilter, setTimeFilter] = useState([]);
+  const [exactStart, setExactStart] = useState(false);
   const [roleFilter, setRoleFilter] = useState('');
   const [observation1Filter, setObservation1Filter] = useState('');
   const [observation2Filter, setObservation2Filter] = useState('');
@@ -26,11 +27,18 @@ export default function WorkersWithSchedules() {
   const [documentList, setDocumentList] = useState('');
 
   const { workers, loading, error, urlKustomer, availableDates } = useWorkersWithFilters({
-    search, nameList, statusFilter, teamFilter, selectedDate, timeFilter, roleFilter, observation1Filter, observation2Filter, documentList
+    search, nameList, statusFilter, teamFilter, selectedDate, timeFilter, exactStart, roleFilter, observation1Filter, observation2Filter, documentList
   });
 
   const handleAction = () => {
     const message = urlKustomer;
+    navigator.clipboard
+      .writeText(message)
+      .catch(() => alert("Error al copiar el texto"));
+  };
+
+  const handleActionOffline = () => {
+    const message = `${urlKustomer}&filter.agent.status=OFFLINE`;
     navigator.clipboard
       .writeText(message)
       .catch(() => alert("Error al copiar el texto"));
@@ -65,6 +73,7 @@ export default function WorkersWithSchedules() {
         teamFilter={teamFilter} setTeamFilter={setTeamFilter}
         selectedDate={selectedDate} setSelectedDate={setSelectedDate}
         timeFilter={timeFilter} setTimeFilter={setTimeFilter}
+        exactStart={exactStart} setExactStart={setExactStart}
         roleFilter={roleFilter} setRoleFilter={setRoleFilter}
         observation1Filter={observation1Filter} setObservation1Filter={setObservation1Filter}
         observation2Filter={observation2Filter} setObservation2Filter={setObservation2Filter}
@@ -77,6 +86,12 @@ export default function WorkersWithSchedules() {
           className="px-3 py-1 text-white rounded"
         >
           All Users Link
+        </button>
+        <button
+          onClick={handleActionOffline}
+          className="px-3 py-1 text-white rounded"
+        >
+          All Users Link Offline
         </button>
         <button
           onClick={openModal}
