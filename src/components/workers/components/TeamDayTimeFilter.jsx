@@ -58,9 +58,10 @@ export function TeamDayTimeFilter({
     { label: "Agent", value: "AGENT" },
     { label: "Supervisor", value: "SUPERVISOR" },
     { label: "Coordinator", value: "COORDINATOR" },
+    { label: "Training", value: "TRAINING" },
   ];
 
-  const observation1Options = [
+  const observation1Options = [ 
     { label: "All", value: "" },
     { label: "Part-Time", value: "PART TIME" },
     { label: "Full-Time", value: "FULL TIME" },
@@ -70,8 +71,9 @@ export function TeamDayTimeFilter({
 
   const observation2Options = [
     { label: "All", value: "" },
-    { label: "Mail User", value: "MAIL USER" },
-    { label: "Mail Rider", value: "MAIL RIDER" },
+    { label: "Customer Tier 2", value: "CUSTOMER TIER 1" },
+    { label: "Rider Tier 2", value: "RIDER TIER 1" },
+    { label: "Apoyos", value: "APOYO" },
   ];
 
   const timeSlots = [];

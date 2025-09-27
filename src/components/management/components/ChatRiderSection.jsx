@@ -39,7 +39,7 @@ export function ChatRiderSection() {
           setter={setBandejaActual}
           placeholder="Ej: 25"
         />
-        <NumericInput
+        {/* <NumericInput
           label="Agentes Nesting:"
           value={agentesNesting}
           setter={setAgentesNesting}
@@ -50,14 +50,14 @@ export function ChatRiderSection() {
           value={bandejaNesting}
           setter={setBandejaNesting}
           placeholder="Ej: 3"
-        />
+        /> */}
         <NumericInput
           label="Cola (override):"
           value={cola}
           setter={setCola}
           placeholder="Ej: 3"
         />
-        <NumericInput
+        {/* <NumericInput
           label="Training:"
           value={training}
           setter={setTraining}
@@ -68,8 +68,8 @@ export function ChatRiderSection() {
           value={others}
           setter={setOthers}
           placeholder="Ej: 3"
-        />
-        <SendButton chanel={'Chat Rider'} agentes={agentes} training={training} others={others}/>
+        /> */}
+        {/* <SendButton chanel={'Chat Rider'} agentes={agentes} training={training} others={others}/> */}
       </div>
       <CopyButton text={report} />
     </section>

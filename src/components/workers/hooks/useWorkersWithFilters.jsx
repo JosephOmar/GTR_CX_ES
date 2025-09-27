@@ -33,6 +33,7 @@ export function useWorkersWithFilters({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [urlKustomer, setUrlKustomer] = useState("");
+  const [emails, setEmails] = useState("");
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -113,7 +114,19 @@ export function useWorkersWithFilters({
     const parsedNames = parseNames(nameList);
     if (parsedNames.length) {
       result = result.filter((w) => {
-        return parsedNames.includes(w.kustomer_name?.toLowerCase());
+        const email = w.kustomer_email?.toLowerCase() || "";
+        const fullName = w.name?.toLowerCase() || "";
+
+        return parsedNames.some((n) => {
+          // dividir cada n en tokens (como en tu búsqueda normal)
+          const nTokens = n.split(/\s+/).filter(Boolean);
+
+          // Caso 1: coincide por email exacto
+          if (email === n) return true;
+
+          // Caso 2: todos los tokens de la línea de lista están en el nombre
+          return nTokens.every((tok) => fullName.includes(tok));
+        });
       });
     }
 
@@ -205,7 +218,7 @@ export function useWorkersWithFilters({
     if (roleFilter) {
       result = result.filter((w) => {
         const r = w.role?.name;
-        return r === roleFilter;
+        return r.includes(roleFilter);
       });
     }
 
@@ -217,28 +230,25 @@ export function useWorkersWithFilters({
           .toString()
           .toUpperCase();
         if(observation1Filter === "CONCENTRIX"){
-          return contract_type.includes("PART TIME") || contract_type.includes("FULL TIME")
+          return (contract_type.includes("PART TIME") || contract_type.includes("FULL TIME")) && !obs.includes('APOYO')
         }
-        return contract_type === observation1Filter;
-
+        return contract_type.includes(observation1Filter) && !obs.includes('APOYO');
       });
     }
 
     if (observation2Filter) {
       result = result.filter((w) => {
-        const obs = (w.observation_2 || "").toString().toUpperCase();
-        const email = (w.kustomer_email || "").toString().toLowerCase();
-        const team = (w.team?.name || "").toString().toLowerCase();
+        const obs2 = (w.observation_2 || "").toString().toUpperCase();
+        const obs1 = (w.observation_1 || "").toString().toUpperCase();
+        const team = (w.team?.name || "").toString().toUpperCase();
 
-        if (observation2Filter === "MAIL USER") {
-          return obs.includes("MAIL USER");
+        if (observation2Filter === "APOYO") {
+          return obs1.includes(observation2Filter);
         }
-
-        if (observation2Filter === "MAIL RIDER") {
-          return email.includes("providers") && team.includes("chat rider");
+        if (observation2Filter === "CUSTOMER TIER 1" || observation2Filter === "RIDER TIER 1") {
+          return team.includes(observation2Filter) && obs2.includes("BACK UP TIER 2");
         }
-
-        return true;
+        return true
       });
     }
 
@@ -265,7 +275,13 @@ export function useWorkersWithFilters({
     const url = `https://glovo-eu.deliveryherocare.com/supervisor/agent-monitor?filter.agent.ids=${ids.join(
       "%2C"
     )}`;
+
+    const emails = filtered.map((w) => w.kustomer_email).filter(Boolean);
+
+    const allEmails = `${emails.join('\n')}`
+
     setUrlKustomer(url);
+    setEmails(allEmails)
   }, [filtered]);
-  return { workers: filtered, loading, error, urlKustomer, availableDates };
+  return { workers: filtered, loading, error, urlKustomer, emails, availableDates };
 }

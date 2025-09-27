@@ -45,7 +45,7 @@ export function ChatCustomerSection() {
           required
           placeholder="Ej: 97"
         />
-        <NumericInput
+        {/* <NumericInput
           label="Snapcall:"
           value={snapcall}
           setter={setSnapcall}
@@ -68,14 +68,14 @@ export function ChatCustomerSection() {
           value={nestingPart}
           setter={setNestingPart}
           placeholder="Ej: 2"
-        />
+        /> */}
         <NumericInput
           label="Cola:"
           value={cola}
           setter={setCola}
           placeholder="Ej: 3"
         />
-        <NumericInput
+        {/* <NumericInput
           label="Training:"
           value={training}
           setter={setTraining}
@@ -86,8 +86,8 @@ export function ChatCustomerSection() {
           value={others}
           setter={setOthers}
           placeholder="Ej: 3"
-        />
-        <SendButton chanel={'Chat Customer'} agentes={agentes} training={training} others={others}/>
+        /> */}
+        {/* <SendButton chanel={'Chat Customer'} agentes={agentes} training={training} others={others}/> */}
       </div>
       <CopyButton text={report} />
     </section>

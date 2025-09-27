@@ -22,10 +22,9 @@ export function WorkersTable({ workers, selectedDate }) {
     "Contract Type",
     "Schedule",
     "Break",
+    "HC Email",
     "Observation 1",
     "Observation 2",
-    "Kustomer Name",
-    "Kustomer Link",
     ...(showTerminationColumn ? ["Termination Date"] : []),
   ];
 
@@ -228,9 +227,10 @@ export function WorkersTable({ workers, selectedDate }) {
                   <td>{w.contract_type?.name || "—"}</td>
                   <td>{slots.length ? slots : <em>Sin horario</em>}</td>
                   <td>{breakInfo}</td>
+                  <td>{w.kustomer_email || "—"}</td>
                   <td>{w.observation_1 || "—"}</td>
                   <td>{w.observation_2 || "—"}</td>
-                  <td>{w.kustomer_name || "—"}</td>
+                  {/* <td>{w.kustomer_name || "—"}</td>
                   <td>
                     {w.kustomer_id ? (
                       <a
@@ -244,7 +244,7 @@ export function WorkersTable({ workers, selectedDate }) {
                     ) : (
                       "—" 
                     )}
-                  </td>
+                  </td> */}
                   {showTerminationColumn && (
                     <td>
                       {w.status?.name === "Inactivo"

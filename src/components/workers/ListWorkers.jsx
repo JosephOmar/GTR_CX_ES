@@ -26,7 +26,7 @@ export default function WorkersWithSchedules() {
   const [isPlannedModalOpen, setIsPlannedModalOpen] = useState(false); // Estado para el modal de horarios
   const [documentList, setDocumentList] = useState('');
 
-  const { workers, loading, error, urlKustomer, availableDates } = useWorkersWithFilters({
+  const { workers, loading, error, urlKustomer, emails, availableDates } = useWorkersWithFilters({
     search, nameList, statusFilter, teamFilter, selectedDate, timeFilter, exactStart, roleFilter, observation1Filter, observation2Filter, documentList
   });
 
@@ -39,6 +39,13 @@ export default function WorkersWithSchedules() {
 
   const handleActionOffline = () => {
     const message = `${urlKustomer}&filter.agent.status=OFFLINE`;
+    navigator.clipboard
+      .writeText(message)
+      .catch(() => alert("Error al copiar el texto"));
+  };
+
+  const handleActionEmails = () => {
+    const message = `${emails}`;
     navigator.clipboard
       .writeText(message)
       .catch(() => alert("Error al copiar el texto"));
@@ -92,6 +99,12 @@ export default function WorkersWithSchedules() {
           className="px-3 py-1 text-white rounded"
         >
           All Users Link Offline
+        </button>
+        <button
+          onClick={handleActionEmails}
+          className="px-3 py-1 text-white rounded"
+        >
+          All Emails
         </button>
         <button
           onClick={openModal}

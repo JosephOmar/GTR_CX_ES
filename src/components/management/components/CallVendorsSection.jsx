@@ -51,7 +51,7 @@ export function CallVendorsSection() {
           setter={setCola}
           placeholder="Ej: 0"
         />
-        <NumericInput
+        {/* <NumericInput
           label="Training:"
           value={training}
           setter={setTraining}
@@ -68,7 +68,7 @@ export function CallVendorsSection() {
           agentes={agentesReal}
           training={training}
           others={others}
-        />
+        /> */}
       </div>
       <CopyButton text={report} />
     </section>
