@@ -55,11 +55,15 @@ export function WorkersTable({ workers, selectedDate }) {
       // Orden para 'schedule'
       if (key === "schedule") {
         const turnsA = expandOvernight(
-          a.contract_type?.name === "UBYCALL" ? a.ubycall_schedules : a.schedules
+          a.contract_type?.name === "UBYCALL"
+            ? a.ubycall_schedules
+            : a.schedules
         ).filter((f) => f.date === selectedDate);
 
         const turnsB = expandOvernight(
-          b.contract_type?.name === "UBYCALL" ? b.ubycall_schedules : b.schedules
+          b.contract_type?.name === "UBYCALL"
+            ? b.ubycall_schedules
+            : b.schedules
         ).filter((f) => f.date === selectedDate);
 
         // calcular la hora mínima de ingreso
@@ -174,7 +178,15 @@ export function WorkersTable({ workers, selectedDate }) {
                     className="px-2 py-2 text-left font-medium cursor-pointer"
                     onClick={() => {
                       // Incluir 'schedule' en los campos ordenables
-                      if (["name", "supervisor", "team", "termination_date", "schedule"].includes(key)) {
+                      if (
+                        [
+                          "name",
+                          "supervisor",
+                          "team",
+                          "termination_date",
+                          "schedule",
+                        ].includes(key)
+                      ) {
                         handleSort(key);
                       }
                     }}
@@ -203,7 +215,11 @@ export function WorkersTable({ workers, selectedDate }) {
               );
               const slots = filtered.map((f, i) => (
                 <div key={i}>
-                  {f.start && f.end ? `${f.start} - ${f.end}` : <em>Descanso</em>}
+                  {f.start && f.end ? (
+                    `${f.start} - ${f.end}`
+                  ) : (
+                    <em>Descanso</em>
+                  )}
                 </div>
               ));
               const breakInfo = filtered.length
@@ -212,11 +228,24 @@ export function WorkersTable({ workers, selectedDate }) {
                   : "—"
                 : "—";
 
+              const schedule = w.schedules.map((item) => {
+                // Compara las fechas y retorna 'obs' si coincide con 'selectedDate', o un string vacío
+                if (item.date === selectedDate) {
+                  return item.obs || ""; // Retorna el valor de 'obs' o un string vacío si no tiene valor
+                }
+                return ""; // Si no coincide la fecha, retorna un string vacío
+              });
+              const hasObs = schedule.some((obs) => obs !== "");
+              console.log(hasObs);
               return (
                 <tr
                   key={w.document}
                   className={`*:px-2 *:py-1 *:truncate ${
-                    idx % 2 === 0 ? "table-row-even" : "table-row-odd"
+                    hasObs
+                      ? "table-row-vac"
+                      : idx % 2 === 0
+                      ? "table-row-even"
+                      : "table-row-odd"
                   } font-medium`}
                 >
                   <td>{w.document}</td>

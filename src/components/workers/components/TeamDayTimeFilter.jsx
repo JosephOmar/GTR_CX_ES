@@ -51,6 +51,7 @@ export function TeamDayTimeFilter({
     { label: "Vendor Tier 2", value: "VENDOR TIER 2" },
     { label: "Vendor Call", value: "VENDOR CALL" },
     { label: "Vendor Mail", value: "VENDOR MAIL" },
+    { label: "All HC", value: "ALL HC"}
   ];
 
   const roleOptions = [
@@ -225,7 +226,7 @@ export function TeamDayTimeFilter({
               }`}
               onClick={() => setExactStart((prev) => !prev)}
             >
-              {exactStart ? "Inicio exacto" : "Rango"}
+              {exactStart ? "Rango" : "Inicio exacto"}
             </button>
           </div>
           <div className="grid sm:grid-cols-12 grid-cols-6 gap-2">

@@ -148,6 +148,10 @@ export function useWorkersWithFilters({
         if (teamFilter === "CHAT CUSTOMER HC" || teamFilter === "CHAT RIDER HC" || teamFilter === "CALL VENDOR HC"){          
           return (t === teamFilter && !obs.includes('PORTUGAL'));
         } 
+        if (teamFilter === "ALL HC"){
+          const allHc = ["CUSTOMER TIER 1", "CUSTOMER TIER 2","RIDER TIER 1", "RIDER TIER 2","VENDOR TIER 1", "VENDOR TIER 2",]
+          return allHc.includes(t);
+        }
         return t === teamFilter
       });
     }
@@ -194,26 +198,26 @@ export function useWorkersWithFilters({
       });
     }
 
-    if (statusFilter) {
-      result = result.filter((w) => {
-        const status = (w.status?.name || "").toString().toUpperCase();
-        const obs = (w.observation_1 || "").toString().toUpperCase();
-        const schedule = w.schedules.map((item) => {
-          // Compara las fechas y retorna 'obs' si coincide con 'selectedDate', o un string vacío
-          if (item.date === selectedDate) {
-            return item.obs || ""; // Retorna el valor de 'obs' o un string vacío si no tiene valor
+      if (statusFilter) {
+        result = result.filter((w) => {
+          const status = (w.status?.name || "").toString().toUpperCase();
+          const obs = (w.observation_1 || "").toString().toUpperCase();
+          const schedule = w.schedules.map((item) => {
+            // Compara las fechas y retorna 'obs' si coincide con 'selectedDate', o un string vacío
+            if (item.date === selectedDate) {
+              return item.obs || ""; // Retorna el valor de 'obs' o un string vacío si no tiene valor
+            }
+            return ""; // Si no coincide la fecha, retorna un string vacío
+          });
+          if (statusFilter === "ACTIVO" || statusFilter === "INACTIVO") {
+            return status === statusFilter;
+          } else if (statusFilter === "VACACIONES") {
+            // Retorna verdadero solo si al menos un 'obs' no está vacío
+            return schedule.some((obs) => obs !== "");
           }
-          return ""; // Si no coincide la fecha, retorna un string vacío
+          return true;
         });
-        if (statusFilter === "ACTIVO" || statusFilter === "INACTIVO") {
-          return status === statusFilter;
-        } else if (statusFilter === "VACACIONES") {
-          // Retorna verdadero solo si al menos un 'obs' no está vacío
-          return schedule.some((obs) => obs !== "");
-        }
-        return true;
-      });
-    }
+      }
 
     if (roleFilter) {
       result = result.filter((w) => {
