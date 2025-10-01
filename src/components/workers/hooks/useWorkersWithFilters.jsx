@@ -25,6 +25,13 @@ function normalizeString(str = "") {
     .trim();
 }
 
+function normalizeInput(str) {
+  if (/\S+@\S+\.\S+/.test(str)) {
+    return str.toLowerCase(); // email → no se normaliza
+  }
+  return normalizeString(str); // nombre → sí se normaliza
+}
+
 // compara de forma ligera: igual, 1 sustitución, 1 inserción/eliminación o 1 transposición adyacente
 function isSimilarLight(a, b, tolerance = 1) {
   if (!a || !b) return false;
@@ -171,22 +178,21 @@ export function useWorkersWithFilters({
     const parsedNames = parseNames(nameList);
     if (parsedNames.length) {
       result = result.filter((w) => {
-        const email = normalizeString(w.kustomer_email || "");
-        const fullName = normalizeString(w.name || "");
-        const fullNameTokens = fullName.split(/\s+/).filter(Boolean);
+        const email = (w.kustomer_email || "").toLowerCase(); // email intacto
+        const fullName = normalizeString(w.name || ""); // nombre normalizado
 
         return parsedNames.some((n) => {
-          const nNorm = normalizeString(n);
-          const nTokens = nNorm.split(/\s+/).filter(Boolean);
-          // Caso 1: email exacto
-          if (email === nNorm) return true;
+          const nNorm = normalizeInput(n);
 
-          // Caso 2: todos los tokens deben estar (con tolerancia)
-          return nTokens.every((tok) =>
-            fullNameTokens.some(
-              (fTok) => fTok.includes(tok) || isSimilarLight(tok, fTok)
-            )
-          );
+          // Caso 1: email exacto
+          if (email && email === nNorm) return true;
+
+          // Caso 2: nombre completo similar
+          if (isSimilarLight(fullName, nNorm, 2)) return true;
+
+          // Caso 3: buscar token por token (Carmen Martinez → encuentra Carmen Celestino Martinez)
+          const tokens = nNorm.split(/\s+/);
+          return tokens.every((t) => fullName.includes(t));
         });
       });
     }
