@@ -16,6 +16,63 @@ function isTokenExpired(token) {
   }
 }
 
+function normalizeString(str = "") {
+  return str
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "") // elimina tildes
+    .replace(/ñ/g, "n")
+    .trim();
+}
+
+// compara de forma ligera: igual, 1 sustitución, 1 inserción/eliminación o 1 transposición adyacente
+function isSimilarLight(a, b, tolerance = 1) {
+  if (!a || !b) return false;
+  a = a.toLowerCase();
+  b = b.toLowerCase();
+  if (a === b) return true;
+
+  const la = a.length,
+    lb = b.length;
+  if (Math.abs(la - lb) > tolerance) return false;
+
+  // caso: mismas longitudes -> chequeo por sustituciones + transposición adyacente
+  if (la === lb) {
+    const diffs = [];
+    for (let i = 0; i < la; i++) {
+      if (a[i] !== b[i]) diffs.push(i);
+      if (diffs.length > tolerance + 1) return false; // corte temprano
+    }
+    if (diffs.length <= tolerance) return true;
+
+    // permitir 1 transposición adyacente (p. ej. "escriba" <-> "escirba")
+    if (diffs.length === 2) {
+      const i = diffs[0],
+        j = diffs[1];
+      if (j === i + 1 && a[i] === b[j] && a[j] === b[i]) return true;
+    }
+    return false;
+  }
+
+  // caso: longitudes diferentes (por 1) -> comprobar inserción/eliminación simple
+  const [shorter, longer] = la < lb ? [a, b] : [b, a];
+  let i = 0,
+    j = 0,
+    diffs = 0;
+  while (i < shorter.length && j < longer.length) {
+    if (shorter[i] === longer[j]) {
+      i++;
+      j++;
+    } else {
+      diffs++;
+      if (diffs > tolerance) return false;
+      j++; // salta 1 en la cadena más larga
+    }
+  }
+  diffs += longer.length - j; // resto de la cola
+  return diffs <= tolerance;
+}
+
 export function useWorkersWithFilters({
   search,
   nameList,
@@ -114,18 +171,22 @@ export function useWorkersWithFilters({
     const parsedNames = parseNames(nameList);
     if (parsedNames.length) {
       result = result.filter((w) => {
-        const email = w.kustomer_email?.toLowerCase() || "";
-        const fullName = w.name?.toLowerCase() || "";
+        const email = normalizeString(w.kustomer_email || "");
+        const fullName = normalizeString(w.name || "");
+        const fullNameTokens = fullName.split(/\s+/).filter(Boolean);
 
         return parsedNames.some((n) => {
-          // dividir cada n en tokens (como en tu búsqueda normal)
-          const nTokens = n.split(/\s+/).filter(Boolean);
+          const nNorm = normalizeString(n);
+          const nTokens = nNorm.split(/\s+/).filter(Boolean);
+          // Caso 1: email exacto
+          if (email === nNorm) return true;
 
-          // Caso 1: coincide por email exacto
-          if (email === n) return true;
-
-          // Caso 2: todos los tokens de la línea de lista están en el nombre
-          return nTokens.every((tok) => fullName.includes(tok));
+          // Caso 2: todos los tokens deben estar (con tolerancia)
+          return nTokens.every((tok) =>
+            fullNameTokens.some(
+              (fTok) => fTok.includes(tok) || isSimilarLight(tok, fTok)
+            )
+          );
         });
       });
     }
@@ -145,20 +206,31 @@ export function useWorkersWithFilters({
         const t = w.team?.name;
         const obs = (w.observation_1 || "").toString().toUpperCase();
 
-        if (teamFilter === "CHAT CUSTOMER HC" || teamFilter === "CHAT RIDER HC" || teamFilter === "CALL VENDOR HC"){          
-          return (t === teamFilter && !obs.includes('PORTUGAL'));
-        } 
-        if (teamFilter === "ALL HC"){
-          const allHc = ["CUSTOMER TIER 1", "CUSTOMER TIER 2","RIDER TIER 1", "RIDER TIER 2","VENDOR TIER 1", "VENDOR TIER 2",]
+        if (
+          teamFilter === "CHAT CUSTOMER HC" ||
+          teamFilter === "CHAT RIDER HC" ||
+          teamFilter === "CALL VENDOR HC"
+        ) {
+          return t === teamFilter && !obs.includes("PORTUGAL");
+        }
+        if (teamFilter === "ALL HC") {
+          const allHc = [
+            "CUSTOMER TIER 1",
+            "CUSTOMER TIER 2",
+            "RIDER TIER 1",
+            "RIDER TIER 2",
+            "VENDOR TIER 1",
+            "VENDOR TIER 2",
+          ];
           return allHc.includes(t);
         }
-        return t === teamFilter
+        return t === teamFilter;
       });
     }
 
     // Después de todos los filtros de texto, equipo, rol y observaciones
     if (selectedDate || (timeFilter && timeFilter.length > 0)) {
-      console.log(exactStart)
+      console.log(exactStart);
       // calculamos el rango continuo de minutos sólo una vez
       let rangeStart, rangeEnd;
       if (timeFilter && timeFilter.length > 0) {
@@ -181,7 +253,7 @@ export function useWorkersWithFilters({
           if (timeFilter && timeFilter.length > 0) {
             const s = toMinutes(frag.start);
             const e = frag.end === "24:00" ? 1440 : toMinutes(frag.end);
-            
+
             if (exactStart) {
               const slotStart = rangeStart;
               const slotEnd = rangeStart + 30;
@@ -198,26 +270,26 @@ export function useWorkersWithFilters({
       });
     }
 
-      if (statusFilter) {
-        result = result.filter((w) => {
-          const status = (w.status?.name || "").toString().toUpperCase();
-          const obs = (w.observation_1 || "").toString().toUpperCase();
-          const schedule = w.schedules.map((item) => {
-            // Compara las fechas y retorna 'obs' si coincide con 'selectedDate', o un string vacío
-            if (item.date === selectedDate) {
-              return item.obs || ""; // Retorna el valor de 'obs' o un string vacío si no tiene valor
-            }
-            return ""; // Si no coincide la fecha, retorna un string vacío
-          });
-          if (statusFilter === "ACTIVO" || statusFilter === "INACTIVO") {
-            return status === statusFilter;
-          } else if (statusFilter === "VACACIONES") {
-            // Retorna verdadero solo si al menos un 'obs' no está vacío
-            return schedule.some((obs) => obs !== "");
+    if (statusFilter) {
+      result = result.filter((w) => {
+        const status = (w.status?.name || "").toString().toUpperCase();
+        const obs = (w.observation_1 || "").toString().toUpperCase();
+        const schedule = w.schedules.map((item) => {
+          // Compara las fechas y retorna 'obs' si coincide con 'selectedDate', o un string vacío
+          if (item.date === selectedDate) {
+            return item.obs || ""; // Retorna el valor de 'obs' o un string vacío si no tiene valor
           }
-          return true;
+          return ""; // Si no coincide la fecha, retorna un string vacío
         });
-      }
+        if (statusFilter === "ACTIVO" || statusFilter === "INACTIVO") {
+          return status === statusFilter;
+        } else if (statusFilter === "VACACIONES") {
+          // Retorna verdadero solo si al menos un 'obs' no está vacío
+          return schedule.some((obs) => obs !== "");
+        }
+        return true;
+      });
+    }
 
     if (roleFilter) {
       result = result.filter((w) => {
@@ -227,16 +299,22 @@ export function useWorkersWithFilters({
     }
 
     if (observation1Filter) {
-      console.log(observation1Filter)
+      console.log(observation1Filter);
       result = result.filter((w) => {
         const obs = (w.observation_1 || "").toString().toUpperCase();
         const contract_type = (w.contract_type?.name || "")
           .toString()
           .toUpperCase();
-        if(observation1Filter === "CONCENTRIX"){
-          return (contract_type.includes("PART TIME") || contract_type.includes("FULL TIME")) && !obs.includes('APOYO')
+        if (observation1Filter === "CONCENTRIX") {
+          return (
+            (contract_type.includes("PART TIME") ||
+              contract_type.includes("FULL TIME")) &&
+            !obs.includes("APOYO")
+          );
         }
-        return contract_type.includes(observation1Filter) && !obs.includes('APOYO');
+        return (
+          contract_type.includes(observation1Filter) && !obs.includes("APOYO")
+        );
       });
     }
 
@@ -249,10 +327,15 @@ export function useWorkersWithFilters({
         if (observation2Filter === "APOYO") {
           return obs1.includes(observation2Filter);
         }
-        if (observation2Filter === "CUSTOMER TIER 1" || observation2Filter === "RIDER TIER 1") {
-          return team.includes(observation2Filter) && obs2.includes("BACK UP TIER 2");
+        if (
+          observation2Filter === "CUSTOMER TIER 1" ||
+          observation2Filter === "RIDER TIER 1"
+        ) {
+          return (
+            team.includes(observation2Filter) && obs2.includes("BACK UP TIER 2")
+          );
         }
-        return true
+        return true;
       });
     }
 
@@ -282,10 +365,17 @@ export function useWorkersWithFilters({
 
     const emails = filtered.map((w) => w.kustomer_email).filter(Boolean);
 
-    const allEmails = `${emails.join('\n')}`
+    const allEmails = `${emails.join("\n")}`;
 
     setUrlKustomer(url);
-    setEmails(allEmails)
+    setEmails(allEmails);
   }, [filtered]);
-  return { workers: filtered, loading, error, urlKustomer, emails, availableDates };
+  return {
+    workers: filtered,
+    loading,
+    error,
+    urlKustomer,
+    emails,
+    availableDates,
+  };
 }
