@@ -18,21 +18,10 @@ export function TeamDayTimeFilter({
   setObservation1Filter,
   observation2Filter,
   setObservation2Filter,
+  attendanceFilter,
+  setAttendanceFilter,
   availableDates,
 }) {
-  const DAYS = [
-    "Domingo",
-    "Lunes",
-    "Martes",
-    "Miercoles",
-    "Jueves",
-    "Viernes",
-    "Sabado",
-  ];
-  const dayOptions = DAYS.map((d) => ({
-    label: d === getTodayDay() ? `${d} (Hoy)` : d,
-    value: d,
-  }));
 
   const statusOptions = [
     { label: "All", value: "" },
@@ -77,6 +66,12 @@ export function TeamDayTimeFilter({
     { label: "Apoyos", value: "APOYO" },
   ];
 
+  const attendanceOptions = [
+    { label: "All", value: "" },
+    { label: "Present", value: "Present" },
+    { label: "Absent", value: "Absent" },
+  ];
+
   const timeSlots = [];
   for (let h = 0; h < 24; h++)
     ["00", "30"].forEach((m) =>
@@ -84,9 +79,14 @@ export function TeamDayTimeFilter({
     );
 
   function formatDM(iso) {
-    const [year, month, day] = iso.split("-");
-    return `${day.padStart(2, "0")}/${month.padStart(2, "0")}`;
-  }
+  if (!iso) return ""; // retorna vacío si iso es null/undefined
+
+  const parts = iso.split("-");
+  if (parts.length < 3) return iso; // si no tiene el formato esperado, devuelves el valor tal cual
+
+  const [year, month, day] = parts;
+  return `${day.padStart(2, "0")}/${month.padStart(2, "0")}`;
+}
 
   const handleTimeClick = (timeSlot) => {
     setTimeFilter((prev) => {
@@ -174,6 +174,20 @@ export function TeamDayTimeFilter({
               className="w-full border-gray-300 rounded px-2 py-1 "
             >
               {observation2Options.map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block mb-1">Filter by Attendance:</label>
+            <select
+              value={attendanceFilter}
+              onChange={(e) => setAttendanceFilter(e.target.value)}
+              className="w-full border-gray-300 rounded px-2 py-1 "
+            >
+              {attendanceOptions.map((o) => (
                 <option key={o.value} value={o.value}>
                   {o.label}
                 </option>

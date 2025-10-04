@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { parseNames } from "../utils/parseUtils";
 import { expandOvernight, inWindow, toMinutes } from "../utils/scheduleUtils";
+import { getStringDays } from "../utils/scheduleUtils";
 
 function isSessionValid() {
   const token = localStorage.getItem("token"); // Cambié a localStorage
@@ -91,6 +92,7 @@ export function useWorkersWithFilters({
   roleFilter,
   observation1Filter,
   observation2Filter,
+  attendanceFilter,
   documentList,
 }) {
   const [workers, setWorkers] = useState([]);
@@ -146,18 +148,20 @@ export function useWorkersWithFilters({
         .finally(() => setLoading(false));
     }
   }, []); // Se vuelve a cargar si cambia el token de sesión
-
+  
+  const {todayStr, yesterdayStr} = getStringDays()
   // Se extra las fechas únicas de todos los schedules
   const availableDates = useMemo(() => {
+    
     // 1) extrae y deduplica
-    const allDates = workers.flatMap((w) => w.schedules.map((t) => t.date));
+    const allDates = workers.flatMap((w) => w.schedules.map((t) => t.date).filter((date) => date === todayStr || date === yesterdayStr));
     const uniqDates = Array.from(new Set(allDates));
 
     // 2) ordena lexicográficamente — con ISO funciona igual que cronológico
     uniqDates.sort((a, b) => a.localeCompare(b));
 
     return uniqDates; // array de strings "2025-06-16", …
-  }, [workers]);
+  }, [workers, todayStr, yesterdayStr]);
 
   const filtered = useMemo(() => {
     const parsedDocuments = (documentList || "")
@@ -227,6 +231,8 @@ export function useWorkersWithFilters({
             "RIDER TIER 2",
             "VENDOR TIER 1",
             "VENDOR TIER 2",
+            "VENDOR CALL",
+            "VENDOR MAIL",
           ];
           return allHc.includes(t);
         }
@@ -236,7 +242,6 @@ export function useWorkersWithFilters({
 
     // Después de todos los filtros de texto, equipo, rol y observaciones
     if (selectedDate || (timeFilter && timeFilter.length > 0)) {
-      console.log(exactStart);
       // calculamos el rango continuo de minutos sólo una vez
       let rangeStart, rangeEnd;
       if (timeFilter && timeFilter.length > 0) {
@@ -300,7 +305,33 @@ export function useWorkersWithFilters({
     if (roleFilter) {
       result = result.filter((w) => {
         const r = w.role?.name;
+        console.log(r)
         return r.includes(roleFilter);
+      });
+    }
+
+    if (attendanceFilter) {
+      result = result.filter((w) => {
+        // buscar asistencia en la fecha seleccionada
+        const attendance = w.attendances?.find((a) => a.date === selectedDate);
+
+        // Si no existe registro, considerarlo Absent
+        const status = attendance?.status?.toLowerCase() || "absent";
+        
+        if (attendanceFilter.toLowerCase() === "present") {
+          // incluir tanto "present" como "late"
+          console.log(status)
+          return status === "present" || status === "late";
+        }
+
+        if (attendanceFilter.toLowerCase() === "absent") {
+          // incluir los que no tienen registro o cuyo status es "absent"
+          console.log(status)
+          return status === "absent";
+        }
+
+        // fallback: match exacto
+        return status === attendanceFilter.toLowerCase();
       });
     }
 
@@ -358,6 +389,7 @@ export function useWorkersWithFilters({
     roleFilter,
     observation1Filter,
     observation2Filter,
+    attendanceFilter,
     documentList, // Agregamos documentList aquí
   ]);
 

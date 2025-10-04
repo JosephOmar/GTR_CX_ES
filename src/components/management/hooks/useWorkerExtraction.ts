@@ -21,6 +21,7 @@ export function useWorkerExtraction(nameInput: string, timeInput: string) {
     roleFilter: "",
     observation1Filter: "",
     observation2Filter: "",
+    attendanceFilter: "",
     documentList: "",
   });
 

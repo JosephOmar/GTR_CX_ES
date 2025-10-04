@@ -127,6 +127,12 @@ h3 {
   background-color: light-dark(var(--cx-primary-opacity), var(--cx-primary-dark-opacity));
 }
 
-.table-row-vac {
+.table-row-obs {
   background-color: light-dark(var(--cx-error), var(--cx-error-dark));
+  color: light-dark(var(--cx-bg-main), var(--cx-bg-main-dark));
+}
+
+.table-row-support {
+  background-color: light-dark(var(--cx-success), var(--cx-success-dark));
+  color: light-dark(var(--cx-bg-main), var(--cx-bg-main-dark));
 }

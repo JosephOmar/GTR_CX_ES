@@ -22,9 +22,12 @@ export function WorkersTable({ workers, selectedDate }) {
     "Contract Type",
     "Schedule",
     "Break",
+    "Attendance",
+    "Check In",
     "HC Email",
+    "Obs",
     "Observation 1",
-    "Observation 2",
+    // "Observation 2",
     ...(showTerminationColumn ? ["Termination Date"] : []),
   ];
 
@@ -94,6 +97,27 @@ export function WorkersTable({ workers, selectedDate }) {
         return direction === "asc"
           ? valA.localeCompare(valB)
           : valB.localeCompare(valA);
+      }
+
+      if (key === "attendance") {
+        const attA = a.attendances?.find((att) => att.date === selectedDate);
+        const attB = b.attendances?.find((att) => att.date === selectedDate);
+
+        const valA = attA?.status || "";
+        const valB = attB?.status || "";
+
+        // Definimos la prioridad de cada status
+        const priority = {
+          "Present": 1,
+          "Late": 2,
+          "Absent": 3,
+          "": 4,  // vacío o sin registro
+        };
+
+        const rankA = priority[valA] ?? 99; // si no existe, lo mandamos al final
+        const rankB = priority[valB] ?? 99;
+
+        return direction === "asc" ? rankA - rankB : rankB - rankA;
       }
 
       // Orden por fecha para termination_date
@@ -185,6 +209,7 @@ export function WorkersTable({ workers, selectedDate }) {
                           "team",
                           "termination_date",
                           "schedule",
+                          "attendance"
                         ].includes(key)
                       ) {
                         handleSort(key);
@@ -228,21 +253,28 @@ export function WorkersTable({ workers, selectedDate }) {
                   : "—"
                 : "—";
 
-              const schedule = w.schedules.map((item) => {
+              const schedule = w.schedules.map((schedule) => {
                 // Compara las fechas y retorna 'obs' si coincide con 'selectedDate', o un string vacío
-                if (item.date === selectedDate) {
-                  return item.obs || ""; // Retorna el valor de 'obs' o un string vacío si no tiene valor
+                if (schedule.date === selectedDate) {
+                  return schedule.obs || ""; // Retorna el valor de 'obs' o un string vacío si no tiene valor
                 }
                 return ""; // Si no coincide la fecha, retorna un string vacío
               });
               const hasObs = schedule.some((obs) => obs !== "");
-              console.log(hasObs);
+
+              const hasSupport = w.observation_1?.includes('APOYO') 
+              
+              const attendance = w.attendances?.find(
+                (a) => a.date === selectedDate
+              );
               return (
                 <tr
                   key={w.document}
                   className={`*:px-2 *:py-1 *:truncate ${
                     hasObs
-                      ? "table-row-vac"
+                      ? "table-row-obs"
+                      : hasSupport 
+                      ? "table-row-support"
                       : idx % 2 === 0
                       ? "table-row-even"
                       : "table-row-odd"
@@ -256,9 +288,12 @@ export function WorkersTable({ workers, selectedDate }) {
                   <td>{w.contract_type?.name || "—"}</td>
                   <td>{slots.length ? slots : <em>Sin horario</em>}</td>
                   <td>{breakInfo}</td>
+                  <td className={`${attendance?.status === 'Present' ? 'bg-green-400' : attendance?.status === 'Late' ? 'bg-orange-400' : 'bg-red-400'}`}>{attendance?.status || 'Absent'}</td>
+                  <td>{attendance?.check_in || ''}</td>
                   <td>{w.kustomer_email || "—"}</td>
-                  <td>{w.observation_1 || "—"}</td>
-                  <td>{w.observation_2 || "—"}</td>
+                  <td>{schedule}</td>
+                  <td>{`${hasSupport ? w.observation_1.split(" ").slice(0, 3).join(" ") : ""}`}</td>
+                  {/* <td>{w.observation_2 || "—"}</td> */}
                   {/* <td>{w.kustomer_name || "—"}</td>
                   <td>
                     {w.kustomer_id ? (

@@ -2,7 +2,18 @@ const DAYS = ['Domingo','Lunes','Martes','Miercoles','Jueves','Viernes','Sabado'
 
 // day de hoy
 export function getTodayDay() {
-  return DAYS[new Date().getDay()];
+  return new Date().getDay();
+}
+
+export function getStringDays() {
+  const today = new Date();
+  const todayStr = today.toISOString().slice(0, 10);
+  
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  const yesterdayStr = yesterday.toISOString().slice(0, 10);
+
+  return {todayStr, yesterdayStr}
 }
 
 // "HH:MM" → minutos desde medianoche
@@ -42,7 +53,7 @@ function addDaysISO(isoDate, n) {
 }
 
 export function expandOvernight(turns) {
-  return turns.flatMap(t => {
+  return turns?.flatMap(t => {
     // st = "HH:MM", et = "HH:MM"
     const st = t.start_time?.slice(0, 5);
     const et = t.end_time?.slice(0, 5);
