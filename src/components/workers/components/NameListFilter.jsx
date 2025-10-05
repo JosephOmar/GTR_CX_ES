@@ -1,9 +1,9 @@
 import React from 'react';
 
-export function NameListFilter({ nameList, setNameList }) {
+export function NameListFilter({ nameList, setNameList, title }) {
   return (
     <div>
-      <label className="block mb-1">Search by agent list:</label>
+      <label className="block mb-1">{title}</label>
       <textarea
         rows={6}
         value={nameList}

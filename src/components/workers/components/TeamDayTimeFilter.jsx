@@ -69,6 +69,7 @@ export function TeamDayTimeFilter({
   const attendanceOptions = [
     { label: "All", value: "" },
     { label: "Present", value: "Present" },
+    { label: "Late", value: "Late" },
     { label: "Absent", value: "Absent" },
   ];
 

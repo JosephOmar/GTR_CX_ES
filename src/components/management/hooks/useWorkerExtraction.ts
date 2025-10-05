@@ -13,6 +13,7 @@ export function useWorkerExtraction(nameInput: string, timeInput: string) {
   const { workers, loading, error } = useWorkersWithFilters({
     search: "",
     nameList: "",
+    nameList2: "",
     statusFilter: "",
     teamFilter: "",
     selectedDate: "",

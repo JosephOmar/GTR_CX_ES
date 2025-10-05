@@ -14,6 +14,7 @@ import UploadAttendanceModal from './hooks/UploadAttendanceModal';
 export default function WorkersWithSchedules() {
   const [search, setSearch] = useState('');
   const [nameList, setNameList] = useState('');
+  const [nameList2, setNameList2] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [teamFilter, setTeamFilter] = useState('');
   const [selectedDate, setSelectedDate] = useState('');
@@ -30,7 +31,7 @@ export default function WorkersWithSchedules() {
   const [documentList, setDocumentList] = useState('');
 
   const { workers, loading, error, urlKustomer, emails, availableDates } = useWorkersWithFilters({
-    search, nameList, statusFilter, teamFilter, selectedDate, timeFilter, exactStart, roleFilter, observation1Filter, observation2Filter, attendanceFilter, documentList
+    search, nameList, nameList2, statusFilter, teamFilter, selectedDate, timeFilter, exactStart, roleFilter, observation1Filter, observation2Filter, attendanceFilter, documentList
   });
 
   const handleAction = () => {
@@ -72,8 +73,9 @@ export default function WorkersWithSchedules() {
 
   return (
     <div className="p-4 space-y-6 text-xs">
-      <div className='sm:w-[50%] w-[80%] mx-auto grid grid-cols-2 gap-4'>
-        <NameListFilter nameList={nameList} setNameList={setNameList} />
+      <div className='sm:w-[60%] w-[80%] mx-auto grid grid-cols-3 gap-4'>
+        <NameListFilter nameList={nameList} setNameList={setNameList} title='Search by agent list:' />
+        <NameListFilter nameList={nameList2} setNameList={setNameList2} title='Missing by agent list:'/>
         <DocumentListFilter documentList={documentList} setDocumentList={setDocumentList} />
         <div className=' col-span-2'>
           <SearchFilter  search={search}   setSearch={setSearch} />

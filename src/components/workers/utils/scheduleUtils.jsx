@@ -6,14 +6,17 @@ export function getTodayDay() {
 }
 
 export function getStringDays() {
-  const today = new Date();
-  const todayStr = today.toISOString().slice(0, 10);
-  
-  const yesterday = new Date();
-  yesterday.setDate(yesterday.getDate() - 1);
-  const yesterdayStr = yesterday.toISOString().slice(0, 10);
 
-  return {todayStr, yesterdayStr}
+  const options = { timeZone: "America/Lima"};
+
+  const today = new Date();
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+
+  const todayStr = today.toLocaleDateString("en-CA", options); // "YYYY-MM-DD"
+  const yesterdayStr = yesterday.toLocaleDateString("en-CA", options);
+
+  return { todayStr, yesterdayStr };
 }
 
 // "HH:MM" → minutos desde medianoche

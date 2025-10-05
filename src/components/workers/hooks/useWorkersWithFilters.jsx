@@ -84,6 +84,7 @@ function isSimilarLight(a, b, tolerance = 1) {
 export function useWorkersWithFilters({
   search,
   nameList,
+  nameList2,
   statusFilter,
   teamFilter,
   selectedDate,
@@ -201,6 +202,32 @@ export function useWorkersWithFilters({
       });
     }
 
+    // --- NUEVO FILTRO: mostrar los que están en nameList2 pero no en nameList ---
+    const parsedNames2 = parseNames(nameList2);
+    if (parsedNames2.length) {
+      const normalized1 = parsedNames.map((n) => normalizeInput(n));
+      const normalized2 = parsedNames2.map((n) => normalizeInput(n));
+
+      // Filtrar los que están en la segunda lista pero no en la primera
+      const missingNames = normalized2.filter(
+        (n2) => !normalized1.some((n1) => isSimilarLight(n1, n2, 2))
+      );
+
+      // Aplicar el filtro a los workers
+      result = workers.filter((w) => {
+        const email = (w.kustomer_email || "").toLowerCase();
+        const fullName = normalizeString(w.name || "");
+
+        return missingNames.some((n) => {
+          const nNorm = normalizeInput(n);
+          if (email && email === nNorm) return true;
+          if (isSimilarLight(fullName, nNorm, 2)) return true;
+          const tokens = nNorm.split(/\s+/);
+          return tokens.every((t) => fullName.includes(t));
+        });
+      });
+    }
+
     const tokens = search.toLowerCase().trim().split(/\s+/).filter(Boolean);
     if (tokens.length) {
       result = result.filter((w) =>
@@ -288,19 +315,26 @@ export function useWorkersWithFilters({
         const schedule = w.schedules.map((item) => {
           // Compara las fechas y retorna 'obs' si coincide con 'selectedDate', o un string vacío
           if (item.date === selectedDate) {
-            return item.obs || ""; // Retorna el valor de 'obs' o un string vacío si no tiene valor
+            return item.obs || "";
           }
-          return ""; // Si no coincide la fecha, retorna un string vacío
+          return "";
         });
-        if (statusFilter === "ACTIVO" || statusFilter === "INACTIVO") {
-          return status === statusFilter;
+
+        if (statusFilter === "ACTIVO") {
+          // Incluye solo si el status es ACTIVO
+          // y si no tiene ninguna obs en schedule (VACACIONES)
+          const hasVacation = schedule.some((obs) => obs !== "");
+          return status === "ACTIVO" && !hasVacation;
+        } else if (statusFilter === "INACTIVO") {
+          return status === "INACTIVO";
         } else if (statusFilter === "VACACIONES") {
-          // Retorna verdadero solo si al menos un 'obs' no está vacío
+          // Retorna verdadero si al menos una obs no está vacía
           return schedule.some((obs) => obs !== "");
         }
         return true;
       });
     }
+
 
     if (roleFilter) {
       result = result.filter((w) => {
@@ -325,8 +359,6 @@ export function useWorkersWithFilters({
         }
 
         if (attendanceFilter.toLowerCase() === "absent") {
-          // incluir los que no tienen registro o cuyo status es "absent"
-          console.log(status)
           return status === "absent";
         }
 
@@ -381,6 +413,7 @@ export function useWorkersWithFilters({
     workers,
     search,
     nameList,
+    nameList2,
     statusFilter,
     teamFilter,
     exactStart,
