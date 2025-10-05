@@ -33,6 +33,11 @@ function normalizeInput(str) {
   return normalizeString(str); // nombre → sí se normaliza
 }
 
+function normalizeNameForComparison(name = "") {
+  const clean = normalizeString(name);
+  const parts = clean.split(/\s+/).filter(Boolean).sort(); // ordenar alfabéticamente
+  return parts.join(" ");
+}
 // compara de forma ligera: igual, 1 sustitución, 1 inserción/eliminación o 1 transposición adyacente
 function isSimilarLight(a, b, tolerance = 1) {
   if (!a || !b) return false;
@@ -204,30 +209,30 @@ export function useWorkersWithFilters({
 
     // --- NUEVO FILTRO: mostrar los que están en nameList2 pero no en nameList ---
     const parsedNames2 = parseNames(nameList2);
-    if (parsedNames2.length) {
-      const normalized1 = parsedNames.map((n) => normalizeInput(n));
-      const normalized2 = parsedNames2.map((n) => normalizeInput(n));
 
-      // Filtrar los que están en la segunda lista pero no en la primera
-      const missingNames = normalized2.filter(
-        (n2) => !normalized1.some((n1) => isSimilarLight(n1, n2, 2))
-      );
+      if (parsedNames2.length) {
+        const normalized1 = parsedNames.map((n) => normalizeNameForComparison(n));
+        const normalized2 = parsedNames2.map((n) => normalizeNameForComparison(n));
 
-      // Aplicar el filtro a los workers
-      result = workers.filter((w) => {
-        const email = (w.kustomer_email || "").toLowerCase();
-        const fullName = normalizeString(w.name || "");
+        // Filtrar los que están en la segunda lista pero no en la primera
+        const missingNames = normalized2.filter(
+          (n2) => !normalized1.some((n1) => isSimilarLight(n1, n2, 2))
+        );
 
-        return missingNames.some((n) => {
-          const nNorm = normalizeInput(n);
-          if (email && email === nNorm) return true;
-          if (isSimilarLight(fullName, nNorm, 2)) return true;
-          const tokens = nNorm.split(/\s+/);
-          return tokens.every((t) => fullName.includes(t));
+        // Aplicar el filtro a los workers
+        result = workers.filter((w) => {
+          const email = (w.kustomer_email || "").toLowerCase();
+          const fullNameNorm = normalizeNameForComparison(w.name || "");
+
+          return missingNames.some((n) => {
+            const nNorm = normalizeNameForComparison(n);
+            if (email && email === nNorm) return true;
+            if (isSimilarLight(fullNameNorm, nNorm, 2)) return true;
+            const tokens = nNorm.split(/\s+/);
+            return tokens.every((t) => fullNameNorm.includes(t));
+          });
         });
-      });
-    }
-
+      }
     const tokens = search.toLowerCase().trim().split(/\s+/).filter(Boolean);
     if (tokens.length) {
       result = result.filter((w) =>
