@@ -257,12 +257,12 @@ export function useWorkersWithFilters({
         }
         if (teamFilter === "ALL HC") {
           const allHc = [
-            "CUSTOMER TIER 1",
-            "CUSTOMER TIER 2",
-            "RIDER TIER 1",
-            "RIDER TIER 2",
-            "VENDOR TIER 1",
-            "VENDOR TIER 2",
+            "CUSTOMER TIER1",
+            "CUSTOMER TIER2",
+            "RIDER TIER1",
+            "RIDER TIER2",
+            "VENDOR TIER1",
+            "VENDOR TIER2",
             "VENDOR CALL",
             "VENDOR MAIL",
           ];
@@ -402,11 +402,11 @@ export function useWorkersWithFilters({
           return obs1.includes(observation2Filter);
         }
         if (
-          observation2Filter === "CUSTOMER TIER 1" ||
-          observation2Filter === "RIDER TIER 1"
+          observation2Filter === "CUSTOMER TIER1" ||
+          observation2Filter === "RIDER TIER1"
         ) {
           return (
-            team.includes(observation2Filter) && obs2.includes("BACK UP TIER 2")
+            team.includes(observation2Filter) && obs2.includes("BACK UP TIER2")
           );
         }
         return true;

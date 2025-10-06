@@ -28,7 +28,7 @@ export function ConcurrencyTier1() {
 
   return (
     <section className="border p-4 rounded-lg">
-      <h3 className="text-xl font-bold">Tier 1</h3>
+      <h3 className="text-xl font-bold">Tier1</h3>
       <div className="grid grid-cols-1 gap-4 mt-2">
         <NumericInput
           label="Total Chats:"
@@ -54,17 +54,17 @@ export function ConcurrencyTier1() {
         <div className="flex gap-3 justify-center">
           <button
             className={`px-3 py-1 rounded-sm ${
-              team === "CUSTOMER TIER 1" ? "bg-blue-500 text-white" : ""
+              team === "CUSTOMER TIER1" ? "bg-blue-500 text-white" : ""
             }`}
-            onClick={() => setTeam("CUSTOMER TIER 1")}
+            onClick={() => setTeam("CUSTOMER TIER1")}
           >
             Customer
           </button>
           <button
             className={`px-3 py-1 rounded-sm ${
-              team === "RIDER TIER 1" ? "bg-blue-500 text-white" : ""
+              team === "RIDER TIER1" ? "bg-blue-500 text-white" : ""
             }`}
-            onClick={() => setTeam("RIDER TIER 1")}
+            onClick={() => setTeam("RIDER TIER1")}
           >
             Rider
           </button>

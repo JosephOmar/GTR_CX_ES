@@ -32,12 +32,12 @@ export function TeamDayTimeFilter({
 
   const teamOptions = [
     { label: "All", value: "" },
-    { label: "Customer Tier 1", value: "CUSTOMER TIER 1" },
-    { label: "Customer Tier 2", value: "CUSTOMER TIER 2" },
-    { label: "Rider Tier 1", value: "RIDER TIER 1" },
-    { label: "Rider Tier 2", value: "RIDER TIER 2" },
-    { label: "Vendor Tier 1", value: "VENDOR TIER 1" },
-    { label: "Vendor Tier 2", value: "VENDOR TIER 2" },
+    { label: "Customer Tier1", value: "CUSTOMER TIER1" },
+    { label: "Customer Tier2", value: "CUSTOMER TIER2" },
+    { label: "Rider Tier1", value: "RIDER TIER1" },
+    { label: "Rider Tier2", value: "RIDER TIER2" },
+    { label: "Vendor Tier1", value: "VENDOR TIER1" },
+    { label: "Vendor Tier2", value: "VENDOR TIER2" },
     { label: "Vendor Call", value: "VENDOR CALL" },
     { label: "Vendor Mail", value: "VENDOR MAIL" },
     { label: "All HC", value: "ALL HC"}
@@ -61,8 +61,8 @@ export function TeamDayTimeFilter({
 
   const observation2Options = [
     { label: "All", value: "" },
-    { label: "Customer Tier 2", value: "CUSTOMER TIER 1" },
-    { label: "Rider Tier 2", value: "RIDER TIER 1" },
+    { label: "Customer Tier2", value: "CUSTOMER TIER1" },
+    { label: "Rider Tier2", value: "RIDER TIER1" },
     { label: "Apoyos", value: "APOYO" },
   ];
 
