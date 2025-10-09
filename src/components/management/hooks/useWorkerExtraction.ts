@@ -14,6 +14,7 @@ export function useWorkerExtraction(nameInput: string, timeInput: string) {
     search: "",
     nameList: "",
     nameList2: "",
+    nameList3: "",
     statusFilter: "",
     teamFilter: "",
     selectedDate: "",

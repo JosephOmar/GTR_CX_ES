@@ -90,6 +90,7 @@ export function useWorkersWithFilters({
   search,
   nameList,
   nameList2,
+  nameList3,
   statusFilter,
   teamFilter,
   selectedDate,
@@ -154,13 +155,16 @@ export function useWorkersWithFilters({
         .finally(() => setLoading(false));
     }
   }, []); // Se vuelve a cargar si cambia el token de sesión
-  
-  const {todayStr, yesterdayStr} = getStringDays()
+
+  const { todayStr, yesterdayStr } = getStringDays();
   // Se extra las fechas únicas de todos los schedules
   const availableDates = useMemo(() => {
-    
     // 1) extrae y deduplica
-    const allDates = workers.flatMap((w) => w.schedules.map((t) => t.date).filter((date) => date === todayStr || date === yesterdayStr));
+    const allDates = workers.flatMap((w) =>
+      w.schedules
+        .map((t) => t.date)
+        .filter((date) => date === todayStr || date === yesterdayStr)
+    );
     const uniqDates = Array.from(new Set(allDates));
 
     // 2) ordena lexicográficamente — con ISO funciona igual que cronológico
@@ -210,29 +214,60 @@ export function useWorkersWithFilters({
     // --- NUEVO FILTRO: mostrar los que están en nameList2 pero no en nameList ---
     const parsedNames2 = parseNames(nameList2);
 
-      if (parsedNames2.length) {
-        const normalized1 = parsedNames.map((n) => normalizeNameForComparison(n));
-        const normalized2 = parsedNames2.map((n) => normalizeNameForComparison(n));
+    if (parsedNames2.length) {
+      const normalized1 = parsedNames.map((n) => normalizeNameForComparison(n));
+      const normalized2 = parsedNames2.map((n) =>
+        normalizeNameForComparison(n)
+      );
 
-        // Filtrar los que están en la segunda lista pero no en la primera
-        const missingNames = normalized2.filter(
-          (n2) => !normalized1.some((n1) => isSimilarLight(n1, n2, 2))
-        );
+      // Filtrar los que están en la segunda lista pero no en la primera
+      const missingNames = normalized2.filter(
+        (n2) => !normalized1.some((n1) => isSimilarLight(n1, n2, 2))
+      );
 
-        // Aplicar el filtro a los workers
-        result = workers.filter((w) => {
-          const email = (w.kustomer_email || "").toLowerCase();
-          const fullNameNorm = normalizeNameForComparison(w.name || "");
+      // Aplicar el filtro a los workers
+      result = workers.filter((w) => {
+        const email = (w.kustomer_email || "").toLowerCase();
+        const fullNameNorm = normalizeNameForComparison(w.name || "");
 
-          return missingNames.some((n) => {
-            const nNorm = normalizeNameForComparison(n);
-            if (email && email === nNorm) return true;
-            if (isSimilarLight(fullNameNorm, nNorm, 2)) return true;
-            const tokens = nNorm.split(/\s+/);
-            return tokens.every((t) => fullNameNorm.includes(t));
-          });
+        return missingNames.some((n) => {
+          const nNorm = normalizeNameForComparison(n);
+          if (email && email === nNorm) return true;
+          if (isSimilarLight(fullNameNorm, nNorm, 2)) return true;
+          const tokens = nNorm.split(/\s+/);
+          return tokens.every((t) => fullNameNorm.includes(t));
         });
-      }
+      });
+    }
+
+    const parsedNames3 = parseNames(nameList3);
+
+    if (parsedNames3.length) {
+      const normalized1 = parsedNames.map((n) => normalizeNameForComparison(n));
+      const normalized3 = parsedNames3.map((n) =>
+        normalizeNameForComparison(n)
+      );
+
+      // Filtrar los que están en la tercera lista y si están en la primera
+      const foundNames = normalized3.filter(
+        (n3) => normalized1.some((n1) => isSimilarLight(n1, n3, 3))
+      );
+
+      // Aplicar el filtro a los workers
+      result = workers.filter((w) => {
+        const email = (w.kustomer_email || "").toLowerCase();
+        const fullNameNorm = normalizeNameForComparison(w.name || "");
+
+        return foundNames.some((n) => {
+          const nNorm = normalizeNameForComparison(n);
+          if (email && email === nNorm) return true;
+          if (isSimilarLight(fullNameNorm, nNorm, 3)) return true;
+          const tokens = nNorm.split(/\s+/);
+          return tokens.every((t) => fullNameNorm.includes(t));
+        });
+      });
+    }
+
     const tokens = search.toLowerCase().trim().split(/\s+/).filter(Boolean);
     if (tokens.length) {
       result = result.filter((w) =>
@@ -340,11 +375,10 @@ export function useWorkersWithFilters({
       });
     }
 
-
     if (roleFilter) {
       result = result.filter((w) => {
         const r = w.role?.name;
-        console.log(r)
+        console.log(r);
         return r.includes(roleFilter);
       });
     }
@@ -356,10 +390,10 @@ export function useWorkersWithFilters({
 
         // Si no existe registro, considerarlo Absent
         const status = attendance?.status?.toLowerCase() || "absent";
-        
+
         if (attendanceFilter.toLowerCase() === "present") {
           // incluir tanto "present" como "late"
-          console.log(status)
+          console.log(status);
           return status === "present" || status === "late";
         }
 
@@ -419,6 +453,7 @@ export function useWorkersWithFilters({
     search,
     nameList,
     nameList2,
+    nameList3,
     statusFilter,
     teamFilter,
     exactStart,
