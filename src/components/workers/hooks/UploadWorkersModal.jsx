@@ -11,10 +11,9 @@ export default function UploadWorkersModal({ isOpen, onClose }) {
     { label: "People Active", expectedPart: "people_active" },
     { label: "People Inactive", expectedPart: "people_inactive" },
     { label: "Scheduling PPP", expectedPart: "scheduling_ppp" },
-    { label: "Report Kustomer", expectedPart: "report_kustomer" },
+    { label: "API ID", expectedPart: "api_id" },
     { label: "Master Glovo", expectedPart: "master_glovo" },
     { label: "Scheduling Ubycall", expectedPart: "scheduling_ubycall" },
-    { label: "Taking Off", expectedPart: "taking_off" },
   ];
 
   const handleFileChange = (e) => {

@@ -7,12 +7,81 @@ export function WorkersTable({ workers, selectedDate }) {
   const [sortConfig, setSortConfig] = useState({ key: "", direction: "asc" });
   const [sortedWorkers, setSortedWorkers] = useState(workers);
 
+  // ==============================
+  //  🔧 Configuración y helpers (zona horaria Lima)
+  // ==============================
+  const TIMEZONE = "America/Lima";
+  const CUTOFF_MINUTES = 9 * 60; // 09:00 (Lima)
+  // Por defecto 0 => SOLO 00:00. Si quieres incluir hasta las 02:00, pon 120.
+  const ALLOWED_OVERNIGHT_START_MINUTES = 0;
+
+  // Hora/fecha actual en Lima
+  const getNowInTZ = (timeZone) => {
+    const parts = new Intl.DateTimeFormat("en-CA", {
+      timeZone,
+      hour12: false,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+    }).formatToParts(new Date());
+    const map = Object.fromEntries(parts.map((p) => [p.type, p.value]));
+    const date = `${map.year}-${map.month}-${map.day}`;
+    const minutes = parseInt(map.hour, 10) * 60 + parseInt(map.minute, 10);
+    return { date, minutes };
+  };
+  const { date: todayISO_Lima, minutes: nowMinutes_Lima } = getNowInTZ(TIMEZONE);
+
+  // YYYY-MM-DD -> YYYY-MM-DD (día anterior, sin sesgos de TZ)
+  const prevDateStr = (iso) => {
+    const [y, m, d] = iso.split("-").map((x) => parseInt(x, 10));
+    const dt = new Date(Date.UTC(y, m - 1, d));
+    dt.setUTCDate(dt.getUTCDate() - 1);
+    const yy = dt.getUTCFullYear();
+    const mm = String(dt.getUTCMonth() + 1).padStart(2, "0");
+    const dd = String(dt.getUTCDate()).padStart(2, "0");
+    return `${yy}-${mm}-${dd}`;
+  };
+
+  // Helper "HH:MM" -> minutos
+  const parseTime = (str) => {
+    if (!str) return null;
+    const [h, m] = str.split(":");
+    return parseInt(h, 10) * 60 + parseInt(m, 10);
+  };
+
+  // ¿El primer bloque del día arranca dentro del umbral permitido?
+  // Con el valor por defecto (0) esto equivale a "empieza a 00:00".
+  const startsWithinOvernightThreshold = (slots) => {
+    const mins = slots
+      .map((s) => parseTime(s.start))
+      .filter((v) => Number.isFinite(v));
+    if (!mins.length) return false;
+    const earliest = Math.min(...mins);
+    return earliest <= ALLOWED_OVERNIGHT_START_MINUTES;
+  };
+
+  // Decide la fecha "efectiva" para leer asistencia
+  const chooseAttendanceDate = (selDate, filteredSlots) => {
+    const isTodayInLima = selDate === todayISO_Lima;
+    if (
+      isTodayInLima &&
+      nowMinutes_Lima < CUTOFF_MINUTES &&
+      startsWithinOvernightThreshold(filteredSlots)
+    ) {
+      return prevDateStr(selDate); // leer asistencia de AYER
+    }
+    return selDate; // de lo contrario, del propio día
+  };
+
+  // ==============================
   // Mostrar columna de termination date si hay inactivos
+  // ==============================
   const showTerminationColumn = workers.some(
     (w) => w.status?.name === "Inactivo"
   );
 
-  // Definición de encabezados
   const headers = [
     "Document",
     "Name",
@@ -27,49 +96,34 @@ export function WorkersTable({ workers, selectedDate }) {
     "HC Email",
     "Obs",
     "Observation 1",
-    // "Observation 2",
     ...(showTerminationColumn ? ["Termination Date"] : []),
   ];
 
-  // Helper para convertir "HH:MM" a minutos
-  const parseTime = (str) => {
-    if (!str) return null;
-    const [h, m] = str.split(":");
-    return parseInt(h, 10) * 60 + parseInt(m, 10);
-  };
-
-  // Función de sorting genérica
+  // ==============================
+  //  Ordenamiento
+  // ==============================
   const handleSort = (key) => {
     let direction = "asc";
-    // Para 'schedule', turno de asc a desc para cambiar entre entrada y salida
     if (key === "schedule") {
-      if (sortConfig.key !== "schedule") {
-        direction = "asc"; // primer click: ordenar por Hora de entrada ascendente
-      } else {
-        direction = sortConfig.direction === "asc" ? "desc" : "asc";
-      }
-    } else {
-      if (sortConfig.key === key && sortConfig.direction === "asc") {
-        direction = "desc";
-      }
+      direction =
+        sortConfig.key !== "schedule"
+          ? "asc"
+          : sortConfig.direction === "asc"
+          ? "desc"
+          : "asc";
+    } else if (sortConfig.key === key && sortConfig.direction === "asc") {
+      direction = "desc";
     }
 
     const sortedData = [...workers].sort((a, b) => {
-      // Orden para 'schedule'
       if (key === "schedule") {
         const turnsA = expandOvernight(
-          a.contract_type?.name === "UBYCALL"
-            ? a.ubycall_schedules
-            : a.schedules
+          a.contract_type?.name === "UBYCALL" ? a.ubycall_schedules : a.schedules
         ).filter((f) => f.date === selectedDate);
-
         const turnsB = expandOvernight(
-          b.contract_type?.name === "UBYCALL"
-            ? b.ubycall_schedules
-            : b.schedules
+          b.contract_type?.name === "UBYCALL" ? b.ubycall_schedules : b.schedules
         ).filter((f) => f.date === selectedDate);
 
-        // calcular la hora mínima de ingreso
         const startA = turnsA.length
           ? Math.min(...turnsA.map((f) => parseTime(f.start)))
           : Infinity;
@@ -77,11 +131,9 @@ export function WorkersTable({ workers, selectedDate }) {
           ? Math.min(...turnsB.map((f) => parseTime(f.start)))
           : Infinity;
 
-        // toggle solo en base a la hora de ingreso
         return direction === "asc" ? startA - startB : startB - startA;
       }
 
-      // Orden alfabético para name y supervisor
       if (key === "name" || key === "supervisor") {
         const valA = a[key] || "";
         const valB = b[key] || "";
@@ -90,7 +142,6 @@ export function WorkersTable({ workers, selectedDate }) {
           : valB.localeCompare(valA);
       }
 
-      // Orden alfabético para team.name
       if (key === "team") {
         const valA = a.team?.name || "";
         const valB = b.team?.name || "";
@@ -100,27 +151,29 @@ export function WorkersTable({ workers, selectedDate }) {
       }
 
       if (key === "attendance") {
-        const attA = a.attendances?.find((att) => att.date === selectedDate);
-        const attB = b.attendances?.find((att) => att.date === selectedDate);
+        const turnsA = expandOvernight(
+          a.contract_type?.name === "UBYCALL" ? a.ubycall_schedules : a.schedules
+        ).filter((f) => f.date === selectedDate);
+        const turnsB = expandOvernight(
+          b.contract_type?.name === "UBYCALL" ? b.ubycall_schedules : b.schedules
+        ).filter((f) => f.date === selectedDate);
+
+        const effDateA = chooseAttendanceDate(selectedDate, turnsA);
+        const effDateB = chooseAttendanceDate(selectedDate, turnsB);
+
+        const attA = a.attendances?.find((att) => att.date === effDateA);
+        const attB = b.attendances?.find((att) => att.date === effDateB);
 
         const valA = attA?.status || "";
         const valB = attB?.status || "";
 
-        // Definimos la prioridad de cada status
-        const priority = {
-          "Present": 1,
-          "Late": 2,
-          "Absent": 3,
-          "": 4,  // vacío o sin registro
-        };
-
-        const rankA = priority[valA] ?? 99; // si no existe, lo mandamos al final
+        const priority = { Present: 1, Late: 2, Absent: 3, "": 4 };
+        const rankA = priority[valA] ?? 99;
         const rankB = priority[valB] ?? 99;
 
         return direction === "asc" ? rankA - rankB : rankB - rankA;
       }
 
-      // Orden por fecha para termination_date
       if (key === "termination_date") {
         const timeA = a.termination_date
           ? new Date(a.termination_date).getTime()
@@ -147,7 +200,9 @@ export function WorkersTable({ workers, selectedDate }) {
     setSortedWorkers(workers);
   }, [workers]);
 
-  // Función para copiar la tabla como imagen
+  // ==============================
+  //  Copiar tabla como imagen
+  // ==============================
   const handleCopyToClipboard = async () => {
     const tableSection = document.getElementById("workers-table-section");
     if (!tableSection) return;
@@ -179,6 +234,9 @@ export function WorkersTable({ workers, selectedDate }) {
     }
   };
 
+  // ==============================
+  //  Render
+  // ==============================
   return (
     <div>
       <button
@@ -201,7 +259,6 @@ export function WorkersTable({ workers, selectedDate }) {
                     key={i}
                     className="px-2 py-2 text-left font-medium cursor-pointer"
                     onClick={() => {
-                      // Incluir 'schedule' en los campos ordenables
                       if (
                         [
                           "name",
@@ -209,7 +266,7 @@ export function WorkersTable({ workers, selectedDate }) {
                           "team",
                           "termination_date",
                           "schedule",
-                          "attendance"
+                          "attendance",
                         ].includes(key)
                       ) {
                         handleSort(key);
@@ -218,9 +275,7 @@ export function WorkersTable({ workers, selectedDate }) {
                   >
                     {h}
                     {sortConfig.key === key && (
-                      <span>
-                        {sortConfig.direction === "asc" ? " ↑" : " ↓"}
-                      </span>
+                      <span>{sortConfig.direction === "asc" ? " ↑" : " ↓"}</span>
                     )}
                   </th>
                 );
@@ -238,42 +293,40 @@ export function WorkersTable({ workers, selectedDate }) {
               const filtered = expandOvernight(turns).filter(
                 (f) => f.date === selectedDate
               );
+
               const slots = filtered.map((f, i) => (
                 <div key={i}>
-                  {f.start && f.end ? (
-                    `${f.start} - ${f.end}`
-                  ) : (
-                    <em>Descanso</em>
-                  )}
+                  {f.start && f.end ? `${f.start} - ${f.end}` : <em>Descanso</em>}
                 </div>
               ));
+
               const breakInfo = filtered.length
                 ? filtered[0].break_start && filtered[0].break_end
                   ? `${filtered[0].break_start} - ${filtered[0].break_end}`
                   : "—"
                 : "—";
 
-              const schedule = w.schedules.map((schedule) => {
-                // Compara las fechas y retorna 'obs' si coincide con 'selectedDate', o un string vacío
-                if (schedule.date === selectedDate) {
-                  return schedule.obs || ""; // Retorna el valor de 'obs' o un string vacío si no tiene valor
-                }
-                return ""; // Si no coincide la fecha, retorna un string vacío
-              });
-              const hasObs = schedule.some((obs) => obs !== "");
-
-              const hasSupport = w.observation_1?.includes('APOYO') 
-              
-              const attendance = w.attendances?.find(
-                (a) => a.date === selectedDate
+              // Obs del día seleccionado
+              const scheduleObs = w.schedules.map((s) =>
+                s.date === selectedDate ? s.obs || "" : ""
               );
+              const hasObs = scheduleObs.some((obs) => obs !== "");
+
+              const hasSupport = w.observation_1?.includes("APOYO");
+
+              // === Asistencia con lógica Lima (corrimiento madrugada SOLO si earliest start <= umbral) ===
+              const effectiveAttendDate = chooseAttendanceDate(selectedDate, filtered);
+              const attendance = w.attendances?.find(
+                (a) => a.date === effectiveAttendDate
+              );
+
               return (
                 <tr
                   key={w.document}
                   className={`*:px-2 *:py-1 *:truncate ${
                     hasObs
                       ? "table-row-obs"
-                      : hasSupport 
+                      : hasSupport
                       ? "table-row-support"
                       : idx % 2 === 0
                       ? "table-row-even"
@@ -288,27 +341,24 @@ export function WorkersTable({ workers, selectedDate }) {
                   <td>{w.contract_type?.name || "—"}</td>
                   <td>{slots.length ? slots : <em>Sin horario</em>}</td>
                   <td>{breakInfo}</td>
-                  <td className={`${attendance?.status === 'Present' ? 'bg-green-400' : attendance?.status === 'Late' ? 'bg-orange-400' : 'bg-red-400'}`}>{attendance?.status || 'Absent'}</td>
-                  <td>{attendance?.check_in || ''}</td>
+                  <td
+                    className={`${
+                      attendance?.status === "Present"
+                        ? "bg-green-400"
+                        : attendance?.status === "Late"
+                        ? "bg-orange-400"
+                        : "bg-red-400"
+                    }`}
+                  >
+                    {attendance?.status || "Absent"}
+                  </td>
+                  <td>{attendance?.check_in || ""}</td>
                   <td>{w.kustomer_email || "—"}</td>
-                  <td>{schedule}</td>
-                  <td>{`${hasSupport ? w.observation_1.split(" ").slice(0, 3).join(" ") : ""}`}</td>
-                  {/* <td>{w.observation_2 || "—"}</td> */}
-                  {/* <td>{w.kustomer_name || "—"}</td>
+                  <td>{scheduleObs}</td>
                   <td>
-                    {w.kustomer_id ? (
-                      <a
-                        href={`https://glovo.kustomerapp.com/app/users/status?u=${w.kustomer_id}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-indigo-600"
-                      >
-                        Link
-                      </a>
-                    ) : (
-                      "—" 
-                    )}
-                  </td> */}
+                    {`${hasSupport ? w.observation_1.split(" ").slice(0, 3).join(" ") : ""}`}
+                  </td>
+
                   {showTerminationColumn && (
                     <td>
                       {w.status?.name === "Inactivo"
