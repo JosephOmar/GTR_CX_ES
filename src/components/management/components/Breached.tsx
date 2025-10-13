@@ -26,7 +26,7 @@ export const Breached: React.FC = () => {
   const matchingWorker = workers.find(
     (w) =>
       w.kustomer_name?.toLowerCase() === inputNormalized ||
-      w.kustomer_email?.toLowerCase() === inputNormalized
+      w.api_email?.toLowerCase() === inputNormalized
   );
 
   const actions = [

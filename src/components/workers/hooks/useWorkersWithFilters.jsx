@@ -192,7 +192,7 @@ export function useWorkersWithFilters({
     const parsedNames = parseNames(nameList);
     if (parsedNames.length) {
       result = result.filter((w) => {
-        const email = (w.kustomer_email || "").toLowerCase(); // email intacto
+        const email = (w.api_email || "").toLowerCase(); // email intacto
         const fullName = normalizeString(w.name || ""); // nombre normalizado
 
         return parsedNames.some((n) => {
@@ -227,7 +227,7 @@ export function useWorkersWithFilters({
 
       // Aplicar el filtro a los workers
       result = workers.filter((w) => {
-        const email = (w.kustomer_email || "").toLowerCase();
+        const email = (w.api_email || "").toLowerCase();
         const fullNameNorm = normalizeNameForComparison(w.name || "");
 
         return missingNames.some((n) => {
@@ -255,7 +255,7 @@ export function useWorkersWithFilters({
 
       // Aplicar el filtro a los workers
       result = workers.filter((w) => {
-        const email = (w.kustomer_email || "").toLowerCase();
+        const email = (w.api_email || "").toLowerCase();
         const fullNameNorm = normalizeNameForComparison(w.name || "");
 
         return foundNames.some((n) => {
@@ -278,75 +278,82 @@ export function useWorkersWithFilters({
     // Quitar duplicados por documento
     result = Array.from(new Map(result.map((w) => [w.document, w])).values());
 
-    if (teamFilter) {
+    const teamSelected = Array.isArray(teamFilter)
+      ? teamFilter
+      : (teamFilter ? [teamFilter] : []);
+
+    const hcTeams = [
+      "CUSTOMER TIER1",
+      "CUSTOMER TIER2",
+      "RIDER TIER1",
+      "RIDER TIER2",
+      "VENDOR TIER1",
+      "VENDOR TIER2",
+      "VENDOR CALL",
+      "VENDOR MAIL"
+    ];
+
+    if (teamSelected.length > 0) {
+
+      if (teamSelected.includes("All HC")) {
+        teamSelected.push(...hcTeams); // Añadimos los 8 equipos de HC a las selecciones
+        teamSelected.splice(teamSelected.indexOf("All HC"), 1); // Eliminamos "All HC" de la selección
+      }
+      // Expande selecciones a un set de equipos permitidos
+      const allowedTeams = new Set();
+      for (const sel of teamSelected) {
+          allowedTeams.add(sel);
+      }
+
       result = result.filter((w) => {
         const t = w.team?.name;
-        const obs = (w.observation_1 || "").toString().toUpperCase();
 
-        if (
-          teamFilter === "CHAT CUSTOMER HC" ||
-          teamFilter === "CHAT RIDER HC" ||
-          teamFilter === "CALL VENDOR HC"
-        ) {
-          return t === teamFilter && !obs.includes("PORTUGAL");
-        }
-        if (teamFilter === "ALL HC") {
-          const allHc = [
-            "CUSTOMER TIER1",
-            "CUSTOMER TIER2",
-            "RIDER TIER1",
-            "RIDER TIER2",
-            "VENDOR TIER1",
-            "VENDOR TIER2",
-            "VENDOR CALL",
-            "VENDOR MAIL",
-          ];
-          return allHc.includes(t);
-        }
-        return t === teamFilter;
+        if (!allowedTeams.has(t)) return false;
+
+        return true;
       });
     }
 
     // Después de todos los filtros de texto, equipo, rol y observaciones
-    if (selectedDate || (timeFilter && timeFilter.length > 0)) {
-      // calculamos el rango continuo de minutos sólo una vez
-      let rangeStart, rangeEnd;
-      if (timeFilter && timeFilter.length > 0) {
-        const mins = timeFilter.map(toMinutes).sort((a, b) => a - b);
-        rangeStart = mins[0]; // minuto inicial del rango
-        rangeEnd = mins[mins.length - 1] + 30; // minuto final (+30m)
-      }
+      if (selectedDate || (timeFilter && timeFilter.length > 0)) {
+        // calculamos el rango continuo de minutos sólo una vez
+        let rangeStart, rangeEnd;
+        if (timeFilter && timeFilter.length > 0) {
+          const mins = timeFilter.map(toMinutes).sort((a, b) => a - b);
+          rangeStart = mins[0]; // minuto inicial del rango
+          rangeEnd = mins[mins.length - 1] + 30; // minuto final (+30m)
+        }
 
-      result = result.filter((w) => {
-        const turns =
-          w.contract_type?.name === "UBYCALL"
-            ? w.ubycall_schedules
-            : w.schedules;
-        const frags = expandOvernight(turns);
-        return frags.some((frag) => {
-          // 1) filtrado por fecha si está aplicado
-          if (selectedDate && frag.date !== selectedDate) return false;
+        result = result.filter((w) => {
+          const turns =
+            w.contract_type?.name === "UBYCALL"
+              ? w.ubycall_schedules
+              : w.schedules;
+          const frags = expandOvernight(turns);
+          return frags.some((frag) => {
+            // 1) filtrado por fecha si está aplicado
+            if (selectedDate && frag.date !== selectedDate) return false;
 
-          // 2) filtrado por hora usando rango continuo
-          if (timeFilter && timeFilter.length > 0) {
-            const s = toMinutes(frag.start);
-            const e = frag.end === "24:00" ? 1440 : toMinutes(frag.end);
+            // 2) filtrado por hora usando rango continuo
+            if (timeFilter && timeFilter.length > 0) {
+              const s = toMinutes(frag.start);
+              const e = frag.end === "24:00" ? 1440 : toMinutes(frag.end);
 
-            if (exactStart) {
-              const slotStart = rangeStart;
-              const slotEnd = rangeStart + 30;
-              return s >= slotStart && s < slotEnd;
-            } else {
-              // 👈 modo actual: rango continuo
-              return s < rangeEnd && e > rangeStart;
+              if (exactStart) {
+                const slotStart = rangeStart;
+                const slotEnd = rangeEnd;
+                return s >= slotStart && s < slotEnd;
+              } else {
+                // 👈 modo actual: rango continuo
+                return s < rangeEnd && e > rangeStart;
+              }
             }
-          }
 
-          // si sólo hay fecha, pasó ambos chequeos
-          return true;
+            // si sólo hay fecha, pasó ambos chequeos
+            return true;
+          });
         });
-      });
-    }
+      }
 
     if (statusFilter) {
       result = result.filter((w) => {
@@ -468,13 +475,13 @@ export function useWorkersWithFilters({
 
   useEffect(() => {
     // Extraemos sólo los IDs y los unimos con coma
-    const ids = filtered.map((w) => w.kustomer_id).filter(Boolean); // descartamos undefined/null si existen
+    const ids = filtered.map((w) => w.api_id).filter(Boolean); // descartamos undefined/null si existen
 
     const url = `https://glovo-eu.deliveryherocare.com/supervisor/agent-monitor?filter.agent.ids=${ids.join(
       "%2C"
     )}`;
 
-    const emails = filtered.map((w) => w.kustomer_email).filter(Boolean);
+    const emails = filtered.map((w) => w.api_email).filter(Boolean);
 
     const allEmails = `${emails.join("\n")}`;
 

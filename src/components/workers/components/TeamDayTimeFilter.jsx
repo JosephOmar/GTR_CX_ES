@@ -22,16 +22,14 @@ export function TeamDayTimeFilter({
   setAttendanceFilter,
   availableDates,
 }) {
-
   const statusOptions = [
     { label: "All", value: "" },
     { label: "Actives", value: "ACTIVO" },
-    { label: "Inactives", value: "INACTIVO" },   
+    { label: "Inactives", value: "INACTIVO" },
     { label: "Vacation", value: "VACACIONES" },
-  ]
+  ];
 
   const teamOptions = [
-    { label: "All", value: "" },
     { label: "Customer Tier1", value: "CUSTOMER TIER1" },
     { label: "Customer Tier2", value: "CUSTOMER TIER2" },
     { label: "Rider Tier1", value: "RIDER TIER1" },
@@ -40,7 +38,7 @@ export function TeamDayTimeFilter({
     { label: "Vendor Tier2", value: "VENDOR TIER2" },
     { label: "Vendor Call", value: "VENDOR CALL" },
     { label: "Vendor Mail", value: "VENDOR MAIL" },
-    { label: "All HC", value: "ALL HC"}
+    { label: "All HC", value: "All HC" },
   ];
 
   const roleOptions = [
@@ -51,7 +49,7 @@ export function TeamDayTimeFilter({
     { label: "Training", value: "TRAINING" },
   ];
 
-  const observation1Options = [ 
+  const observation1Options = [
     { label: "All", value: "" },
     { label: "Part-Time", value: "PART TIME" },
     { label: "Full-Time", value: "FULL TIME" },
@@ -73,6 +71,44 @@ export function TeamDayTimeFilter({
     { label: "Absent", value: "Absent" },
   ];
 
+  // ¿Hay selección en Team?
+  const isTeamEmpty = Array.isArray(teamFilter)
+    ? teamFilter.length === 0
+    : !teamFilter;
+
+  // ¿Algún filtro distinto al estado "limpio"?
+  const isDirty = Boolean(
+    statusFilter ||
+      roleFilter ||
+      observation1Filter ||
+      observation2Filter ||
+      attendanceFilter ||
+      selectedDate ||
+      exactStart ||
+      (timeFilter && timeFilter.length > 0) ||
+      !isTeamEmpty
+  );
+
+  // Limpia todos los filtros a sus valores "All"/vacíos
+  const handleClearAll = () => {
+    setStatusFilter("");
+    setTeamFilter([]); // multiselección vacía
+    setRoleFilter("");
+    setObservation1Filter("");
+    setObservation2Filter("");
+    setAttendanceFilter("");
+    setSelectedDate(""); // sin fecha
+    setTimeFilter([]); // sin horas
+    setExactStart(false); // modo rango por defecto (ajústalo si tu default es true)
+  };
+
+  const handleTeamChange = (e) => {
+    const values = Array.from(e.target.selectedOptions, (opt) => opt.value)
+      // Evita guardar la opción "All" (valor vacío) cuando hay selección múltiple
+      .filter((v) => v !== "");
+    setTeamFilter(values);
+  };
+
   const timeSlots = [];
   for (let h = 0; h < 24; h++)
     ["00", "30"].forEach((m) =>
@@ -80,14 +116,14 @@ export function TeamDayTimeFilter({
     );
 
   function formatDM(iso) {
-  if (!iso) return ""; // retorna vacío si iso es null/undefined
+    if (!iso) return ""; // retorna vacío si iso es null/undefined
 
-  const parts = iso.split("-");
-  if (parts.length < 3) return iso; // si no tiene el formato esperado, devuelves el valor tal cual
+    const parts = iso.split("-");
+    if (parts.length < 3) return iso; // si no tiene el formato esperado, devuelves el valor tal cual
 
-  const [year, month, day] = parts;
-  return `${day.padStart(2, "0")}/${month.padStart(2, "0")}`;
-}
+    const [year, month, day] = parts;
+    return `${day.padStart(2, "0")}/${month.padStart(2, "0")}`;
+  }
 
   const handleTimeClick = (timeSlot) => {
     setTimeFilter((prev) => {
@@ -128,15 +164,25 @@ export function TeamDayTimeFilter({
           <div>
             <label className="block mb-1">Filter by Team:</label>
             <select
-              value={teamFilter}
-              onChange={(e) => setTeamFilter(e.target.value)}
-              className="w-full border-gray-300 rounded px-2 py-1 "
+              multiple
+              value={
+                Array.isArray(teamFilter)
+                  ? teamFilter
+                  : teamFilter
+                  ? [teamFilter]
+                  : []
+              }
+              onChange={handleTeamChange}
+              className="w-full border-gray-300 rounded px-2 py-1 min-h-[160px]"
             >
-              {teamOptions.map((o) => (
-                <option key={o.value} value={o.value}>
-                  {o.label}
-                </option>
-              ))}
+              <option value="">All</option>
+              {teamOptions
+                .filter((o) => o.value !== "") // evitamos duplicar "All"
+                .map((o) => (
+                  <option key={o.value} value={o.value}>
+                    {o.label}
+                  </option>
+                ))}
             </select>
           </div>
           <div>
@@ -214,9 +260,7 @@ export function TeamDayTimeFilter({
                 key={date}
                 onClick={() => setSelectedDate(date)}
                 className={`px-2 py-2 text-center rounded ${
-                  selectedDate === date
-                    ? "bg-primary-hover text-white"
-                    : ""
+                  selectedDate === date ? "bg-primary-hover text-white" : ""
                 }`}
               >
                 {formatDM(date)}
@@ -243,6 +287,18 @@ export function TeamDayTimeFilter({
             >
               {exactStart ? "Rango" : "Inicio exacto"}
             </button>
+            <div className="lg:col-span-2 flex justify-end">
+              <button
+                type="button"
+                onClick={handleClearAll}
+                disabled={!isDirty}
+                title="Limpiar todos los filtros"
+                className="px-3 py-2 rounded bg-rose-600 text-white hover:bg-rose-700 
+                   disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Limpiar todos los filtros
+              </button>
+            </div>
           </div>
           <div className="grid sm:grid-cols-12 grid-cols-6 gap-2">
             {timeSlots.map((ts) => (
@@ -250,9 +306,7 @@ export function TeamDayTimeFilter({
                 key={ts}
                 onClick={() => handleTimeClick(ts)}
                 className={`px-2 py-2 text-center rounded ${
-                  timeFilter.includes(ts)
-                    ? "bg-primary-hover text-white"
-                    : ""
+                  timeFilter.includes(ts) ? "bg-primary-hover text-white" : ""
                 }`}
               >
                 {ts}

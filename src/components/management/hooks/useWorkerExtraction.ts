@@ -16,7 +16,7 @@ export function useWorkerExtraction(nameInput: string, timeInput: string) {
     nameList2: "",
     nameList3: "",
     statusFilter: "",
-    teamFilter: "",
+    teamFilter: [],
     selectedDate: "",
     timeFilter: "",
     exactStart: "",
@@ -31,7 +31,7 @@ export function useWorkerExtraction(nameInput: string, timeInput: string) {
     const extractedName = nameInput.split("(")[0].split(":").pop()?.trim().toLowerCase();
     const worker = workers.find(
       (w) => w.kustomer_name?.toLowerCase() === extractedName ||
-             w.kustomer_email?.toLowerCase() === extractedName
+             w.api_email?.toLowerCase() === extractedName
     );
     if (!worker) {
       alert(`No encontré un worker llamado "${extractedName}"`);

@@ -17,7 +17,7 @@ export default function WorkersWithSchedules() {
   const [nameList2, setNameList2] = useState('');
   const [nameList3, setNameList3] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
-  const [teamFilter, setTeamFilter] = useState('');
+  const [teamFilter, setTeamFilter] = useState([]);
   const [selectedDate, setSelectedDate] = useState('');
   const [timeFilter, setTimeFilter] = useState([]);
   const [exactStart, setExactStart] = useState(false);

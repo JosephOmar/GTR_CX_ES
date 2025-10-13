@@ -353,7 +353,7 @@ export function WorkersTable({ workers, selectedDate }) {
                     {attendance?.status || "Absent"}
                   </td>
                   <td>{attendance?.check_in || ""}</td>
-                  <td>{w.kustomer_email || "—"}</td>
+                  <td>{w.api_email || "—"}</td>
                   <td>{scheduleObs}</td>
                   <td>
                     {`${hasSupport ? w.observation_1.split(" ").slice(0, 3).join(" ") : ""}`}

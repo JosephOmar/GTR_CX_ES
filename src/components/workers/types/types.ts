@@ -31,9 +31,9 @@ export interface Worker {
   start_date: string;
   termination_date: string | null;
   requirement_id: string;
-  kustomer_id: string;
+  api_id: string;
   kustomer_name: string;
-  kustomer_email: string;
+  api_email: string;
   observation_1: string;
   observation_2: string;
   tenure: number;
