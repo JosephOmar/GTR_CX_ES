@@ -36,8 +36,6 @@ export function TeamDayTimeFilter({
     { label: "Rider Tier2", value: "RIDER TIER2" },
     { label: "Vendor Tier1", value: "VENDOR TIER1" },
     { label: "Vendor Tier2", value: "VENDOR TIER2" },
-    { label: "Vendor Call", value: "VENDOR CALL" },
-    { label: "Vendor Mail", value: "VENDOR MAIL" },
     { label: "All HC", value: "All HC" },
   ];
 
@@ -59,9 +57,8 @@ export function TeamDayTimeFilter({
 
   const observation2Options = [
     { label: "All", value: "" },
-    { label: "Customer Tier2", value: "CUSTOMER TIER1" },
-    { label: "Rider Tier2", value: "RIDER TIER1" },
-    { label: "Apoyos", value: "APOYO" },
+    { label: "Productive", value: "productive" },
+    { label: "Unproductive", value: "unproductive" },
   ];
 
   const attendanceOptions = [
@@ -173,7 +170,7 @@ export function TeamDayTimeFilter({
                   : []
               }
               onChange={handleTeamChange}
-              className="w-full border-gray-300 rounded px-2 py-1 min-h-[160px]"
+              className="w-full border-gray-300 rounded px-2 py-1 min-h-[130px]"
             >
               <option value="">All</option>
               {teamOptions
@@ -214,7 +211,7 @@ export function TeamDayTimeFilter({
             </select>
           </div>
           <div>
-            <label className="block mb-1">Filter by Support:</label>
+            <label className="block mb-1">Filter by Productive:</label>
             <select
               value={observation2Filter}
               onChange={(e) => setObservation2Filter(e.target.value)}

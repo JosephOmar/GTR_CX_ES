@@ -312,7 +312,7 @@ export function WorkersTable({ workers, selectedDate }) {
               );
               const hasObs = scheduleObs.some((obs) => obs !== "");
 
-              const hasSupport = w.observation_1?.includes("APOYO") || w.observation_2?.includes("Auditoria DSAT");
+              const hasSupport = w.productive?.includes("No")
 
               // === Asistencia con lógica Lima (corrimiento madrugada SOLO si earliest start <= umbral) ===
               const effectiveAttendDate = chooseAttendanceDate(selectedDate, filtered);
@@ -326,7 +326,7 @@ export function WorkersTable({ workers, selectedDate }) {
                   className={`*:px-2 *:py-1 *:truncate ${
                     hasObs
                       ? "table-row-obs"
-                      : hasSupport
+                      :hasSupport
                       ? "table-row-support"
                       : idx % 2 === 0
                       ? "table-row-even"

@@ -434,22 +434,35 @@ export function useWorkersWithFilters({
       });
     }
 
+    // if (observation2Filter) {
+    //   result = result.filter((w) => {
+    //     const obs2 = (w.observation_2 || "").toString().toUpperCase();
+    //     const obs1 = (w.observation_1 || "").toString().toUpperCase();
+    //     const team = (w.team?.name || "").toString().toUpperCase();
+
+    //     if (observation2Filter === "APOYO") {
+    //       return obs1.includes(observation2Filter);
+    //     }
+    //     if (
+    //       observation2Filter === "CUSTOMER TIER1" ||
+    //       observation2Filter === "RIDER TIER1"
+    //     ) {
+    //       return (
+    //         team.includes(observation2Filter) && obs2.includes("BACK UP TIER2")
+    //       );
+    //     }
+    //     return true;
+    //   });
+    // }
+
     if (observation2Filter) {
       result = result.filter((w) => {
-        const obs2 = (w.observation_2 || "").toString().toUpperCase();
-        const obs1 = (w.observation_1 || "").toString().toUpperCase();
-        const team = (w.team?.name || "").toString().toUpperCase();
+        const productive = (w.productive || "").toString().toUpperCase();
 
-        if (observation2Filter === "APOYO") {
-          return obs1.includes(observation2Filter);
-        }
-        if (
-          observation2Filter === "CUSTOMER TIER1" ||
-          observation2Filter === "RIDER TIER1"
-        ) {
-          return (
-            team.includes(observation2Filter) && obs2.includes("BACK UP TIER2")
-          );
+        if (observation2Filter === "productive") {
+          return productive.includes('SI');
+        } else if(observation2Filter === "unproductive") {
+          return !productive.includes('SI');
         }
         return true;
       });
