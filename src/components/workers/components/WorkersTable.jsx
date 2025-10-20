@@ -93,6 +93,9 @@ export function WorkersTable({ workers, selectedDate }) {
     "Break",
     "Attendance",
     "Check In",
+    "Check Out",
+    "Out Adherence",
+    "Offline Time",
     "HC Email",
     "Obs",
     "Observation 1",
@@ -353,6 +356,9 @@ export function WorkersTable({ workers, selectedDate }) {
                     {attendance?.status || "Absent"}
                   </td>
                   <td>{attendance?.check_in || ""}</td>
+                  <td>{attendance?.check_out || ""}</td>
+                  <td>{attendance?.out_of_adherence || ""}</td>
+                  <td>{attendance?.offline_minutes || ""}</td>
                   <td>{w.api_email || "—"}</td>
                   <td>{scheduleObs}</td>
                   <td>
