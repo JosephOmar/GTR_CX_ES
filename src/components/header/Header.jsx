@@ -62,6 +62,11 @@ export default function Header({ title = 'GTR SUPPORT' }) {
                     Views
                   </a>
                 </li>
+                <li>
+                  <a href="/fcst-vs-real" className="">
+                    Fcst vs Real
+                  </a>
+                </li>
                 <li className="">
                   Hi, {user?.name}!
                 </li>

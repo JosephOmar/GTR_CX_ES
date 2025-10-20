@@ -417,6 +417,7 @@ export function useWorkersWithFilters({
       console.log(observation1Filter);
       result = result.filter((w) => {
         const obs = (w.observation_1 || "").toString().toUpperCase();
+        const obs2 = (w.observation_2 || "").toString().toUpperCase();
         const contract_type = (w.contract_type?.name || "")
           .toString()
           .toUpperCase();
@@ -424,11 +425,11 @@ export function useWorkersWithFilters({
           return (
             (contract_type.includes("PART TIME") ||
               contract_type.includes("FULL TIME")) &&
-            !obs.includes("APOYO")
+            !obs.includes("APOYO") && !obs2.includes("AUDITORIA DSAT")
           );
         }
         return (
-          contract_type.includes(observation1Filter) && !obs.includes("APOYO")
+          contract_type.includes(observation1Filter) && !obs.includes("APOYO") && !obs2.includes("AUDITORIA DSAT")
         );
       });
     }

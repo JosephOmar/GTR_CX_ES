@@ -312,7 +312,7 @@ export function WorkersTable({ workers, selectedDate }) {
               );
               const hasObs = scheduleObs.some((obs) => obs !== "");
 
-              const hasSupport = w.observation_1?.includes("APOYO");
+              const hasSupport = w.observation_1?.includes("APOYO") || w.observation_2?.includes("Auditoria DSAT");
 
               // === Asistencia con lógica Lima (corrimiento madrugada SOLO si earliest start <= umbral) ===
               const effectiveAttendDate = chooseAttendanceDate(selectedDate, filtered);
