@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { parseNames } from "../utils/parseUtils";
 import { expandOvernight, inWindow, toMinutes } from "../utils/scheduleUtils";
 import { getStringDays } from "../utils/scheduleUtils";
+import { useWorkersStore } from "../store/WorkersStore";
 
 function isSessionValid() {
   const token = localStorage.getItem("token"); // Cambié a localStorage
@@ -102,59 +103,17 @@ export function useWorkersWithFilters({
   attendanceFilter,
   documentList,
 }) {
-  const [workers, setWorkers] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { workers, loading, error, fetchWorkers } = useWorkersStore();
+  // const [loading, setLoading] = useState(true);
+  // const [error, setError] = useState(null);
   const [urlKustomer, setUrlKustomer] = useState("");
   const [emails, setEmails] = useState("");
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    const token = localStorage.getItem("token"); // Cambié a localStorage
-
-    if (!isSessionValid()) {
-      // Si la sesión ha expirado o no existe el token, limpiamos todo
-      localStorage.removeItem("workers"); // Cambié a localStorage
-      localStorage.removeItem("workers_timestamp"); // Cambié a localStorage
-      setWorkers([]);
-      setLoading(false);
-      return;
+    if (workers.length === 0) {
+      fetchWorkers(); // ya maneja cache y sesión internamente
     }
-
-    // Si la sesión está activa, revisamos la caché de los trabajadores
-    const cachedWorkers = localStorage.getItem("workers"); // Cambié a localStorage
-    const cachedTimestamp = localStorage.getItem("workers_timestamp"); // Cambié a localStorage
-
-    if (cachedWorkers && cachedTimestamp) {
-      setWorkers(JSON.parse(cachedWorkers));
-      setLoading(false);
-    } else {
-      // Si no está en caché, hacemos la petición al servidor
-      fetch(`${import.meta.env.PUBLIC_URL_BACKEND}workers`, {
-        headers: {
-          // Pasamos el token de sesión en el header
-          Authorization: `Bearer ${token}`,
-        },
-      })
-        .then((res) => {
-          if (!res.ok) throw new Error(`Error ${res.status}`);
-          return res.json();
-        })
-        .then((data) => {
-          const activeWorkers = data;
-          // .filter(
-          //   (worker) => worker.status?.name === "Activo"
-          // );
-          localStorage.setItem("workers", JSON.stringify(activeWorkers)); // Cambié a localStorage
-          localStorage.setItem("workers_timestamp", Date.now().toString()); // Cambié a localStorage
-
-          setWorkers(activeWorkers);
-        })
-        .catch((err) => setError(err.message))
-        .finally(() => setLoading(false));
-    }
-  }, []); // Se vuelve a cargar si cambia el token de sesión
+  }, [workers.length, fetchWorkers]);
 
   const { todayStr, yesterdayStr } = getStringDays();
   // Se extra las fechas únicas de todos los schedules

@@ -1,15 +1,21 @@
 import React, { useState } from "react";
 import { useFetchWorkers } from "./useFetchWorkers";
+import { useWorkersStore } from "../store/WorkersStore";
 
 export default function UploadAttendanceModal({ isOpen, onClose, onSuccess }) {
-  const { workers, loadingW, error, fetchWorkersData } = useFetchWorkers(); 
+  const { fetchWorkers } = useWorkersStore(); 
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const [date, setDate] = useState(new Date().toISOString().split('T')[0]); // Establecer la fecha actual como valor predeterminado
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
     setFile(selectedFile);
+  };
+
+  const handleDateChange = (e) => {
+    setDate(e.target.value);
   };
 
   const handleSubmit = async (e) => {
@@ -28,10 +34,10 @@ export default function UploadAttendanceModal({ isOpen, onClose, onSuccess }) {
 
     const formData = new FormData();
     formData.append("file", file);
+    formData.append("target_date", date); // Agregar la fecha al formulario
 
     setLoading(true);
     setMessage("");
-
     try {
       const response = await fetch(
         `${import.meta.env.PUBLIC_URL_BACKEND}upload-attendance/`,
@@ -40,21 +46,23 @@ export default function UploadAttendanceModal({ isOpen, onClose, onSuccess }) {
           body: formData,
         }
       );
-
       if (response.ok) {
-        const data = await response.json();
-        setMessage(`✅ Registros cargados`);
-        fetchWorkersData();
+        setTimeout(() => {
+          setMessage("✅ Registros cargados correctamente");
+        }, 1200)       
+        await fetchWorkers(true); // actualiza el store sin perder el modal
+          // cerramos el modal tras mostrar el mensaje brevemente
         if (onSuccess) onSuccess();
+        onClose();
       } else {
         const errorData = await response.json();
         setMessage(
-          `❌ ${errorData.detail || "Error al cargar attendance"}`
+          `❌ ${errorData.detail || "Error al cargar attendance 1"}`
         );
       }
     } catch (error) {
-      console.error(error);
-      setMessage("❌ Error al cargar attendance");
+      console.log(error);
+      setMessage("❌ Error al cargar attendance 2");
     } finally {
       setLoading(false);
     }
@@ -79,6 +87,19 @@ export default function UploadAttendanceModal({ isOpen, onClose, onSuccess }) {
               required
             />
           </div>
+
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700">
+              Fecha
+            </label>
+            <input
+              type="date"
+              value={date}
+              onChange={handleDateChange}
+              className="mt-2 block w-full border border-gray-300 rounded px-3 py-2 text-sm"
+            />
+          </div>
+
           <div className="mt-4 flex items-center justify-between">
             <button
               type="button"
