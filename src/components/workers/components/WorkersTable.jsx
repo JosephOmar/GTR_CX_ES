@@ -146,11 +146,13 @@ export function WorkersTable({ workers, selectedDate }) {
       }
 
       if (key === "team") {
+        console.log('xd')
         const valA = a.team?.name || "";
         const valB = b.team?.name || "";
         return direction === "asc"
           ? valA.localeCompare(valB)
           : valB.localeCompare(valA);
+          
       }
 
       if (key === "attendance") {
