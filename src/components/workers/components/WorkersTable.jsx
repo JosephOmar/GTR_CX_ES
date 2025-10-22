@@ -94,8 +94,8 @@ export function WorkersTable({ workers, selectedDate }) {
     "Attendance",
     "Check In",
     "Check Out",
-    "Out Adherence",
-    "Offline Time",
+    "Out Of Adherence",
+    "Offline Minutes",
     "HC Email",
     "Obs",
     "Observation 1",
@@ -151,8 +151,7 @@ export function WorkersTable({ workers, selectedDate }) {
         const valB = b.team?.name || "";
         return direction === "asc"
           ? valA.localeCompare(valB)
-          : valB.localeCompare(valA);
-          
+          : valB.localeCompare(valA);         
       }
 
       if (key === "attendance") {
@@ -177,6 +176,21 @@ export function WorkersTable({ workers, selectedDate }) {
         const rankB = priority[valB] ?? 99;
 
         return direction === "asc" ? rankA - rankB : rankB - rankA;
+      }
+
+      if (key === "out_of_adherence" || key === "offline_minutes") {
+          const attA = a.attendances?.find((att) => att.date === selectedDate);
+          const attB = b.attendances?.find((att) => att.date === selectedDate);
+          // Asegurarnos de acceder correctamente a los valores dentro de 'attendance'
+          const rawA = attA?.[key] ?? Infinity;  // Usamos Infinity si no existe el valor
+          const rawB = attB?.[key] ?? Infinity;
+
+          // Si el valor es vacío o no existe, asignamos Infinity para colocarlos al final
+          const valA = rawA != null && rawA !== "" ? rawA : Infinity;
+          const valB = rawB != null && rawB !== "" ? rawB : Infinity;
+
+          // Ordenamos de acuerdo a la dirección (ascendente o descendente)
+          return direction === "asc" ? valA - valB : valB - valA;
       }
 
       if (key === "termination_date") {
@@ -272,6 +286,8 @@ export function WorkersTable({ workers, selectedDate }) {
                           "termination_date",
                           "schedule",
                           "attendance",
+                          "out_of_adherence",
+                          "offline_minutes",
                         ].includes(key)
                       ) {
                         handleSort(key);
