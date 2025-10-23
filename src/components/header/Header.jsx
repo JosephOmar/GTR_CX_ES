@@ -63,8 +63,8 @@ export default function Header({ title = 'GTR SUPPORT' }) {
                   </a>
                 </li>
                 <li>
-                  <a href="/fcst-vs-real" className="">
-                    Fcst vs Real
+                  <a href="/dashboard" className="">
+                    Dashboard
                   </a>
                 </li>
                 <li className="">
