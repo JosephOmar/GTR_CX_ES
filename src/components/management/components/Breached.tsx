@@ -7,6 +7,7 @@ import {
   buildAgilizarMailMessage,
   buildAsNoCierraChatMessage,
   buildAsNoSaludaMessage,
+  buildSaludoInTimeMessage
 } from "../utils/MessageBuilders";
 import { ActionButton } from "./ActionButton";
 import { WorkerForm } from "./WorkerForm";
@@ -53,6 +54,11 @@ export const Breached: React.FC = () => {
     {
       label: "As no saluda",
       builder: buildAsNoSaludaMessage,
+      colorClass: "bg-purple-600 hover:bg-purple-700",
+    },
+    {
+      label: "As saludo en tiempo",
+      builder: buildSaludoInTimeMessage,
       colorClass: "bg-purple-600 hover:bg-purple-700",
     },
   ];

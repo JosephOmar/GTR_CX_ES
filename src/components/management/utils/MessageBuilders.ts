@@ -71,3 +71,10 @@ export const buildAsNoSaludaMessage = ({ worker, contractLabel, url }: Omit<Mess
   `  ${toUnicodeBold(`Link:`)} ${url}`,
   buildSupervisorLine(worker),
 ].join("\n");
+
+export const buildSaludoInTimeMessage = ({ worker, contractLabel, url }: Omit<MessageData, 'diffSec' | 'hmsStr'>) => [
+  `⭐${toUnicodeBold('SALUDO DENTRO DE LOS 30 SEG')}⭐\n`,
+  `  ${toUnicodeBold(worker.name?.toUpperCase() ?? "Nombre Desconocido")} realizó el saludo dentro del tiempo establecido.`,
+  `  ¡Excelente cumplimiento, sigamos así! 🙌🏻  `,
+  `  ${toUnicodeBold(`Link:`)} ${url}`,
+].join("\n");
