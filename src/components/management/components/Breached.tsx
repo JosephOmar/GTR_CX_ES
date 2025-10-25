@@ -25,7 +25,7 @@ export const Breached: React.FC = () => {
   const inputNormalized = nameInput.split("(")[0].split(":").pop()?.trim().toLowerCase();
 
   const matchingWorker = workers.find(
-    (w) =>
+    (w : any) =>
       w.kustomer_name?.toLowerCase() === inputNormalized ||
       w.api_email?.toLowerCase() === inputNormalized
   );
