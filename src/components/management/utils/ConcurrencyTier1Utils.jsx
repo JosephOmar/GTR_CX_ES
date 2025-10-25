@@ -33,7 +33,9 @@ export function buildCustomerTier1(data) {
   const colorConcurrency = getStatusColorConcurrency(concurrency, CONCURRENCY_THRESHOLDS);
 
   // Datos Adicionales
-  const totalCapacity = agentsOnline * 3;
+  let capacity 
+  team === 'CUSTOMER TIER1' ? capacity = 2 : capacity = 3
+  const totalCapacity = agentsOnline * capacity;
   const remainingCapacity = totalCapacity - totalChats;
   console.log(queue)
   const queuedChats = queue <= 0 ? 
