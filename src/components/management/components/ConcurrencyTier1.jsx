@@ -50,7 +50,7 @@ export function ConcurrencyTier1() {
           setter={setQueue}
           required
           placeholder="Ej: 6"
-        />         
+        />
         <div className="flex gap-3 justify-center">
           <button
             className={`px-3 py-1 rounded-sm ${

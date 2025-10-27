@@ -14,8 +14,8 @@ export function Management() {
     <div>
       <Breached plannedData={plannedData} />
       <Concurrency plannedData={plannedData} />
-      <MailInbox plannedData={plannedData} />
-      <ConcurrencyHC plannedData={plannedData} />
+      {/* <MailInbox plannedData={plannedData} />
+      <ConcurrencyHC plannedData={plannedData} /> */}
     </div>
   )
 }
