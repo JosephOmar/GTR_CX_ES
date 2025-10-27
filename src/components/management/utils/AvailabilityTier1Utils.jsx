@@ -48,12 +48,12 @@ export function buildAvailabilityTier1(data) {
   availabilityAgentsCS < 0 ? availabilityAgentsCS = 0 : ''
   availabilityAgentsRD < 0 ? availabilityAgentsRD = 0 : ''
 
-  // Colores
+// Colores
 //   const colorConcurrency = getStatusColorConcurrency(concurrency, CONCURRENCY_THRESHOLDS);
 
   return (
-    `${toUnicodeBold(`Customer T1 Capacidad ${concurrencyCS} - Disponibilidad de ${availabilityAgentsCS} HC para refuerzo o apoyo a Vendor`)}\n` +
-    `${toUnicodeBold(`Rider T1 Capacidad ${concurrencyRD} - Disponibilidad de ${availabilityAgentsRD} HC para refuerzo o apoyo a Vendor`)}\n\n` +
+    `${toUnicodeBold(`Customer T1 Concurrencia ${concurrencyCS} - Disponibilidad de ${availabilityAgentsCS} HC para refuerzo o apoyo a Vendor`)}\n` +
+    `${toUnicodeBold(`Rider T1 Concurrencia ${concurrencyRD} - Disponibilidad de ${availabilityAgentsRD} HC para refuerzo o apoyo a Vendor`)}\n\n` +
     `${toUnicodeBold(`🚨Tener en cuenta que se debe avanzar por equipo de Supervisión y compartir la lista de los As para el control interno`)}`
   );
 }
