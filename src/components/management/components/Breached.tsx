@@ -7,7 +7,8 @@ import {
   buildAgilizarMailMessage,
   buildAsNoCierraChatMessage,
   buildAsNoSaludaMessage,
-  buildSaludoInTimeMessage
+  buildSaludoInTimeMessage,
+  buildGreetingOutOfTimeMessage
 } from "../utils/MessageBuilders";
 import { ActionButton } from "./ActionButton";
 import { WorkerForm } from "./WorkerForm";
@@ -57,9 +58,14 @@ export const Breached: React.FC = () => {
       colorClass: "bg-purple-600 hover:bg-purple-700",
     },
     {
+      label: "Saludo + 30s",
+      builder: buildGreetingOutOfTimeMessage,
+      colorClass: "bg-blue-600 hover:bg-blue-700",
+    },
+    {
       label: "As saludo en tiempo",
       builder: buildSaludoInTimeMessage,
-      colorClass: "bg-purple-600 hover:bg-purple-700",
+      colorClass: "bg-yellow-800 hover:bg-yellow-900",
     },
   ];
 

@@ -72,6 +72,15 @@ export const buildAsNoSaludaMessage = ({ worker, contractLabel, url }: Omit<Mess
   buildSupervisorLine(worker),
 ].join("\n");
 
+export const buildGreetingOutOfTimeMessage = ({ worker, contractLabel, url }: Omit<MessageData, 'diffSec' | 'hmsStr'>) => [
+  buildFirstLine(worker, contractLabel),
+  `  ❌CHAT PERDIDO POR SALUDO ‼️`,
+  `  ${toUnicodeBold(worker.name?.toUpperCase() ?? "Nombre Desconocido")} realiza saludo despues de 30s`,
+  `  Reforzar el cumplimiento del saludo dentro de tiempo 🚨`,
+  `  ${toUnicodeBold(`Link:`)} ${url}`,
+  buildSupervisorLine(worker),
+].join("\n");
+
 export const buildSaludoInTimeMessage = ({ worker, contractLabel, url }: Omit<MessageData, 'diffSec' | 'hmsStr'>) => [
   `⭐${toUnicodeBold('SALUDO DENTRO DE LOS 30 SEG')}⭐\n`,
   `  ${toUnicodeBold(worker.name?.toUpperCase() ?? "Nombre Desconocido")} realizó el saludo dentro del tiempo establecido.`,

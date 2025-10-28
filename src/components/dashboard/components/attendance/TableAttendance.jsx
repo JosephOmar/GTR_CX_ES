@@ -94,14 +94,19 @@ const AttendanceTable = () => {
 
     const filtered = workers.filter((worker) => {
       const teamName = worker.team?.name || "";
-      if (worker.productive !== "Si") return false;
-
+      if (worker.productive !== "Si" ) return false;
+      
       if (teamFilter.length > 0 && !teamFilter.includes(teamName)) return false;
 
       const schedules = worker.schedules;
       if (!Array.isArray(schedules) || schedules.length === 0) return false;
 
       const hasScheduleInRange = schedules.some((schedule) => {
+
+        if (schedule.obs && schedule.obs !== "FLT" && schedule.obs !== null) {
+                return false; // Excluir este horario si no es "FLT" o NULL
+        }
+        
         if (!schedule.date || !schedule.start_time || !schedule.end_time)
           return false;
 
