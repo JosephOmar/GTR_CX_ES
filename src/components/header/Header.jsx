@@ -1,40 +1,51 @@
-// src/components/Header.jsx
 import React, { useEffect, useState } from 'react';
+import AuthStore from '../Auth/store/AuthStore';
 
 const url_backend = import.meta.env.PUBLIC_URL_BACKEND;
 
 export default function Header({ title = 'GTR SUPPORT' }) {
   const [user, setUser] = useState(null);
 
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) return;
+  // Obtener el token y la información de autenticación desde el store de Zustand
+  const { isAuthenticated, token } = AuthStore();
 
+  useEffect(() => {
+    if (!isAuthenticated || !token) {
+      setUser(null);
+      return;
+    }
+
+    // Si el token es válido, obtenemos la información del usuario desde el backend
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
       const userId = payload.sub;
+
+      // Hacer la solicitud al backend para obtener los datos del usuario
       fetch(`${url_backend}users/${userId}`, {
         headers: { Authorization: `Bearer ${token}` }
       })
-      .then(res => res.json())
-      .then(data => setUser(data)) // aquí ya tienes { id, name, email, ... }
-      .catch(() => localStorage.removeItem('token'));
+        .then(res => res.json())
+        .then(data => setUser(data)) // Guardamos los datos del usuario
+        .catch(() => {
+          // Si hay un error, eliminamos el token y la sesión
+          AuthStore.getState().logout();
+        });
     } catch {
-      localStorage.removeItem('token');
+      // Si hay un error al parsear el token, eliminamos la sesión
+      AuthStore.getState().logout();
     }
-  }, []);
+  }, [isAuthenticated, token]);
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('workers'); // Eliminar workers
+    AuthStore.getState().logout(); // Llamamos a la acción de logout en el store
     setUser(null);
-    window.location.href = '/login'; // ← redirección clásica
+    window.location.href = '/login'; // Redirigimos al login
   };
 
   return (
     <header className="bg-primary shadow">
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
-        <div className="text-xl font-semibold ">
+        <div className="text-xl font-semibold">
           {title}
         </div>
 

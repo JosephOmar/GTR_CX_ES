@@ -16,7 +16,6 @@ function getStatusColorSLA(value, { green, orange }) {
 
 function getStatusColorAgents(online, scheduled, { green, orange }) {
   if (scheduled*(1-green) < online) return '🟢';
-  console.log(scheduled*(1-green))
   if (scheduled*(1-orange) < online) return '🟠';
   return '🔴';
 }

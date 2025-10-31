@@ -1,31 +1,21 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
+import AuthStore from "./store/AuthStore";
+import FormField from "../common/FormField";
 
 const url_backend = import.meta.env.PUBLIC_URL_BACKEND;
 axios.defaults.baseURL = url_backend;
 
 export default function AuthForm() {
-  const [isClient, setIsClient] = useState(false);
   const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({ name: "", lastname: "", email: "", password: "" });
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
 
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
+  // Usamos el store de autenticación
+  const { login, isAuthenticated } = AuthStore(); // Obtenemos el estado de autenticación
 
-  const toggleMode = () => {
-    setIsLogin((prev) => !prev);
-    setFormData({ name: "", lastname: "", email: "", password: "" });
-    setError("");
-    setMessage("");
-  };
-
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
+  // Redirigir al login o al dashboard
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -39,19 +29,23 @@ export default function AuthForm() {
 
       if (isLogin) {
         const { access_token } = response.data;
-        localStorage.setItem("token", access_token);
-        window.location.href = "/workers";
+        login(access_token); // Usamos el store para guardar el token
+
         setMessage("¡Inicio de sesión exitoso!");
       } else {
         setMessage("¡Registro exitoso! Ahora puedes iniciar sesión.");
       }
     } catch (err) {
-      console.error(err);
       setError(err.response?.data?.detail || "Ocurrió un error.");
     }
   };
 
-  if (!isClient) return null;
+  useEffect(() => {
+
+    if (isAuthenticated) {
+      window.location.replace("/workers"); // Redirigir a la página protegida
+    }
+  }, [isAuthenticated]); // Se ejecuta cuando isAuthenticated cambia
 
   return (
     <div className="w-[100vw] h-[100vh] flex justify-center items-center">
@@ -68,84 +62,46 @@ export default function AuthForm() {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {isLogin ? (
-            ""
-          ) : (
+          {isLogin ? null : (
             <div>
-              <div>
-                <label
-                  htmlFor="name"
-                  className="block text-sm font-medium text-gray-800"
-                >
-                  Name
-                </label>
-                <input
-                  type="text"
-                  name="name"
-                  id="name"
-                  autoComplete="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  required
-                  className=" mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg"
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="lastname"
-                  className="block text-sm font-medium text-gray-800"
-                >
-                  Lastname
-                </label>
-                <input
-                  type="text"
-                  name="lastname"
-                  id="lastname"
-                  autoComplete="lastname"
-                  value={formData.lastname}
-                  onChange={handleChange}
-                  required
-                  className=" mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg"
-                />
-              </div>
+              <FormField
+                label="Name"
+                name="name"
+                type="text"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                required
+                autoComplete="name"
+              />
+              <FormField
+                label="Lastname"
+                name="lastname"
+                type="text"
+                value={formData.lastname}
+                onChange={(e) => setFormData({ ...formData, lastname: e.target.value })}
+                required
+                autoComplete="lastname"
+              />
             </div>
           )}
-          <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-800"
-            >
-              Email
-            </label>
-            <input
-              type="text"
-              name="email"
-              id="email"
-              autoComplete="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-              className=" mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg"
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-gray-800"
-            >
-              Password
-            </label>
-            <input
-              type="password"
-              name="password"
-              id="password"
-              autoComplete={isLogin ? "current-password" : "new-password"}
-              value={formData.password}
-              onChange={handleChange}
-              required
-              className=" mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg"
-            />
-          </div>
+          <FormField
+            label="Email"
+            name="email"
+            type="text"
+            value={formData.email}
+            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+            required
+            autoComplete="email"
+          />
+          <FormField
+            label="Password"
+            name="password"
+            type="password"
+            value={formData.password}
+            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+            required
+            autoComplete={isLogin ? "current-password" : "new-password"}
+          />
 
           <button
             type="submit"
@@ -158,7 +114,7 @@ export default function AuthForm() {
         <p className="text-center text-sm text-gray-700">
           {isLogin ? "¿No tienes cuenta?" : "¿Ya tienes cuenta?"}{" "}
           <button
-            onClick={toggleMode}
+            onClick={() => setIsLogin(!isLogin)}
             className="text-indigo-600 hover:text-indigo-800 font-medium focus:outline-none"
           >
             {isLogin ? "Regístrate" : "Inicia Sesión"}

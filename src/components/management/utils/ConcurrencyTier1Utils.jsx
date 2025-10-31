@@ -37,7 +37,6 @@ export function buildCustomerTier1(data) {
   team === 'CUSTOMER TIER1' ? capacity = 2 : capacity = 3
   const totalCapacity = agentsOnline * capacity;
   const remainingCapacity = totalCapacity - totalChats;
-  console.log(queue)
   const queuedChats = queue <= 0 ? 
         `  ${toUnicodeBold('Chats en Curso:')} ${totalChats}\n\n` +
         `  ${toUnicodeBold('Capacidad Total:')} ${totalCapacity}\n` +

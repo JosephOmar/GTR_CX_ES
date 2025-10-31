@@ -4,10 +4,6 @@ import { expandOvernight, inWindow, toMinutes } from "../utils/scheduleUtils";
 import { getStringDays } from "../utils/scheduleUtils";
 import { useWorkersStore } from "../store/WorkersStore";
 
-function isSessionValid() {
-  const token = localStorage.getItem("token"); // Cambié a localStorage
-  return token && !isTokenExpired(token); // Sólo si el token de sesión está presente y no está expirado
-}
 
 function isTokenExpired(token) {
   try {
@@ -344,7 +340,6 @@ export function useWorkersWithFilters({
     if (roleFilter) {
       result = result.filter((w) => {
         const r = w.role?.name;
-        console.log(r);
         return r.includes(roleFilter);
       });
     }
@@ -359,7 +354,6 @@ export function useWorkersWithFilters({
 
         if (attendanceFilter.toLowerCase() === "present") {
           // incluir tanto "present" como "late"
-          console.log(status);
           return status === "present" || status === "late";
         }
 
@@ -373,7 +367,6 @@ export function useWorkersWithFilters({
     }
 
     if (observation1Filter) {
-      console.log(observation1Filter);
       result = result.filter((w) => {
         const obs = (w.observation_1 || "").toString().toUpperCase();
         const obs2 = (w.observation_2 || "").toString().toUpperCase();

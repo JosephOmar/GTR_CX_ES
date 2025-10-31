@@ -53,7 +53,6 @@ export function buildRubikHCUpdate(data) {
   const longestTimeText = (longestTime > 0) ? `${colorLongestTime} Case con mayor tiempo en gestión: ${longestTime} min` : `🟢Sin casos en gestión`
   const isGroup = (group === 'Slack' ) ? `\n\n⚠️${toUnicodeBold(`Importante : Considerar que de forma automática se les está asignando a los agentes cases del skill ${team}-case-inbox-spa-ES-tier2 como prioridad 1, al término de bandeja se les asigna automáticamente  ${team}-case-inbox-por-PT-tier2BO`)}\n` +
     `⚠️${toUnicodeBold(`Casos de región GV_PT se reflejan en skill ${team}-case-inbox-spa-ES-tier2`)}` : ''
-  console.log(hourStart)
   // Reporte final
   return (
     `${toUnicodeBold(`PANEL ACTUAL ${team} - ${t} ES`)}\n\n` +

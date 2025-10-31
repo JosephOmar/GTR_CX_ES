@@ -40,7 +40,6 @@ export function getPlannedFor(team, hourStart, timeZone = "Europe/Madrid") {
     const planned = JSON.parse(raw);
 
     const date = getTodayForInterval(hourStart, timeZone);
-    console.log(`${hourStart}, ${date}`)
     return planned.find(
       (p) =>
         p.team === team &&

@@ -24,7 +24,6 @@ export default function SendButton({ chanel, agentes, training, others }) {
       });
 
       if (!response.ok) throw new Error("Error en el servidor");
-      console.log(payload);
       const data = await response.json();
 
       setTimeout(() => setSend(false), 10);

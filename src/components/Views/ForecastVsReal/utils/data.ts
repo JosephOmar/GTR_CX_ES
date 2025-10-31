@@ -1,6 +1,6 @@
 // utils/data.ts
 import type { ForecastItem, Totals } from '../types/types';
-import { toUnicodeBold } from '../../../management/utils/toUnicodeBold';
+import { toUnicodeBold } from '../../../Management/utils/toUnicodeBold';
 
 export function parseCsvToJson(text: string): ForecastItem[] {
   const rows = text

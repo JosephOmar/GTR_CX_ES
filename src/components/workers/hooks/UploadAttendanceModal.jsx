@@ -61,7 +61,6 @@ export default function UploadAttendanceModal({ isOpen, onClose, onSuccess }) {
         );
       }
     } catch (error) {
-      console.log(error);
       setMessage("❌ Error al cargar attendance 2");
     } finally {
       setLoading(false);

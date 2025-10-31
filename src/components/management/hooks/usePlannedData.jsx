@@ -1,65 +1,56 @@
 import { useState, useEffect } from "react";
 import localforage from "localforage";
-import AuthStore from "../../Auth/store/AuthStore";
+import AuthStore from "../../Auth/store/AuthStore";// Importamos el store de autenticación
 
 // 🧩 Configuración de almacenamiento persistente (IndexedDB)
 localforage.config({
   name: "GTR-CX-DB",
-  storeName: "workers_store",
+  storeName: "planned_data_store",
 });
 
 // 🕐 Tiempo de expiración del caché en milisegundos (ej. 10 minutos)
 const CACHE_TTL = 10 * 60 * 1000;
 
-export function useFetchWorkers() {
-  const [workers, setWorkers] = useState([]);
+export function usePlannedData() {
+  const [plannedData, setPlannedData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   // Usamos el store de autenticación para obtener el estado
   const { isAuthenticated, token } = AuthStore();
 
-  // 🚀 Función para obtener trabajadores (desde caché o backend)
-  const fetchWorkersData = async () => {
-    // Verificar si el usuario está autenticado
-    if (!isAuthenticated || !token) {
-      setWorkers([]);
-      setLoading(false);
-      setError("Sesión no válida o expirada");
-      return;
-    }
+  // 🚀 Función para obtener los datos planificados (desde caché o backend)
+  const fetchPlannedData = async () => {
 
     try {
       // 1️⃣ Verificar si hay datos en caché
-      const cachedWorkers = await localforage.getItem("workers");
-      const cachedTimestamp = await localforage.getItem("workers_timestamp");
+      const cachedPlannedData = await localforage.getItem("plannedData");
+      const cachedTimestamp = await localforage.getItem("planned_timestamp");
 
       const isCacheValid =
-        cachedWorkers &&
+        cachedPlannedData &&
         cachedTimestamp &&
         Date.now() - cachedTimestamp < CACHE_TTL;
-
+      console.log(isCacheValid)
       if (isCacheValid) {
-        setWorkers(cachedWorkers);
+        setPlannedData(cachedPlannedData);
         setLoading(false);
         return;
       }
-
-      const res = await fetch(`${import.meta.env.PUBLIC_URL_BACKEND}workers`, {
+      const res = await fetch(`${import.meta.env.PUBLIC_URL_BACKEND}planned-data/`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
       if (!res.ok) throw new Error(`Error ${res.status}`);
 
       const data = await res.json();
-
+      console.log(data)
       // Guardar en IndexedDB
-      await localforage.setItem("workers", data);
-      await localforage.setItem("workers_timestamp", Date.now());
+      await localforage.setItem("plannedData", data);
 
-      setWorkers(data);
+      setPlannedData(data);
     } catch (err) {
-      console.error("❌ Error al cargar trabajadores:", err);
+      console.error("❌ Error al cargar datos planificados:", err);
       setError(err.message);
     } finally {
       setLoading(false);
@@ -68,8 +59,15 @@ export function useFetchWorkers() {
 
   // 🔁 Cargar automáticamente al montar el componente
   useEffect(() => {
-    fetchWorkersData();
+    // Revisa caché al inicio
+    const cached = localforage.getItem("plannedData");
+    if (cached) {
+      setPlannedData(cached);
+      setLoading(false);
+    }
+    // De todas formas intenta refrescar datos
+    fetchPlannedData();
   }, [isAuthenticated, token]); // Dependemos de la autenticación
 
-  return { workers, loading, error, fetchWorkersData };
+  return { plannedData, loading, error, fetchPlannedData };
 }

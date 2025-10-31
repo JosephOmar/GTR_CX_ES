@@ -30,7 +30,7 @@ export function useWorkerExtraction(nameInput: string, timeInput: string) {
   const extract = (): ExtractionResult | null => {
     const extractedName = nameInput.split("(")[0].split(":").pop()?.trim().toLowerCase();
     const worker = workers.find(
-      (w) => w.kustomer_name?.toLowerCase() === extractedName ||
+      (w : any) => w.kustomer_name?.toLowerCase() === extractedName ||
              w.api_email?.toLowerCase() === extractedName
     );
     if (!worker) {
@@ -53,7 +53,6 @@ export function useWorkerExtraction(nameInput: string, timeInput: string) {
       let [hms, meridiem] = timePart.split(" ");
       meridiem = meridiem?.toUpperCase();
       let [hh, mm, ss = 0] = hms.split(":").map(Number);
-      console.log(timeInput, hh,mm,ss)
       if (meridiem === "PM" && hh < 12) hh += 12;
       if (meridiem === "AM" && hh === 12) hh = 0;
       const inputDate = new Date(

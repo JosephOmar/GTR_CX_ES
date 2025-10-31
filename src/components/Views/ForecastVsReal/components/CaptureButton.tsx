@@ -4,7 +4,7 @@ import html2canvas from "html2canvas-pro";
 import type { ForecastItem, Totals } from "../types/types";
 import { calculateDeviationAnalysis } from "../utils/data";
 import { getMadridToPeruTime } from "../utils/time";
-import { toUnicodeBold } from "../../../management/utils/toUnicodeBold";
+import { toUnicodeBold } from "../../../Management/utils/toUnicodeBold";
 
 interface Props {
   data: ForecastItem[];

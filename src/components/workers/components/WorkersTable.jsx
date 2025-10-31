@@ -1,83 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { expandOvernight } from "../utils/scheduleUtils";
 import html2canvas from "html2canvas-pro";
+import { getTurnsForWorker, getStartMinutes, chooseAttendanceDate, getAttendancePriority } from "../../utils/UtilsFormatDate";
 
 export function WorkersTable({ workers, selectedDate }) {
   const [imgCopied, setImgCopied] = useState(false);
   const [sortConfig, setSortConfig] = useState({ key: "", direction: "asc" });
   const [sortedWorkers, setSortedWorkers] = useState(workers);
 
-  // ==============================
-  //  🔧 Configuración y helpers (zona horaria Lima)
-  // ==============================
-  const TIMEZONE = "America/Lima";
-  const CUTOFF_MINUTES = 9 * 60; // 09:00 (Lima)
-  // Por defecto 0 => SOLO 00:00. Si quieres incluir hasta las 02:00, pon 120.
-  const ALLOWED_OVERNIGHT_START_MINUTES = 0;
+  
 
-  // Hora/fecha actual en Lima
-  const getNowInTZ = (timeZone) => {
-    const parts = new Intl.DateTimeFormat("en-CA", {
-      timeZone,
-      hour12: false,
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-    }).formatToParts(new Date());
-    const map = Object.fromEntries(parts.map((p) => [p.type, p.value]));
-    const date = `${map.year}-${map.month}-${map.day}`;
-    const minutes = parseInt(map.hour, 10) * 60 + parseInt(map.minute, 10);
-    return { date, minutes };
-  };
-  const { date: todayISO_Lima, minutes: nowMinutes_Lima } = getNowInTZ(TIMEZONE);
-
-  // YYYY-MM-DD -> YYYY-MM-DD (día anterior, sin sesgos de TZ)
-  const prevDateStr = (iso) => {
-    const [y, m, d] = iso.split("-").map((x) => parseInt(x, 10));
-    const dt = new Date(Date.UTC(y, m - 1, d));
-    dt.setUTCDate(dt.getUTCDate() - 1);
-    const yy = dt.getUTCFullYear();
-    const mm = String(dt.getUTCMonth() + 1).padStart(2, "0");
-    const dd = String(dt.getUTCDate()).padStart(2, "0");
-    return `${yy}-${mm}-${dd}`;
-  };
-
-  // Helper "HH:MM" -> minutos
-  const parseTime = (str) => {
-    if (!str) return null;
-    const [h, m] = str.split(":");
-    return parseInt(h, 10) * 60 + parseInt(m, 10);
-  };
-
-  // ¿El primer bloque del día arranca dentro del umbral permitido?
-  // Con el valor por defecto (0) esto equivale a "empieza a 00:00".
-  const startsWithinOvernightThreshold = (slots) => {
-    const mins = slots
-      .map((s) => parseTime(s.start))
-      .filter((v) => Number.isFinite(v));
-    if (!mins.length) return false;
-    const earliest = Math.min(...mins);
-    return earliest <= ALLOWED_OVERNIGHT_START_MINUTES;
-  };
-
-  // Decide la fecha "efectiva" para leer asistencia
-  const chooseAttendanceDate = (selDate, filteredSlots) => {
-    const isTodayInLima = selDate === todayISO_Lima;
-    if (
-      isTodayInLima &&
-      nowMinutes_Lima < CUTOFF_MINUTES &&
-      startsWithinOvernightThreshold(filteredSlots)
-    ) {
-      return prevDateStr(selDate); // leer asistencia de AYER
-    }
-    return selDate; // de lo contrario, del propio día
-  };
-
-  // ==============================
-  // Mostrar columna de termination date si hay inactivos
-  // ==============================
   const showTerminationColumn = workers.some(
     (w) => w.status?.name === "Inactivo"
   );
@@ -102,38 +34,16 @@ export function WorkersTable({ workers, selectedDate }) {
     ...(showTerminationColumn ? ["Termination Date"] : []),
   ];
 
-  // ==============================
-  //  Ordenamiento
-  // ==============================
   const handleSort = (key) => {
     let direction = "asc";
-    if (key === "schedule") {
-      direction =
-        sortConfig.key !== "schedule"
-          ? "asc"
-          : sortConfig.direction === "asc"
-          ? "desc"
-          : "asc";
-    } else if (sortConfig.key === key && sortConfig.direction === "asc") {
+    if (sortConfig.key === key && sortConfig.direction === "asc") {
       direction = "desc";
     }
 
     const sortedData = [...workers].sort((a, b) => {
       if (key === "schedule") {
-        const turnsA = expandOvernight(
-          a.contract_type?.name === "UBYCALL" ? a.ubycall_schedules : a.schedules
-        ).filter((f) => f.date === selectedDate);
-        const turnsB = expandOvernight(
-          b.contract_type?.name === "UBYCALL" ? b.ubycall_schedules : b.schedules
-        ).filter((f) => f.date === selectedDate);
-
-        const startA = turnsA.length
-          ? Math.min(...turnsA.map((f) => parseTime(f.start)))
-          : Infinity;
-        const startB = turnsB.length
-          ? Math.min(...turnsB.map((f) => parseTime(f.start)))
-          : Infinity;
-
+        const startA = getStartMinutes(a, selectedDate);
+        const startB = getStartMinutes(b, selectedDate);
         return direction === "asc" ? startA - startB : startB - startA;
       }
 
@@ -146,7 +56,6 @@ export function WorkersTable({ workers, selectedDate }) {
       }
 
       if (key === "team") {
-        console.log('xd')
         const valA = a.team?.name || "";
         const valB = b.team?.name || "";
         return direction === "asc"
@@ -155,25 +64,14 @@ export function WorkersTable({ workers, selectedDate }) {
       }
 
       if (key === "attendance") {
-        const turnsA = expandOvernight(
-          a.contract_type?.name === "UBYCALL" ? a.ubycall_schedules : a.schedules
-        ).filter((f) => f.date === selectedDate);
-        const turnsB = expandOvernight(
-          b.contract_type?.name === "UBYCALL" ? b.ubycall_schedules : b.schedules
-        ).filter((f) => f.date === selectedDate);
+        const turnsA = getTurnsForWorker(a, selectedDate);
+        const turnsB = getTurnsForWorker(b, selectedDate);
 
         const effDateA = chooseAttendanceDate(selectedDate, turnsA);
         const effDateB = chooseAttendanceDate(selectedDate, turnsB);
 
-        const attA = a.attendances?.find((att) => att.date === effDateA);
-        const attB = b.attendances?.find((att) => att.date === effDateB);
-
-        const valA = attA?.status || "";
-        const valB = attB?.status || "";
-
-        const priority = { Present: 1, Late: 2, Absent: 3, "": 4 };
-        const rankA = priority[valA] ?? 99;
-        const rankB = priority[valB] ?? 99;
+        const rankA = getAttendancePriority(a, effDateA);
+        const rankB = getAttendancePriority(b, effDateB);
 
         return direction === "asc" ? rankA - rankB : rankB - rankA;
       }
