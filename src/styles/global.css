@@ -144,3 +144,8 @@ h3 {
   background-color: light-dark(var(--cx-success), var(--cx-success-dark));
   color: light-dark(var(--cx-bg-main), var(--cx-bg-main-dark));
 }
+
+.table-row-trainee {
+  background-color: light-dark(#e967e9, #990b99);
+  color: light-dark(var(--cx-bg-main), var(--cx-bg-main-dark));
+}

@@ -231,6 +231,8 @@ export function WorkersTable({ workers, selectedDate }) {
               );
               const hasObs = scheduleObs.some((obs) => obs !== "");
 
+              const hasTrainee = (w.tenure === 1 && w.team?.name === 'CUSTOMER TIER1');
+
               const hasSupport = w.productive?.includes("No")
 
               // === Asistencia con lógica Lima (corrimiento madrugada SOLO si earliest start <= umbral) ===
@@ -247,6 +249,8 @@ export function WorkersTable({ workers, selectedDate }) {
                       ? "table-row-obs"
                       :hasSupport
                       ? "table-row-support"
+                      :hasTrainee
+                      ? "table-row-trainee"
                       : idx % 2 === 0
                       ? "table-row-even"
                       : "table-row-odd"
