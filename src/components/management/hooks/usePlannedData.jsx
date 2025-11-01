@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import localforage from "localforage";
-import AuthStore from "../../Auth/store/AuthStore";// Importamos el store de autenticación
+import AuthStore from "../../auth/store/AuthStore";// Importamos el store de autenticación
 
 // 🧩 Configuración de almacenamiento persistente (IndexedDB)
 localforage.config({

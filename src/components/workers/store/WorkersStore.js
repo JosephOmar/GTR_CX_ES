@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import localforage from "localforage";
-import AuthStore from "../../Auth/store/AuthStore";
+import AuthStore from "../../auth/store/AuthStore";
 
 localforage.config({
   name: "GTR-CX-DB",

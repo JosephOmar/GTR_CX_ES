@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { usePlannedData } from "../../../Management/hooks/usePlannedData";
+import { usePlannedData } from "../../../management/hooks/usePlannedData";
 
 /** Obtiene el offset de Madrid (en horas) para una fecha dada (YYYY-MM-DD).
  *  Ej.: "2025-10-13" -> 2 (horario de verano), "2025-12-01" -> 1.

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import AuthStore from '../Auth/store/AuthStore';
+import AuthStore from '../auth/store/AuthStore';
 
 const url_backend = import.meta.env.PUBLIC_URL_BACKEND;
 
