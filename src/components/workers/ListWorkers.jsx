@@ -31,7 +31,7 @@ export default function WorkersWithSchedules() {
   const [isAttendanceModalOpen, setIsAttendanceModalOpen] = useState(false);
   const [documentList, setDocumentList] = useState('');
 
-  const { workers, loading, error, urlKustomer, emails, availableDates } = useWorkersWithFilters({
+  const { workers, loading, error, urlKustomer, emails, availableDates, excelText } = useWorkersWithFilters({
     search, nameList, nameList2, nameList3, statusFilter, teamFilter, selectedDate, timeFilter, exactStart, roleFilter, observation1Filter, observation2Filter, attendanceFilter, documentList
   });
 
@@ -51,6 +51,13 @@ export default function WorkersWithSchedules() {
 
   const handleActionEmails = () => {
     const message = `${emails}`;
+    navigator.clipboard
+      .writeText(message)
+      .catch(() => alert("Error al copiar el texto"));
+  };
+
+  const handleActionExcelText = () => {
+    const message = excelText;
     navigator.clipboard
       .writeText(message)
       .catch(() => alert("Error al copiar el texto"));
@@ -116,6 +123,12 @@ export default function WorkersWithSchedules() {
           className="px-3 py-1 text-white rounded"
         >
           All Emails
+        </button>
+        <button
+          onClick={handleActionExcelText}
+          className="px-3 py-1 text-white rounded"
+        >
+          Para la Goma
         </button>
         <button
           onClick={openModal}

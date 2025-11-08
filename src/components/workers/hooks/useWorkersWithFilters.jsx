@@ -104,6 +104,7 @@ export function useWorkersWithFilters({
   // const [error, setError] = useState(null);
   const [urlKustomer, setUrlKustomer] = useState("");
   const [emails, setEmails] = useState("");
+  const [excelText, setExcelText] = useState("");
 
   useEffect(() => {
     if (workers.length === 0) {
@@ -448,12 +449,30 @@ export function useWorkersWithFilters({
     )}`;
 
     const emails = filtered.map((w) => w.api_email).filter(Boolean);
+    const allEmails = emails.join("\n");
 
-    const allEmails = `${emails.join("\n")}`;
+    // 👇 Construimos las filas para Excel: document, name, attendance(en selectedDate)
+    const rows = filtered.map((w) => {
+      const doc = w.document ?? "";
+      const name = w.name ?? "";
+
+      // buscamos la asistencia del día seleccionado
+      const attendanceForDay = w.attendances?.find(
+        (a) => a.date === selectedDate
+      );
+
+      const attendanceStatus = attendanceForDay?.status ?? "Absent";
+
+      // columnas separadas por TAB (Excel lo lee perfecto)
+      return `${doc}\t${name}\t${attendanceStatus}`;
+    });
+
+    const textForExcel = rows.join("\n");
 
     setUrlKustomer(url);
     setEmails(allEmails);
-  }, [filtered]);
+    setExcelText(textForExcel); // 👈 guardamos el texto listo para copiar
+  }, [filtered, selectedDate]);
   return {
     workers: filtered,
     loading,
@@ -461,5 +480,6 @@ export function useWorkersWithFilters({
     urlKustomer,
     emails,
     availableDates,
+    excelText
   };
 }
