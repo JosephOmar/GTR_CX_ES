@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useFetchWorkers } from "./useFetchWorkers";
+import { useWorkersStore } from "../store/WorkersStore";
 
 // Función para calcular las fechas del lunes y domingo de la semana
 const getWeekDates = (week) => {
@@ -35,11 +35,11 @@ const getWeekDates = (week) => {
 
 export default function UploadSchedulesModal({ isOpen, onClose }) {
     
-  const { workers, loadingW, error, fetchWorkersData } = useFetchWorkers(); 
   const [files, setFiles] = useState({});
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [week, setWeek] = useState(""); // Agregar el estado para la semana
+  const {fetchWorkers} = useWorkersStore()
 
   const requiredFiles = [
     { label: "Schedule Concentrix", expectedPart: "schedule_concentrix" },
@@ -93,7 +93,7 @@ export default function UploadSchedulesModal({ isOpen, onClose }) {
     }
 
     formData.append("week", week); // Agregar el parámetro "week" al FormData
-
+    console.log(week)
     setLoading(true); // Cambiar el estado de carga a true
     setMessage("");
 
@@ -109,7 +109,8 @@ export default function UploadSchedulesModal({ isOpen, onClose }) {
       if (response.ok) {
         const data = await response.json();
         setMessage(data.message);
-        fetchWorkersData();
+        await fetchWorkers(true);
+        onClose()
       } else {
         const errorData = await response.json();
         setMessage(

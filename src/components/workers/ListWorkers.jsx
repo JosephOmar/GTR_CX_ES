@@ -10,6 +10,7 @@ import UploadWorkersModal from './hooks/UploadWorkersModal';
 import UploadSchedulesModal from './hooks/UploadSchedulesModal';
 import UploadPlannedModal from './hooks/UploadPlannedModal';
 import UploadAttendanceModal from './hooks/UploadAttendanceModal';
+import { useWorkersStore } from './store/WorkersStore';
 
 export default function WorkersWithSchedules() {
   const [search, setSearch] = useState('');
@@ -30,6 +31,9 @@ export default function WorkersWithSchedules() {
   const [isPlannedModalOpen, setIsPlannedModalOpen] = useState(false); // Estado para el modal de horarios
   const [isAttendanceModalOpen, setIsAttendanceModalOpen] = useState(false);
   const [documentList, setDocumentList] = useState('');
+
+  //!Actualizar Workers
+  const {fetchWorkers} = useWorkersStore()
 
   const { workers, loading, error, urlKustomer, emails, availableDates, excelText } = useWorkersWithFilters({
     search, nameList, nameList2, nameList3, statusFilter, teamFilter, selectedDate, timeFilter, exactStart, roleFilter, observation1Filter, observation2Filter, attendanceFilter, documentList
@@ -62,6 +66,10 @@ export default function WorkersWithSchedules() {
       .writeText(message)
       .catch(() => alert("Error al copiar el texto"));
   };
+
+  const updateWorkers = async () => {
+    await fetchWorkers(true)
+  }
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
@@ -153,6 +161,12 @@ export default function WorkersWithSchedules() {
           className="px-3 py-1 bg-yellow-500 text-white rounded"
         >
           Subir Asistencia
+        </button>
+        <button
+          onClick={updateWorkers}
+          className="px-3 py-1 bg-yellow-500 text-white rounded"
+        >
+          Actualizar Workers
         </button>
       </div>
       

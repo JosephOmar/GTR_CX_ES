@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import { useFetchWorkers } from "./useFetchWorkers";
+import { useWorkersStore } from "../store/WorkersStore";
 
 export default function UploadWorkersModal({ isOpen, onClose }) {
-  const { workers, loadingW, error, fetchWorkersData } = useFetchWorkers(); 
   const [files, setFiles] = useState({});
   const [loading, setLoading] = useState(false); // Define el estado de carga
   const [message, setMessage] = useState("");
+  const {fetchWorkers} = useWorkersStore()
 
   const requiredFiles = [
     { label: "People Active", expectedPart: "people_active" },
@@ -63,7 +63,8 @@ export default function UploadWorkersModal({ isOpen, onClose }) {
       if (response.ok) {
         const data = await response.json();
         setMessage(data.message);
-        fetchWorkersData();
+        await fetchWorkers(true);
+        onClose()
       } else {
         const errorData = await response.json();
         setMessage(
