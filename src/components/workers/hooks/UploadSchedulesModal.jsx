@@ -5,41 +5,34 @@ import { useWorkersStore } from "../store/WorkersStore";
 const getWeekDates = (week) => {
   const currentYear = new Date().getFullYear();
 
-  // Obtener el primer día del año
   const firstDayOfYear = new Date(currentYear, 0, 1);
-
-  // Calcular el primer jueves del año
-  const dayOfWeek = firstDayOfYear.getDay(); // Día de la semana (0 es domingo, 1 es lunes, etc.)
-  const daysToThursday = (dayOfWeek <= 4 ? 4 - dayOfWeek : 11 - dayOfWeek); // El primer jueves
+  const dayOfWeek = firstDayOfYear.getDay();
+  const daysToThursday = dayOfWeek <= 4 ? 4 - dayOfWeek : 11 - dayOfWeek;
 
   const firstThursday = new Date(firstDayOfYear);
   firstThursday.setDate(firstDayOfYear.getDate() + daysToThursday);
 
-  // Ahora obtenemos el primer lunes de la semana 1
   const firstMonday = new Date(firstThursday);
-  firstMonday.setDate(firstThursday.getDate() - 3); // Ajuste para el lunes de la semana 1
+  firstMonday.setDate(firstThursday.getDate() - 3);
 
-  // Calcular el inicio (lunes) y fin (domingo) de la semana deseada
   const startOfWeek = new Date(firstMonday);
-  startOfWeek.setDate(firstMonday.getDate() + (week - 1) * 7); // Calculamos el lunes de la semana seleccionada
+  startOfWeek.setDate(firstMonday.getDate() + (week - 1) * 7);
 
   const endOfWeek = new Date(startOfWeek);
-  endOfWeek.setDate(startOfWeek.getDate() + 6); // El domingo de esa semana
+  endOfWeek.setDate(startOfWeek.getDate() + 6);
 
-  // Formatear las fechas en formato 'DD/MM/YYYY'
-  const startDate = startOfWeek.toLocaleDateString('en-GB'); // Formato: DD/MM/YYYY
-  const endDate = endOfWeek.toLocaleDateString('en-GB'); // Formato: DD/MM/YYYY
+  const startDate = startOfWeek.toLocaleDateString("en-GB");
+  const endDate = endOfWeek.toLocaleDateString("en-GB");
 
   return { startDate, endDate };
 };
 
 export default function UploadSchedulesModal({ isOpen, onClose }) {
-    
   const [files, setFiles] = useState({});
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
-  const [week, setWeek] = useState(""); // Agregar el estado para la semana
-  const {fetchWorkers} = useWorkersStore()
+  const [week, setWeek] = useState("");
+  const { fetchWorkers } = useWorkersStore();
 
   const requiredFiles = [
     { label: "Schedule Concentrix", expectedPart: "schedule_concentrix" },
@@ -47,7 +40,8 @@ export default function UploadSchedulesModal({ isOpen, onClose }) {
     { label: "Schedule Ubycall", expectedPart: "schedule_ubycall" },
   ];
 
-  // Manejar cambio en los archivos
+  // ================= SUBIDA MANUAL =================
+
   const handleFileChange = (e) => {
     const { name, files: selectedFiles } = e.target;
     setFiles((prevFiles) => ({
@@ -56,12 +50,10 @@ export default function UploadSchedulesModal({ isOpen, onClose }) {
     }));
   };
 
-  // Manejar cambio en la semana
   const handleWeekChange = (e) => {
     setWeek(e.target.value);
   };
 
-  // Manejar el envío del formulario
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -89,12 +81,12 @@ export default function UploadSchedulesModal({ isOpen, onClose }) {
         return;
       }
 
-      formData.append("files", file); // Añadido todos los archivos bajo la clave "files"
+      formData.append("files", file);
     }
 
-    formData.append("week", week); // Agregar el parámetro "week" al FormData
-    console.log(week)
-    setLoading(true); // Cambiar el estado de carga a true
+    formData.append("week", week);
+
+    setLoading(true);
     setMessage("");
 
     try {
@@ -110,7 +102,7 @@ export default function UploadSchedulesModal({ isOpen, onClose }) {
         const data = await response.json();
         setMessage(data.message);
         await fetchWorkers(true);
-        onClose()
+        onClose();
       } else {
         const errorData = await response.json();
         setMessage(
@@ -121,28 +113,90 @@ export default function UploadSchedulesModal({ isOpen, onClose }) {
       console.error(error);
       setMessage("❌ Error al cargar los horarios");
     } finally {
-      setLoading(false); // Cambiar el estado de carga a false
+      setLoading(false);
+    }
+  };
+
+  // ================= AUTO DESDE GOOGLE DRIVE =================
+
+  const handleAutoUpload = async () => {
+    setLoading(true);
+    setMessage("🔄 Descargando y procesando horarios desde Google Drive (semana actual)...");
+    try {
+      const response = await fetch(
+        `${import.meta.env.PUBLIC_URL_BACKEND}auto-upload-schedules/`,
+        {
+          method: "POST",
+        }
+      );
+
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(
+          err.detail || "Error al cargar los horarios automáticamente."
+        );
+      }
+
+      const data = await response.json();
+      setMessage(data.message || "✅ Horarios cargados correctamente desde Google Drive.");
+      await fetchWorkers(true);
+      onClose();
+    } catch (error) {
+      console.error(error);
+      setMessage("❌ " + error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   if (!isOpen) return null;
 
-  // Obtener las fechas de la semana seleccionada
-  const { startDate, endDate } = getWeekDates(Number(week));
+  const { startDate, endDate } =
+    week && Number(week) > 0 ? getWeekDates(Number(week)) : { startDate: "", endDate: "" };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
+    <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
       <div className="bg-white p-6 rounded shadow-lg w-[90%] sm:w-[50%]">
         <h2 className="text-lg font-semibold">Subir Horarios</h2>
-        <form onSubmit={handleSubmit} className="mt-4">
-          {requiredFiles.map(( file , index) => (
+        <p className="text-sm text-gray-600 mt-2">
+          Puedes subir los archivos manualmente para una semana específica
+          o cargarlos automáticamente desde Google Drive usando la semana actual.
+        </p>
+
+        {/* Botones superiores */}
+        <div className="flex justify-between mt-4 mb-6">
+          <button
+            type="button"
+            onClick={handleAutoUpload}
+            disabled={loading}
+            className={`px-4 py-2 rounded text-white ${
+              loading
+                ? "bg-blue-300 cursor-not-allowed"
+                : "bg-blue-500 hover:bg-blue-600"
+            }`}
+          >
+            {loading ? "Procesando..." : "Cargar desde Google Drive (Semana actual)"}
+          </button>
+
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
+          >
+            Cancelar
+          </button>
+        </div>
+
+        {/* Formulario manual */}
+        <form onSubmit={handleSubmit} className="mt-2">
+          {requiredFiles.map((file, index) => (
             <div key={file.label} className="mb-4">
               <label className="block text-sm font-medium text-gray-700">
                 {file.label}
               </label>
               <input
                 type="file"
-                name={`file${index + 1}`} // Establecemos el nombre con la clave del archivo
+                name={`file${index + 1}`}
                 onChange={handleFileChange}
                 className="mt-2 block w-full border border-gray-300 rounded px-3 py-2 text-sm"
                 required
@@ -150,10 +204,10 @@ export default function UploadSchedulesModal({ isOpen, onClose }) {
             </div>
           ))}
 
-          {/* Input para la semana */}
+          {/* Semana solo para modo manual */}
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700">
-              Semana
+              Semana (para subida manual)
             </label>
             <input
               type="number"
@@ -162,7 +216,6 @@ export default function UploadSchedulesModal({ isOpen, onClose }) {
               onChange={handleWeekChange}
               className="mt-2 block w-full border border-gray-300 rounded px-3 py-2 text-sm"
               min={1}
-              required
             />
             {week && (
               <div className="mt-1 text-sm text-gray-500">
@@ -171,28 +224,31 @@ export default function UploadSchedulesModal({ isOpen, onClose }) {
             )}
           </div>
 
-          <div className="mt-4 flex items-center justify-between">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 bg-gray-300 text-gray-700 rounded"
-            >
-              Cancelar
-            </button>
+          <div className="mt-4 flex items-center justify-end">
             <button
               type="submit"
               disabled={loading}
-              className="px-4 py-2 bg-blue-500 text-white rounded"
+              className={`px-4 py-2 rounded text-white ${
+                loading
+                  ? "bg-green-300 cursor-not-allowed"
+                  : "bg-green-500 hover:bg-green-600"
+              }`}
             >
-              {loading ? "Cargando..." : "Subir"}
+              {loading ? "Subiendo..." : "Subir Manualmente"}
             </button>
           </div>
-          {message && (
-            <div className="mt-4 text-sm text-center text-gray-700">
-              {message}
-            </div>
-          )}
         </form>
+
+        {/* Mensaje */}
+        {message && (
+          <div
+            className={`mt-4 text-sm text-center ${
+              message.includes("❌") ? "text-red-600" : "text-gray-700"
+            }`}
+          >
+            {message}
+          </div>
+        )}
       </div>
     </div>
   );
