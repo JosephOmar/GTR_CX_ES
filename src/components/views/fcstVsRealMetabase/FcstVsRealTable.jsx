@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { usePlannedDataStore } from "../store/PlannedDataStore";
 import { useRealTimeDataStore } from "../store/RealTimeDataStore";
 import { toUnicodeBold } from "../../management/utils/toUnicodeBold";
+import html2canvas from "html2canvas-pro";
 
 export default function FcstVsRealTable() {
   const { plannedData, fetchPlannedData, loading: loadingPlanned } = usePlannedDataStore();
@@ -11,6 +12,8 @@ export default function FcstVsRealTable() {
   const [selectedDate, setSelectedDate] = useState("All");
   const [selectedIntervals, setSelectedIntervals] = useState([]);
   const [analysisText, setAnalysisText] = useState("");
+
+  const tableRef = useRef(null);
 
   useEffect(() => {
     fetchPlannedData();
@@ -24,12 +27,19 @@ export default function FcstVsRealTable() {
     const match = realTimeData.find(
       (r) => r.team === p.team && r.date === p.date && r.interval === p.interval
     );
+    const forecast = p.forecast_received || 0;
+    const contacts = match?.contacts_received || 0;
+    const deviationQ = contacts - forecast;
+    const deviationPct = forecast ? (deviationQ / forecast) * 100 : 0;
+
     return {
       ...p,
       interval: p.interval ?? match?.interval ?? "-",
-      contacts_received: match?.contacts_received ?? 0,
+      contacts_received: contacts,
       sla_frt: match?.sla_frt ?? 0,
       tht: match?.tht ?? 0,
+      deviation_q: deviationQ,
+      deviation_pct: deviationPct,
     };
   });
 
@@ -44,11 +54,10 @@ export default function FcstVsRealTable() {
   ];
   const dates = ["All", ...new Set(mergedData.map((d) => d.date))];
 
-  // 🔹 Rango horario
   const hours = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, "0") + ":00");
 
   // ======================
-  // 🔹 Filtrado dinámico con expansión del rango horario
+  // 🔹 Filtrado con expansión del rango horario
   // ======================
   let filteredData = mergedData;
 
@@ -65,7 +74,7 @@ export default function FcstVsRealTable() {
         range.includes(row.interval)
     );
 
-    // 🟩 Asegurar que se muestren todos los intervalos del rango, incluso sin datos
+    // 🟩 incluir intervalos sin datos
     const existingIntervals = filteredData.map((d) => d.interval);
     const missingIntervals = range.filter((hr) => !existingIntervals.includes(hr));
 
@@ -77,6 +86,8 @@ export default function FcstVsRealTable() {
       contacts_received: 0,
       sla_frt: 0,
       tht: 0,
+      deviation_q: 0,
+      deviation_pct: 0,
     }));
 
     filteredData = [...filteredData, ...placeholders].sort(
@@ -92,16 +103,28 @@ export default function FcstVsRealTable() {
     });
   }
 
-  // 🔹 Manejador de selección de intervalos
   const handleIntervalClick = (hour) => {
     setSelectedIntervals((prev) => {
       if (prev.includes(hour)) return prev.filter((h) => h !== hour);
-      if (prev.length === 2) return [prev[1], hour]; // reemplazar el más antiguo
+      if (prev.length === 2) return [prev[1], hour]; // reemplaza el más antiguo
       return [...prev, hour];
     });
   };
 
-  // 🔹 Generador de análisis con formato y negritas
+  // 🔹 Copiar tabla como imagen
+  const copyTableAsImage = async () => {
+    if (!tableRef.current) return;
+    const canvas = await html2canvas(tableRef.current, {
+      backgroundColor: "#ffffff",
+      scale: 2,
+    });
+    canvas.toBlob((blob) => {
+      const item = new ClipboardItem({ "image/png": blob });
+      navigator.clipboard.write([item]);
+    });
+  };
+
+  // 🔹 Generador de análisis con formato y negritas (CORREGIDO: filtra por fecha y equipo)
   const generateAnalysis = () => {
     if (selectedIntervals.length < 2) {
       setAnalysisText("⚠️ Debes seleccionar dos rangos horarios para generar el análisis.");
@@ -118,15 +141,27 @@ export default function FcstVsRealTable() {
     const endIdx = hours.indexOf(end);
     const selectedRange = hours.slice(startIdx, endIdx + 1);
 
-    const dayData = mergedData.filter((d) => d.date === selectedDate);
-    const dayTotalForecast = dayData.reduce((sum, d) => sum + (d.forecast_received || 0), 0);
+    // 🔸 Filtra por fecha y por equipo (coherente con la tabla)
+    const dayData = mergedData.filter(
+      (d) => d.date === selectedDate && (selectedTeam === "All" || d.team === selectedTeam)
+    );
+
+    // Total forecast del día SOLO del equipo seleccionado (o de todos si "All")
+    const dayTotalForecast = dayData.reduce(
+      (sum, d) => sum + (d.forecast_received || 0),
+      0
+    );
 
     let text = "";
     for (let hr of selectedRange) {
       const nextHour = hours[hours.indexOf(hr) + 1];
       if (!nextHour) continue;
 
-      const segmentData = dayData.filter((d) => d.interval === hr);
+      // Por tramo horario (también filtrado por equipo)
+      const segmentData = dayData.filter(
+        (d) => d.interval === hr && (selectedTeam === "All" || d.team === selectedTeam)
+      );
+
       const totalForecast = segmentData.reduce(
         (sum, d) => sum + (d.forecast_received || 0),
         0
@@ -140,7 +175,7 @@ export default function FcstVsRealTable() {
 
       const diff = totalContacts - totalForecast;
       const deviation = (diff / totalForecast) * 100;
-      const portion = (totalForecast / dayTotalForecast) * 100;
+      const portion = dayTotalForecast ? (totalForecast / dayTotalForecast) * 100 : 0;
 
       const hourRange = `"${hr} HE - ${hr.replace(":00", ":59")} HE"`;
       const deviationText = `"${deviation.toFixed(0)}%"`;
@@ -230,17 +265,19 @@ export default function FcstVsRealTable() {
       </div>
 
       {/* Tabla */}
-      <div className="overflow-x-auto mb-4">
+      <div ref={tableRef} className="overflow-x-auto mb-4">
         <table className="min-w-full border border-gray-300 rounded-lg shadow-sm text-sm">
           <thead className="bg-gray-100">
-            <tr>
-              <th className="px-4 py-2 border-b text-left font-semibold">Team</th>
-              <th className="px-4 py-2 border-b text-left font-semibold">Date</th>
-              <th className="px-4 py-2 border-b text-left font-semibold">Interval</th>
-              <th className="px-4 py-2 border-b text-left font-semibold">Forecast Received</th>
-              <th className="px-4 py-2 border-b text-left font-semibold">Contacts Received</th>
-              <th className="px-4 py-2 border-b text-left font-semibold">SLA FRT</th>
-              <th className="px-4 py-2 border-b text-left font-semibold">THT</th>
+            <tr className="*:text-center">
+              <th className="px-4 py-2 text-left font-semibold">Team</th>
+              <th className="px-4 py-2 text-left font-semibold">Date</th>
+              <th className="px-4 py-2 text-left font-semibold">Interval</th>
+              <th className="px-4 py-2 text-left font-semibold">Forecast Received</th>
+              <th className="px-4 py-2 text-left font-semibold">Contacts Received</th>
+              <th className="px-4 py-2 text-left font-semibold">Deviation (Q)</th>
+              <th className="px-4 py-2 text-left font-semibold">Deviation (%)</th>
+              <th className="px-4 py-2 text-left font-semibold">SLA FRT</th>
+              <th className="px-4 py-2 text-left font-semibold">THT</th>
             </tr>
           </thead>
           <tbody>
@@ -248,39 +285,68 @@ export default function FcstVsRealTable() {
               <tr
                 key={index}
                 className={`${
-                  index % 2 === 0 ? "bg-white" : "bg-gray-50"
+                  index % 2 === 0 ? "bg-white" : "bg-gray-200"
                 } hover:bg-gray-100 transition-colors ${
                   item.forecast_received === 0 && item.contacts_received === 0
                     ? "text-gray-400 italic"
                     : ""
-                }`}
+                } *:text-center`}
               >
-                <td className="px-4 py-2 border-b">{item.team}</td>
-                <td className="px-4 py-2 border-b">{item.date}</td>
-                <td className="px-4 py-2 border-b">{item.interval}</td>
-                <td className="px-4 py-2 border-b text-blue-600 font-medium">
+                <td className="px-4 py-2">{item.team}</td>
+                <td className="px-4 py-2">{item.date}</td>
+                <td className="px-4 py-2">{item.interval}</td>
+                <td className="px-4 py-2 font-medium">
                   {item.forecast_received ?? "-"}
                 </td>
-                <td className="px-4 py-2 border-b text-green-600 font-medium">
+                <td className="px-4 py-2 font-medium">
                   {item.contacts_received ?? "-"}
                 </td>
-                <td className="px-4 py-2 border-b">
+                <td
+                  className={`${
+                    (item.deviation_q ?? 0) > 0 ? "text-red-500" : "text-green-500"
+                  } px-4 py-2 font-medium`}
+                >
+                  {item.deviation_q?.toFixed(0)}
+                </td>
+                <td
+                  className={`${
+                    (item.deviation_pct ?? 0) > 0 ? "text-red-500" : "text-green-500"
+                  } px-4 py-2 font-medium`}
+                >
+                  {item.deviation_pct ? `${item.deviation_pct.toFixed(0)}%` : "-"}
+                </td>
+                <td
+                  className={`${
+                    ((item.sla_frt || 0) * 100).toFixed(2) > 85
+                      ? "text-green-500"
+                      : "text-red-500"
+                  } px-4 py-2 font-medium`}
+                >
                   {item.sla_frt ? `${(item.sla_frt * 100).toFixed(2)}%` : "-"}
                 </td>
-                <td className="px-4 py-2 border-b">{item.tht?.toFixed(2) ?? "-"}</td>
+                <td className="px-4 py-2">{item.tht?.toFixed(2) ?? "-"}</td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
 
-      {/* Generar análisis */}
-      <button
-        onClick={generateAnalysis}
-        className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded text-sm"
-      >
-        📋 Copiar análisis
-      </button>
+      {/* Botones inferiores */}
+      <div className="flex gap-3">
+        <button
+          onClick={generateAnalysis}
+          className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded text-sm"
+        >
+          📋 Copiar análisis
+        </button>
+
+        <button
+          onClick={copyTableAsImage}
+          className="px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded text-sm"
+        >
+          🖼️ Copiar tabla
+        </button>
+      </div>
 
       {analysisText && (
         <pre className="mt-4 bg-gray-50 p-3 rounded border border-gray-200 whitespace-pre-wrap text-sm">
