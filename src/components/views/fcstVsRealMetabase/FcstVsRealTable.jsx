@@ -177,10 +177,10 @@ export default function FcstVsRealTable() {
       const deviation = (diff / totalForecast) * 100;
       const portion = dayTotalForecast ? (totalForecast / dayTotalForecast) * 100 : 0;
 
-      const hourRange = `"${hr} HE - ${hr.replace(":00", ":59")} HE"`;
-      const deviationText = `"${deviation.toFixed(0)}%"`;
-      const diffText = `"${diff.toFixed(0)} Q"`;
-      const portionText = `"${portion.toFixed(2)}%"`;
+      const hourRange = `${hr} HE - ${hr.replace(":00", ":59")} HE`;
+      const deviationText = `${deviation.toFixed(0)}%`;
+      const diffText = `${diff.toFixed(0)} Q`;
+      const portionText = `${portion.toFixed(2)}%`;
 
       text += `${toUnicodeBold(hourRange)}\nSe tiene un desvío de contactos de ${toUnicodeBold(
         deviationText
