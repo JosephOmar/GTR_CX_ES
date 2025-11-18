@@ -43,7 +43,7 @@ const CustomerProductionTable = () => {
       setIsLoading(true);  // Activamos el estado de carga
       try {
         console.log('Fetching data for date:', selectedDate);
-        const response = await fetch(`http://localhost:8000/get-from-sheets-customer?date=${selectedDate}`);
+        const response = await fetch(`${import.meta.env.PUBLIC_URL_BACKEND}get-from-sheets-customer?date=${selectedDate}`);
         const data = await response.json();
         console.log('Datos obtenidos:', data);  // Log para verificar los datos que obtenemos
         setData(data.agentData);  // Solo trabajamos con agentData
@@ -114,7 +114,7 @@ const CustomerProductionTable = () => {
 
   // Función para obtener el fondo rojo para valores menores a 12
   const getBgColor = (value) => {
-    return value < 12 ? 'bg-red-500' : 'bg-green-500';
+    return value < 12 ? 'bg-red-300' : 'bg-green-500';
   };
 
   // Filtrar tramos con valores 0 (no mostrarlos)
