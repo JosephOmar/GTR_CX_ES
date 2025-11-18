@@ -69,6 +69,11 @@ export default function Header({ title = 'GTR SUPPORT' }) {
                   </a>
                 </li>
                 <li>
+                  <a href="/production" className="">
+                    Production
+                  </a>
+                </li>
+                <li>
                   <a href="/views" className="">
                     Views
                   </a>

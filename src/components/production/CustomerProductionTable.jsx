@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import html2canvas from 'html2canvas-pro';  // Importa html2canvas-pro
-import { toUnicodeBold } from '../../management/utils/toUnicodeBold';
+import { toUnicodeBold } from '../management/utils/toUnicodeBold';
 
 const CustomerProductionTable = () => {
   const [data, setData] = useState(null);
@@ -18,6 +18,7 @@ const CustomerProductionTable = () => {
 
   // Esta función se ejecuta cuando el usuario selecciona una fecha
   const handleDateChange = (event) => {
+    console.log('xdddddd')
     setSelectedDate(event.target.value);
   };
 
