@@ -36,16 +36,17 @@ export const useRealTimeDataStore = create((set, get) => ({
           return;
         }
       }
-
+      console.log('xd')
       // 🧠 Cargar desde backend
       const token = await localforage.getItem("token");
+      console.log('xd2')
       const res = await fetch(
         `${import.meta.env.PUBLIC_URL_BACKEND}real-time-data/`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-
+      console.log(':c')
       if (!res.ok) throw new Error(`Error ${res.status}`);
 
       const data = await res.json();
@@ -54,7 +55,7 @@ export const useRealTimeDataStore = create((set, get) => ({
       await localforage.setItem("realTimeData", data);
       set({ realTimeData: data, loading: false });
     } catch (err) {
-      console.error("❌ Error al obtener realTimeData:", err);
+      console.log("❌ Error al obtener realTimeData:", err);
       set({ error: err.message, loading: false });
     }
   },

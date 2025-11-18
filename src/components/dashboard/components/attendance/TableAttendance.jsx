@@ -94,7 +94,7 @@ const AttendanceTable = () => {
 
     const filtered = workers.filter((worker) => {
       const teamName = worker.team?.name || "";
-      if (worker.productive !== "Si" ) return false;
+      if (worker.productive !== "Si" && worker.status.name !=='Active' ) return false;
       
       if (teamFilter.length > 0 && !teamFilter.includes(teamName)) return false;
 
