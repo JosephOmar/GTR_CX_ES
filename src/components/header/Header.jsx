@@ -83,6 +83,11 @@ export default function Header({ title = 'GTR SUPPORT' }) {
                     Dashboard
                   </a>
                 </li>
+                <li>
+                  <a href="/sla-breached" className="">
+                    SLA Breached
+                  </a>
+                </li>
                 <li className="">
                   Hi, {user?.name}!
                 </li>
