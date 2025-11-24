@@ -139,9 +139,9 @@ export default function SlaBreachedTable() {
 
     const sorted = [...filteredData].sort((a, b) => {
       if (newSortOrder === "asc") {
-        return a.coordinator.localeCompare(b.coordinator);
+        return a.supervisor.localeCompare(b.supervisor);
       } else {
-        return b.coordinator.localeCompare(a.coordinator);
+        return b.supervisor.localeCompare(a.supervisor);
       }
     });
 
@@ -151,9 +151,9 @@ export default function SlaBreachedTable() {
   useEffect(() => {
     const sorted = [...filteredData].sort((a, b) => {
       if (sortOrder === "asc") {
-        return a.coordinator.localeCompare(b.coordinator);
+        return a.supervisor.localeCompare(b.supervisor);
       } else {
-        return b.coordinator.localeCompare(a.coordinator);
+        return b.supervisor.localeCompare(a.supervisor);
       }
     });
     setSortedData(sorted);
@@ -240,14 +240,15 @@ export default function SlaBreachedTable() {
             </tr>
             <tr className="*:text-center">
               <th className="px-4 py-2 text-left font-semibold">Agent</th>
-              <th className="px-4 py-2 text-left font-semibold">Supervisor</th>
-              <th className="px-4 py-2 text-left font-semibold">Coordinator
+              <th className="px-4 py-2 text-left font-semibold">Supervisor
                 <button
                   onClick={handleCoordinatorSort}
                   className="ml-2 text-sm text-blue-500"
                 >
                   {sortOrder === "asc" ? "↑" : "↓"}
                 </button>
+              </th>
+              <th className="px-4 py-2 text-left font-semibold">Coordinator  
               </th>
               <th className="px-4 py-2 text-left font-semibold">Interval</th>
               <th className="px-4 py-2 text-left font-semibold">Chats Breached</th>
