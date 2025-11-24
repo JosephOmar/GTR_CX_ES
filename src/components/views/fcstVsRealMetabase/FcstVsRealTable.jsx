@@ -442,10 +442,10 @@ export default function FcstVsRealTable() {
           <button
             key={hour}
             onClick={() => handleIntervalClick(hour)}
-            className={`px-3 py-1 text-xs rounded border ${
+            className={`px-3 py-1 text-xs rounded ${
               selectedIntervals.includes(hour)
-                ? "bg-blue-500 text-white border-blue-600"
-                : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
+                ? "border-2"
+                : ""
             }`}
           >
             {hour}
@@ -456,7 +456,7 @@ export default function FcstVsRealTable() {
       {/* Tabla */}
       <div ref={tableRef} className="overflow-x-auto mb-4">
         <table className="min-w-full border border-gray-300 rounded-lg shadow-sm text-sm">
-          <thead className="bg-gray-100">
+          <thead className="bg-gray-100 dark:bg-gray-900">
             <tr className="*:text-center">
               <th className="px-4 py-2 text-left font-semibold">
                 {filteredData[0]?.date}
@@ -488,8 +488,8 @@ export default function FcstVsRealTable() {
               <tr
                 key={index}
                 className={`${
-                  index % 2 === 0 ? "bg-white" : "bg-gray-200"
-                } hover:bg-gray-100 transition-colors ${
+                  index % 2 === 0 ? "bg-white dark:bg-gray-900" : "bg-gray-200 dark:bg-gray-700"
+                } hover:bg-gray-100 dark:hover:bg-gray-500 transition-colors ${
                   item.forecast_received === 0 && item.contacts_received === 0
                     ? "text-gray-400 italic"
                     : ""
@@ -536,7 +536,7 @@ export default function FcstVsRealTable() {
             ))}
 
             {/* Fila de Totales */}
-            <tr className="bg-gray-200 *:text-center">
+            <tr className="bg-green-200 dark:bg-green-800 *:text-center">
               <td className="px-4 py-2 font-semibold">Totales</td>
               <td className="px-4 py-2">{totals.forecast_received}</td>
               <td className="px-4 py-2">{totals.contacts_received}</td>

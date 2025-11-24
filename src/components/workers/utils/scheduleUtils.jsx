@@ -31,7 +31,7 @@ export function toMinutes(hhmm) {
 
 // ¿superpone fragmento [start,end) con ventana de 30m?
 export function inWindow(fragment, selectedDate, selectedTime) {
-  if (fragment.date !== selectedDate) return false
+  if (fragment.start_date !== selectedDate) return false
 
   // 2. Convertimos a minutos
   const ws = toMinutes(selectedTime)        // window start
@@ -67,13 +67,13 @@ export function expandOvernight(turns) {
 
     if (st <= et) {
       // mismo día
-      return [{ date: t.date, start: st, end: et, break_start: breakStart, break_end: breakEnd }];
+      return [{ start_date: t.start_date, start: st, end: et, break_start: breakStart, break_end: breakEnd }];
     }
     // cruza medianoche
-    const nextDate = addDaysISO(t.date, 1);
+    const nextDate = addDaysISO(t.start_date, 1);
     return [
-      { date: t.date, start: st, end: "24:00", break_start: breakStart, break_end: breakEnd },
-      { date: nextDate, start: "00:00", end: et, break_start: breakStart, break_end: breakEnd },
+      { start_date: t.start_date, start: st, end: "24:00", break_start: breakStart, break_end: breakEnd },
+      { start_date: nextDate, start: "00:00", end: et, break_start: breakStart, break_end: breakEnd },
     ];
   });
 }

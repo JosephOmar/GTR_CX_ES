@@ -24,7 +24,7 @@
   /* Estados */
   --cx-success: #10b981;
   --cx-warning: #f59e0b;
-  --cx-error: #ef4444;
+  --cx-error: #e58787;
 
     /* Fondo y estructura */
   --cx-bg-main-dark: #0b1e2a;
@@ -34,14 +34,14 @@
   --cx-text-secondary-dark: #cbd5e1;
 
   /* Colores primarios */
-  --cx-primary-dark: #1fb0a2;
-  --cx-primary-dark-opacity: #1fb0a280;
+  --cx-primary-dark: #095d55;
+  --cx-primary-dark-opacity: #0e827680;
   --cx-primary-hover-dark: #0e6d63;
 
   /* Estados */
-  --cx-success-dark: #34d399;
+  --cx-success-dark: #038d5a;
   --cx-warning-dark: #fbbf24;
-  --cx-error-dark: #f87171;
+  --cx-error-dark: #b32626;
 }
 
 .product {
@@ -137,15 +137,15 @@ h3 {
 
 .table-row-obs {
   background-color: light-dark(var(--cx-error), var(--cx-error-dark));
-  color: light-dark(var(--cx-bg-main), var(--cx-bg-main-dark));
+  color: light-dark(var(--cx-bg-main-dark), var(--cx-bg-main));
 }
 
 .table-row-support {
   background-color: light-dark(var(--cx-success), var(--cx-success-dark));
-  color: light-dark(var(--cx-bg-main), var(--cx-bg-main-dark));
+  color: light-dark(var(--cx-bg-main-dark), var(--cx-bg-main));
 }
 
 .table-row-trainee {
-  background-color: light-dark(#e967e9, #990b99);
-  color: light-dark(var(--cx-bg-main), var(--cx-bg-main-dark));
+  background-color: light-dark(#ea81ea, #990b99);
+  color: light-dark(var(--cx-bg-main-dark), var(--cx-bg-main));
 }

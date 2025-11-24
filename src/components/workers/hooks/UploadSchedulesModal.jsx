@@ -38,6 +38,7 @@ export default function UploadSchedulesModal({ isOpen, onClose }) {
     { label: "Schedule Concentrix", expectedPart: "schedule_concentrix" },
     { label: "People Obs", expectedPart: "people_obs" },
     { label: "Schedule Ubycall", expectedPart: "schedule_ubycall" },
+    { label: "Schedule ppp", expectedPart: "schedule_ppp" },
   ];
 
   // ================= SUBIDA MANUAL =================

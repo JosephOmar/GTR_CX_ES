@@ -7,8 +7,8 @@ export function WorkersTable({ workers, selectedDate }) {
   const [imgCopied, setImgCopied] = useState(false);
   const [sortConfig, setSortConfig] = useState({ key: "", direction: "asc" });
   const [sortedWorkers, setSortedWorkers] = useState(workers);
-
-  
+  const [currentPage, setCurrentPage] = useState(1); // Página actual
+  const workersPerPage = 150; // Número máximo de trabajadores por página
 
   const showTerminationColumn = workers.some(
     (w) => w.status?.name === "Inactivo"
@@ -60,7 +60,7 @@ export function WorkersTable({ workers, selectedDate }) {
         const valB = b.team?.name || "";
         return direction === "asc"
           ? valA.localeCompare(valB)
-          : valB.localeCompare(valA);         
+          : valB.localeCompare(valA);
       }
 
       if (key === "attendance") {
@@ -77,18 +77,14 @@ export function WorkersTable({ workers, selectedDate }) {
       }
 
       if (key === "out_of_adherence" || key === "offline_minutes") {
-          const attA = a.attendances?.find((att) => att.date === selectedDate);
-          const attB = b.attendances?.find((att) => att.date === selectedDate);
-          // Asegurarnos de acceder correctamente a los valores dentro de 'attendance'
-          const rawA = attA?.[key] ?? Infinity;  // Usamos Infinity si no existe el valor
-          const rawB = attB?.[key] ?? Infinity;
+        const attA = a.attendances?.find((att) => att.date === selectedDate);
+        const attB = b.attendances?.find((att) => att.date === selectedDate);
+        const rawA = attA?.[key] ?? Infinity;
+        const rawB = attB?.[key] ?? Infinity;
+        const valA = rawA != null && rawA !== "" ? rawA : Infinity;
+        const valB = rawB != null && rawB !== "" ? rawB : Infinity;
 
-          // Si el valor es vacío o no existe, asignamos Infinity para colocarlos al final
-          const valA = rawA != null && rawA !== "" ? rawA : Infinity;
-          const valB = rawB != null && rawB !== "" ? rawB : Infinity;
-
-          // Ordenamos de acuerdo a la dirección (ascendente o descendente)
-          return direction === "asc" ? valA - valB : valB - valA;
+        return direction === "asc" ? valA - valB : valB - valA;
       }
 
       if (key === "termination_date") {
@@ -112,7 +108,6 @@ export function WorkersTable({ workers, selectedDate }) {
     setSortedWorkers(sortedData);
   };
 
-  // Resetear lista ordenada al cambiar workers
   useEffect(() => {
     setSortedWorkers(workers);
   }, [workers]);
@@ -149,6 +144,19 @@ export function WorkersTable({ workers, selectedDate }) {
         });
       });
     }
+  };
+
+  // ==============================
+  //  Paginar
+  // ==============================
+  const indexOfLastWorker = currentPage * workersPerPage;
+  const indexOfFirstWorker = indexOfLastWorker - workersPerPage;
+  const currentWorkers = sortedWorkers.slice(indexOfFirstWorker, indexOfLastWorker);
+
+  const totalPages = Math.ceil(workers.length / workersPerPage);
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
   };
 
   // ==============================
@@ -203,14 +211,14 @@ export function WorkersTable({ workers, selectedDate }) {
           </thead>
 
           <tbody className="bg-main">
-            {sortedWorkers.map((w, idx) => {
+            {currentWorkers.map((w, idx) => {
               const turns =
                 w.contract_type?.name === "UBYCALL"
                   ? w.ubycall_schedules
                   : w.schedules;
 
               const filtered = expandOvernight(turns).filter(
-                (f) => f.date === selectedDate
+                (f) => f.start_date === selectedDate
               );
 
               const slots = filtered.map((f, i) => (
@@ -225,9 +233,8 @@ export function WorkersTable({ workers, selectedDate }) {
                   : "—"
                 : "—";
 
-              // Obs del día seleccionado
               const scheduleObs = w.schedules.map((s) =>
-                s.date === selectedDate ? s.obs || "" : ""
+                s.start_date === selectedDate ? s.obs || "" : ""
               );
               const hasObs = scheduleObs.some((obs) => obs !== "");
 
@@ -235,7 +242,6 @@ export function WorkersTable({ workers, selectedDate }) {
 
               const hasSupport = w.productive?.includes("No")
 
-              // === Asistencia con lógica Lima (corrimiento madrugada SOLO si earliest start <= umbral) ===
               const effectiveAttendDate = chooseAttendanceDate(selectedDate, filtered);
               const attendance = w.attendances?.find(
                 (a) => a.date === effectiveAttendDate
@@ -267,10 +273,10 @@ export function WorkersTable({ workers, selectedDate }) {
                   <td
                     className={`${
                       attendance?.status === "Present"
-                        ? "bg-green-400"
+                        ? "bg-[#10b981] dark:bg-[#038d5a]"
                         : attendance?.status === "Late"
-                        ? "bg-orange-400"
-                        : "bg-red-400"
+                        ? "bg-[#dd9e33] dark:bg-[#bc7904]"
+                        : "bg-[#e58787] dark:bg-[#b32626]"
                     }`}
                   >
                     {attendance?.status || "Absent"}
@@ -297,6 +303,25 @@ export function WorkersTable({ workers, selectedDate }) {
             })}
           </tbody>
         </table>
+      </div>
+
+      {/* Paginación */}
+      <div className="flex justify-center mt-4">
+        <button
+          onClick={() => handlePageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+          className="px-4 py-2 bg-blue-500 text-white rounded-l"
+        >
+          Anterior
+        </button>
+        <span className="px-4 py-2">{`Página ${currentPage} de ${totalPages}`}</span>
+        <button
+          onClick={() => handlePageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+          className="px-4 py-2 bg-blue-500 text-white rounded-r"
+        >
+          Siguiente
+        </button>
       </div>
     </div>
   );

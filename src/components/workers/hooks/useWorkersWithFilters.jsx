@@ -118,8 +118,8 @@ export function useWorkersWithFilters({
     // 1) extrae y deduplica
     const allDates = workers.flatMap((w) =>
       w.schedules
-        .map((t) => t.date)
-        .filter((date) => date === todayStr || date === yesterdayStr)
+        .map((t) => t.start_date)
+        .filter((start_date) => start_date === todayStr || start_date === yesterdayStr)
     );
     const uniqDates = Array.from(new Set(allDates));
 
@@ -288,7 +288,7 @@ export function useWorkersWithFilters({
           const frags = expandOvernight(turns);
           return frags.some((frag) => {
             // 1) filtrado por fecha si está aplicado
-            if (selectedDate && frag.date !== selectedDate) return false;
+            if (selectedDate && frag.start_date !== selectedDate) return false;
 
             // 2) filtrado por hora usando rango continuo
             if (timeFilter && timeFilter.length > 0) {
@@ -317,7 +317,7 @@ export function useWorkersWithFilters({
         const obs = (w.observation_1 || "").toString().toUpperCase();
         const schedule = w.schedules.map((item) => {
           // Compara las fechas y retorna 'obs' si coincide con 'selectedDate', o un string vacío
-          if (item.date === selectedDate) {
+          if (item.start_date === selectedDate) {
             return item.obs || "";
           }
           return "";

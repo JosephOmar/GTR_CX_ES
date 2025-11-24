@@ -303,7 +303,7 @@ export function TeamDayTimeFilter({
                 key={ts}
                 onClick={() => handleTimeClick(ts)}
                 className={`px-2 py-2 text-center rounded ${
-                  timeFilter.includes(ts) ? "bg-primary-hover text-white" : ""
+                  timeFilter.includes(ts) ? "border-2" : ""
                 }`}
               >
                 {ts}

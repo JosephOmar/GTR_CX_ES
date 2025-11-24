@@ -94,7 +94,7 @@ const AttendanceTable = () => {
 
     const filtered = workers.filter((worker) => {
       const teamName = worker.team?.name || "";
-      if (worker.productive !== "Si" && worker.status.name !=='Active' ) return false;
+      if (worker.productive !== "Si") return false;
       
       if (teamFilter.length > 0 && !teamFilter.includes(teamName)) return false;
 
@@ -107,13 +107,13 @@ const AttendanceTable = () => {
                 return false; // Excluir este horario si no es "FLT" o NULL
         }
         
-        if (!schedule.date || !schedule.start_time || !schedule.end_time)
+        if (!schedule.start_date || !schedule.start_time || !schedule.end_time)
           return false;
 
         const scheduleStartTime = new Date(
-          `${schedule.date}T${schedule.start_time}`
+          `${schedule.start_date}T${schedule.start_time}`
         );
-        let scheduleEndTime = new Date(`${schedule.date}T${schedule.end_time}`);
+        let scheduleEndTime = new Date(`${schedule.start_date}T${schedule.end_time}`);
         if (scheduleEndTime < scheduleStartTime) {
           scheduleEndTime.setDate(scheduleEndTime.getDate() + 1); // Sumar un día
         }
@@ -158,10 +158,10 @@ const AttendanceTable = () => {
       filteredData.forEach((worker) => {
         const validSchedules = worker.schedules.filter((schedule) => {
           const scheduleStartTime = new Date(
-            `${schedule.date}T${schedule.start_time}`
+            `${schedule.start_date}T${schedule.start_time}`
           );
           let scheduleEndTime = new Date(
-            `${schedule.date}T${schedule.end_time}`
+            `${schedule.start_date}T${schedule.end_time}`
           );
           if (scheduleEndTime < scheduleStartTime) {
             scheduleEndTime.setDate(scheduleEndTime.getDate() + 1);
@@ -194,7 +194,7 @@ const AttendanceTable = () => {
         const workerAttendances =
           worker.attendances?.filter(
             (att) =>
-              att.api_email === worker.api_email && att.date === schedule.date
+              att.api_email === worker.api_email && att.date === schedule.start_date
           ) || [];
 
         if (workerAttendances.length === 0) {
@@ -217,7 +217,7 @@ const AttendanceTable = () => {
         const workerAttendances =
           worker.attendances?.filter(
             (att) =>
-              att.api_email === worker.api_email && att.date === schedule.date
+              att.api_email === worker.api_email && att.date === schedule.start_date
           ) || [];
 
         if (workerAttendances.length === 0) {
@@ -270,7 +270,7 @@ const AttendanceTable = () => {
                 worker.attendances?.filter(
                   (att) =>
                     att.api_email === worker.api_email &&
-                    att.date === schedule.date
+                    att.date === schedule.start_date
                 ) || [];
 
               if (workerAttendances.length === 0) {
@@ -287,7 +287,7 @@ const AttendanceTable = () => {
                 worker.attendances?.filter(
                   (att) =>
                     att.api_email === worker.api_email &&
-                    att.date === schedule.date
+                    att.date === schedule.start_date
                 ) || [];
 
               if (workerAttendances.length === 0) {
@@ -414,7 +414,7 @@ const AttendanceTable = () => {
       <div ref={tableRef} className="overflow-x-auto">
         <table className="min-w-full table-auto border-collapse">
           <thead>
-            <tr className="bg-gray-100">
+            <tr className="bg-gray-100 dark:bg-gray-800">
               <th className="px-4 py-2 border-b"></th>
               <th className="px-4 py-2 border-b"></th>
               {teamFilter.map((team) => (
@@ -429,14 +429,14 @@ const AttendanceTable = () => {
                 </>
               ))}
             </tr>
-            <tr className="bg-gray-100">
+            <tr className="bg-gray-100 dark:bg-gray-800">
               <th className="px-4 py-2 border-b">Perú Time</th>
               <th className="px-4 py-2 border-b">Spain Time</th>
               {teamFilter.map((team) => (
                 <>
                   <th
                     key={`${team}Scheduled`}
-                    className="px-4 py-2 border-b border-l border-black"
+                    className="px-4 py-2 border-b border-l"
                   >
                     Scheduled
                   </th>
@@ -458,14 +458,14 @@ const AttendanceTable = () => {
           </thead>
           <tbody>
             {processTableData().map((row, index) => (
-              <tr key={index} className="hover:bg-gray-50 *:text-center">
+              <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-500 *:text-center">
                 <td className="px-4 py-2 border-b">{row.hourPeru}</td>
                 <td className="px-4 py-2 border-b">{row.hourSpain}</td>
                 {teamFilter.map((team) => (
                   <>
                     <td
                       key={`${team}Scheduled-${index}`}
-                      className="px-4 py-2 border-b border-l border-black"
+                      className="px-4 py-2 border-b border-l"
                     >
                       {row[`${team}Scheduled`]}
                     </td>

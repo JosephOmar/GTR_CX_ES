@@ -69,7 +69,7 @@ export const getTurnsForWorker = (worker, selectedDate) => {
       ? worker.ubycall_schedules
       : worker.schedules;
 
-  return expandOvernight(schedules).filter((f) => f.date === selectedDate);
+  return expandOvernight(schedules).filter((f) => f.start_date === selectedDate);
 };
 
 // ! Transforma a minutos la hora de inicio de los turnos
