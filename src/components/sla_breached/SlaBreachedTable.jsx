@@ -133,16 +133,28 @@ export default function SlaBreachedTable() {
 
   const totals = calculateTotals(filteredData);
 
+  // Cambié la función handleCoordinatorSort para ordenar por supervisor y luego coordinator
   const handleCoordinatorSort = () => {
     const newSortOrder = sortOrder === "asc" ? "desc" : "asc";
     setSortOrder(newSortOrder);
 
     const sorted = [...filteredData].sort((a, b) => {
-      if (newSortOrder === "asc") {
-        return a.supervisor.localeCompare(b.supervisor);
-      } else {
-        return b.supervisor.localeCompare(a.supervisor);
-      }
+        const supervisorA = a.supervisor || ""; // Protege contra undefined
+        const supervisorB = b.supervisor || "";
+        const coordinatorA = a.coordinator || ""; // Protege contra undefined
+        const coordinatorB = b.coordinator || "";
+
+        // Primero ordena por coordinator
+        if (coordinatorA !== coordinatorB) {
+        return newSortOrder === "asc"
+            ? coordinatorA.localeCompare(coordinatorB)
+            : coordinatorB.localeCompare(coordinatorA);
+        }
+
+        // Si los coordinadores son iguales, ordena por supervisor
+        return newSortOrder === "asc"
+        ? supervisorA.localeCompare(supervisorB)
+        : supervisorB.localeCompare(supervisorA);
     });
 
     setSortedData(sorted);
@@ -150,14 +162,26 @@ export default function SlaBreachedTable() {
 
   useEffect(() => {
     const sorted = [...filteredData].sort((a, b) => {
-      if (sortOrder === "asc") {
-        return a.supervisor.localeCompare(b.supervisor);
-      } else {
-        return b.supervisor.localeCompare(a.supervisor);
-      }
+        const supervisorA = a.supervisor || ""; // Protege contra undefined
+        const supervisorB = b.supervisor || "";
+        const coordinatorA = a.coordinator || ""; // Protege contra undefined
+        const coordinatorB = b.coordinator || "";
+
+        // Primero ordena por coordinator
+        if (coordinatorA !== coordinatorB) {
+        return sortOrder === "asc"
+            ? coordinatorA.localeCompare(coordinatorB)
+            : coordinatorB.localeCompare(coordinatorA);
+        }
+
+        // Si los coordinadores son iguales, ordena por supervisor
+        return sortOrder === "asc"
+        ? supervisorA.localeCompare(supervisorB)
+        : supervisorB.localeCompare(supervisorA);
     });
+
     setSortedData(sorted);
-  }, [selectedTeam, selectedDate, selectedIntervals, sortOrder]);
+    }, [selectedTeam, selectedDate, selectedIntervals, sortOrder]);
 
   const dataToRender = sortedData.length > 0 ? sortedData : filteredData;
 
@@ -169,7 +193,6 @@ export default function SlaBreachedTable() {
       </div>
     );
   }
-
 
   return (
     <div className="p-4">
@@ -248,8 +271,7 @@ export default function SlaBreachedTable() {
                   {sortOrder === "asc" ? "↑" : "↓"}
                 </button>
               </th>
-              <th className="px-4 py-2 text-left font-semibold">Coordinator  
-              </th>
+              <th className="px-4 py-2 text-left font-semibold">Coordinator</th>
               <th className="px-4 py-2 text-left font-semibold">Interval</th>
               <th className="px-4 py-2 text-left font-semibold">Chats Breached</th>
             </tr>
