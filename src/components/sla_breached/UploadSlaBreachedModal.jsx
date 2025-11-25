@@ -46,7 +46,7 @@ export default function UploadSlaBreachedModal({ isOpen, onClose, onSuccess }) {
         const data = await response.json();
         setMessage(`✅ ${data.status} - ${data.rows_inserted} registros cargados`);
         await fetchSlaBreachedData(true); // Refresca los datos después de la carga
-        if (onSuccess) onSuccess(); // Llama la función onSuccess si se necesita
+        onClose();
       } else {
         const errorData = await response.json();
         setMessage(`❌ ${errorData.detail || "Error al cargar sla_breached_data"}`);
