@@ -187,15 +187,15 @@ export default function SlaBreachedTable() {
 
   const generateSummaryText = () => {
     const selectedTimeRange = selectedIntervals.length === 1 
-      ? `${selectedIntervals[0]}:00 - ${parseInt(selectedIntervals[0], 10) + 1}:00 HE` 
+      ? `${selectedIntervals[0]}:00 - ${parseInt(selectedIntervals[0], 10) + 1}:59 HE` 
       : `${selectedIntervals[0]}:00 - ${selectedIntervals[selectedIntervals.length - 1]}:59 HE`;
     
-    const agentsWithMoreThan2Chats = filteredData.filter((row) => row.chat_breached > 2).length;
+    const agentsWithMoreThan2Chats = filteredData.filter((row) => row.chat_breached > 1).length;
     const totalChats = filteredData.reduce((total, row) => total + row.chat_breached, 0);
     
     return `
 📌 Detalle de chats vencidos por saludo en el rango de ${selectedTimeRange}.
-⚠️ ${agentsWithMoreThan2Chats} As con +2 chat vencido.
+⚠️ ${agentsWithMoreThan2Chats} As con +1 chat vencido.
 📈 Resultado: ${totalChats} chats vencidos en el tramo.
 🚨Por favor su apoyo reforzando tiempos de saludo🚨
     `;
@@ -338,7 +338,7 @@ export default function SlaBreachedTable() {
             {dataToRender.map((item, index) => (
               <tr
                 key={index}
-                className={`${item.chat_breached > 2 ? 'bg-red-300 dark:bg-red-600' : index % 2 === 0 ? "bg-white dark:bg-gray-900" : "bg-gray-200 dark:bg-gray-700"
+                className={`${item.chat_breached > 1 ? 'bg-red-300 dark:bg-red-600' : index % 2 === 0 ? "bg-white dark:bg-gray-900" : "bg-gray-200 dark:bg-gray-700"
                 } hover:bg-gray-100 dark:hover:bg-gray-500 transition-colors *:text-center `}
               >
                 <td className="px-4 py-2">{item.workerName}</td>
