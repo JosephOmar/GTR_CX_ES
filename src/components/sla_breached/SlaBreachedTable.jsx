@@ -3,6 +3,7 @@ import { useSlaBreachedDataStore } from "./SlaBreachedDataStore";
 import { useWorkersStore } from "../workers/store/WorkersStore";
 import html2canvas from "html2canvas-pro";
 import UploadSlaBreachedModal from "./UploadSlaBreachedModal";
+import { toUnicodeBold } from "../management/utils/toUnicodeBold";
 
 export default function SlaBreachedTable() {
   const { slaBreachedData, fetchSlaBreachedData, loading: loadingSlaBreached } =
@@ -186,27 +187,22 @@ export default function SlaBreachedTable() {
   const dataToRender = sortedData.length > 0 ? sortedData : filteredData;
 
   const generateSummaryText = () => {
+
     const selectedTimeRange = selectedIntervals.length === 1 
-      ? `${selectedIntervals[0]}:00 - ${parseInt(selectedIntervals[0], 10) + 1}:59 HE` 
-      : `${selectedIntervals[0]}:00 - ${selectedIntervals[selectedIntervals.length - 1]}:59 HE`;
+      ? `${selectedIntervals[0]} - ${selectedIntervals[0].split(":",1)}:59 HE` 
+      : `${selectedIntervals[0]} - ${selectedIntervals[selectedIntervals.length - 1].split(":",1)}:59 HE`;
     
     const agentsWithMoreThan2Chats = filteredData.filter((row) => row.chat_breached > 1).length;
     const totalChats = filteredData.reduce((total, row) => total + row.chat_breached, 0);
     
-    return `
-📌 Detalle de chats vencidos por saludo en el rango de ${selectedTimeRange}.
-⚠️ ${agentsWithMoreThan2Chats} As con +1 chat vencido.
-📈 Resultado: ${totalChats} chats vencidos en el tramo.
-🚨Por favor su apoyo reforzando tiempos de saludo🚨
-    `;
+    return `📌 Detalle de chats vencidos por saludo en el rango de ${selectedTimeRange}.\n` +
+           `⚠️ ${agentsWithMoreThan2Chats} As con +1 chat vencido.\n` +
+           `📈 Resultado: ${totalChats} chats vencidos en el tramo.\n\n` +
+           `🚨${toUnicodeBold('Por favor su apoyo reforzando tiempos de saludo')}🚨`;
   };
 
   const handleCopyLinks = (links) => {
-    // Si links es una cadena de texto o un arreglo de cadenas, se une con saltos de línea
-    const formattedLinks = Array.isArray(links) ? links.join("\n") : links; // Si es un arreglo, lo unimos, sino lo usamos tal cual
-    console.log('xd');
-    console.log(links);
-    console.log(formattedLinks);
+    const formattedLinks = Array.isArray(links) ? links.join("\n") : links;
     navigator.clipboard.writeText(formattedLinks).then(() => {
       console.log("Links copiados al portapapeles!");
     });
