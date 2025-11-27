@@ -93,6 +93,9 @@ const AttendanceTable = () => {
     const peruEnd = getSpainMidnightInLocalTime(peruNextMidnight);
 
     const filtered = workers.filter((worker) => {
+
+      if (worker.status?.name === "Inactivo") return false;
+
       const teamName = worker.team?.name || "";
       if (worker.productive !== "Si") return false;
       
@@ -418,7 +421,6 @@ const AttendanceTable = () => {
               <th className="px-4 py-2 border-b"></th>
               <th className="px-4 py-2 border-b"></th>
               {teamFilter.map((team) => (
-                <>
                   <th
                     colSpan="5"
                     key={`${team}-header`}
@@ -426,7 +428,6 @@ const AttendanceTable = () => {
                   >
                     {team}
                   </th>
-                </>
               ))}
             </tr>
             <tr className="bg-gray-100 dark:bg-gray-800">
