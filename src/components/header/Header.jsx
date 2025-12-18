@@ -88,6 +88,11 @@ export default function Header({ title = 'GTR SUPPORT' }) {
                     SLA Breached
                   </a>
                 </li>
+                <li>
+                  <a href="/ccr" className="">
+                    Contact Reason
+                  </a>
+                </li>
                 <li className="">
                   Hi, {user?.name}!
                 </li>

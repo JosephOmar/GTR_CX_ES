@@ -7,16 +7,15 @@ localforage.config({
   storeName: "workers_store",
 });
 
-const CACHE_TTL = 480 * 60 * 1000; // 10 minutos
+const CACHE_TTL = 480 * 60 * 1000; 
 
-// 🔥 Store global de Workers
 export const useWorkersStore = create((set, get) => ({
   workers: [],
   loading: false,
   error: null,
 
   fetchWorkers: async (forceRefresh = false) => {
-    // Verificamos si el usuario está autenticado
+
     const { isAuthenticated } = AuthStore.getState();
 
     if (!isAuthenticated) {
@@ -42,11 +41,10 @@ export const useWorkersStore = create((set, get) => ({
         }
       }
 
-      // Si el caché no es válido o se fuerza la actualización
       await localforage.removeItem("workers");
       await localforage.removeItem("workers_timestamp");
 
-      const token = await localforage.getItem("token"); // Obtener el token de localForage
+      const token = await localforage.getItem("token");
       const res = await fetch(`${import.meta.env.PUBLIC_URL_BACKEND}workers`, {
         headers: { Authorization: `Bearer ${token}` },
       });
