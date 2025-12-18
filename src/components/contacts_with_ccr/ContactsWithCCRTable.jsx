@@ -235,6 +235,14 @@ export default function ContactsWithCCRTable() {
             ))}
           </select>
         </div>
+        <button
+          onClick={() => {
+            fetchContactsWithCCRData(true);
+          }}
+          className="self-end px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded text-sm"
+        >
+          🔄 Actualizar datos
+        </button>
       </div>
 
       {selectedTeam !== "All" && selectedDate !== "All" && (
@@ -245,9 +253,9 @@ export default function ContactsWithCCRTable() {
               <button
                 key={hour}
                 onClick={() => handleIntervalClick(hour)}
-                className={`px-3 py-1 text-xs rounded border ${
+                className={`px-3 py-1 text-xs rounded ${
                   selectedIntervals.includes(hour)
-                    ? "bg-blue-500 text-white"
+                    ? "bg-blue-500 text-white border"
                     : "bg-gray-100"
                 }`}
               >
