@@ -413,9 +413,9 @@ export function useWorkersWithFilters({
         const productive = (w.productive || "").toString().toUpperCase();
 
         if (observation2Filter === "productive") {
-          return productive.includes('SI');
+          return productive.includes('SÍ');
         } else if(observation2Filter === "unproductive") {
-          return !productive.includes('SI');
+          return !productive.includes('SÍ');
         }
         return true;
       });

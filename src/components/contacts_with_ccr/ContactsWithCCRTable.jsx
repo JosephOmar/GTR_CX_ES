@@ -97,20 +97,26 @@ export default function ContactsWithCCRTable() {
     filteredData = mergedData.filter(
       row =>
         (selectedTeam === "All" || row.team === selectedTeam) &&
-        (selectedDate === "All" || row.date_pe === selectedDate) &&
-        range.includes(row.interval_pe)
+        (selectedDate === "All" || row.date_es === selectedDate) &&
+        range.includes(row.interval_es)
     );
   } else {
     filteredData = mergedData.filter(row => {
       const matchTeam = selectedTeam === "All" || row.team === selectedTeam;
-      const matchDate = selectedDate === "All" || row.date_pe === selectedDate;
+      const matchDate = selectedDate === "All" || row.date_es === selectedDate;
       const matchInterval =
         selectedIntervals.length === 0 ||
-        selectedIntervals.includes(row.interval_pe);
+        selectedIntervals.includes(row.interval_es);
 
       return matchTeam && matchDate && matchInterval;
     });
   }
+
+  filteredData = [...filteredData].sort((a, b) => {
+    const [ha] = a.interval_es.split(":").map(Number);
+    const [hb] = b.interval_es.split(":").map(Number);
+    return ha - hb;
+  });
 
   const handleIntervalClick = hour => {
     setSelectedIntervals(prev => {

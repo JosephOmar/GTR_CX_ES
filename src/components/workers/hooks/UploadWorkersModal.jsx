@@ -13,7 +13,8 @@ export default function UploadWorkersModal({ isOpen, onClose }) {
     { label: "People Inactive", expectedPart: "people_inactive" },
     { label: "Scheduling PPP", expectedPart: "scheduling_ppp" },
     { label: "API ID", expectedPart: "api_id" },
-    { label: "Master Glovo", expectedPart: "master_glovo" },
+    { label: "Master Ubycall", expectedPart: "master_ubycall" },
+    { label: "Master Concentrix", expectedPart: "master_concentrix" },
     { label: "Scheduling Ubycall", expectedPart: "scheduling_ubycall" },
   ];
 
