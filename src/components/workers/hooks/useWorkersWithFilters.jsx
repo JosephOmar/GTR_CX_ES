@@ -244,9 +244,8 @@ export function useWorkersWithFilters({
       "RIDER TIER1",
       "RIDER TIER2",
       "VENDOR TIER1",
+      "VENDOR CHAT",
       "VENDOR TIER2",
-      "VENDOR CALL",
-      "VENDOR MAIL"
     ];
 
     if (teamSelected.length > 0) {

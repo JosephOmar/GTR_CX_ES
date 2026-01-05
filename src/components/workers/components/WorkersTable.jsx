@@ -267,7 +267,6 @@ export function WorkersTable({ workers, selectedDate }) {
                   <td>{w.team?.name}</td>
                   <td>{w.role?.name}</td>
                   <td>{w.supervisor}</td>
-                  <td>{w.coordinator}</td>
                   <td>{w.contract_type?.name || "—"}</td>
                   <td>{slots.length ? slots : <em>Sin horario</em>}</td>
                   <td>{breakInfo}</td>

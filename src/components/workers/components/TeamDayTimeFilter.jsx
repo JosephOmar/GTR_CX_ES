@@ -35,6 +35,7 @@ export function TeamDayTimeFilter({
     { label: "Rider Tier1", value: "RIDER TIER1" },
     { label: "Rider Tier2", value: "RIDER TIER2" },
     { label: "Vendor Tier1", value: "VENDOR TIER1" },
+    { label: "Vendor Chat", value: "VENDOR CHAT" },
     { label: "Vendor Tier2", value: "VENDOR TIER2" },
     { label: "All HC", value: "All HC" },
   ];
